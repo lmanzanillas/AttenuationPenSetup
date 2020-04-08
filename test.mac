@@ -1,0 +1,4 @@
+/PEN/det/setDetName perPENdicularr_test
+       /PEN/det/setABS 5
+       /PEN/det/setSigAlpha 0.0
+       /run/beamOn 100000
