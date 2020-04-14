@@ -80,7 +80,8 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   G4String directorName = "../output/"+sourceString+"-" + datetime()+"/";
   mkdir(directorName, 0777);
 
-  G4String position = G4BestUnit((fDetector->GetTargetSize()-fPrimary->GetSourcePosition()),"Length");
+  G4String positionZ = G4BestUnit((fDetector->GetTargetSize()-fPrimary->GetSourcePositionZ()),"Length");
+  G4String positionX = G4BestUnit((fDetector->GetTargetSize()-fPrimary->GetSourcePositionX()),"Length");
 
   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
   fTimer->Start();

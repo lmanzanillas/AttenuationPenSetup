@@ -33,6 +33,7 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithAString*        fWMaterCMD;
     G4UIcmdWithADoubleAndUnit* fSizeCMD;
     G4UIcmdWithAnInteger* fTypeCMD;
+    G4UIcmdWithADoubleAndUnit* fSourcePositionX;
     G4UIcmdWithADouble* fLYCMD;
     G4UIcmdWithADouble* fResCMD;
     G4UIcmdWithADouble* fABSCMD;

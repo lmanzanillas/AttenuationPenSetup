@@ -2,6 +2,7 @@
 #include "DetectorMessenger.hh"
 #include "SiliconPlateConstruction.hh"
 #include "LightGuideConstruction.hh"
+#include "PrimaryGeneratorAction.hh"
 
 #include "G4Material.hh"
 #include "G4Element.hh"
@@ -70,6 +71,7 @@ DetectorConstruction::DetectorConstruction()
   fThickness = 1*mm;
   halfPenSampleThickness = 3*mm;
   fDetectorType = 0;
+  fDetectorSourceX = 30*mm;
   fABSL = 1;
   fRES = 4.0;
   fLY = 10500./MeV;
@@ -117,7 +119,13 @@ Sets which detector geometry is used.
 */
 void DetectorConstruction::SetDetectorType(G4int value){
   fDetectorType=value;
+  UpdateGeometry();
+  G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+}
 
+//Set the position of the soure in X
+void DetectorConstruction::SetDetectorSourceX(G4double value){
+  fDetectorSourceX  = value;
   UpdateGeometry();
   G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
@@ -150,6 +158,7 @@ void DetectorConstruction::SetABSFile(G4String fileName){
   UpdateGeometry();
   G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
+
 
 /*
 Sets material of target.
@@ -205,7 +214,6 @@ void DetectorConstruction::DefineMaterials(){
   G4int nelements;
 
   // fAir
-  //
   G4Element* N = new G4Element("Nitrogen", "N", z=7 , a=14.01*g/mole);
   G4Element* O = new G4Element("Oxygen"  , "O", z=8 , a=16.00*g/mole);
 
@@ -215,7 +223,6 @@ void DetectorConstruction::DefineMaterials(){
 
   G4NistManager* man = G4NistManager::Instance();
   // Water
-  //
   G4Element* H = new G4Element("Hydrogen", "H", z=1 , a=1.01*g/mole);
 
   G4Material* water = new G4Material("Water", density= 1.0*g/cm3, nelements=2);
@@ -223,7 +230,7 @@ void DetectorConstruction::DefineMaterials(){
   water->AddElement(O, 1);
 
   G4Element* C = new G4Element("Carbon", "C", z=12, a=12*g/mole);
-  G4Element* Pb = new G4Element("Lead", "Pb", z=87, a=207*g/mole);
+  //G4Element* Pb = new G4Element("Lead", "Pb", z=87, a=207*g/mole);
   fGlass = man->FindOrBuildMaterial("G4_Pyrex_Glass");
   fPOM = new G4Material("POM",density=1.41*g/cm3,nelements=3);
   fPOM->AddElement(O,1);
@@ -254,13 +261,13 @@ void DetectorConstruction::DefineMaterials(){
   G4double emission[102] = {0};
   G4double rIndex[102] = {0};
   G4double rIndex_fAir[102] = {0};
-  G4double emsAbs[102] = {0};
+  //G4double emsAbs[102] = {0};
 
   G4int absEntries = 0;
   ifstream ReadAbs;
 
   G4String absFile = "../input_files/"+fABSFile+".csv";
-  G4double emission_fibre[102]={0};
+  //G4double emission_fibre[102]={0};
   ReadAbs.open(absFile);
   G4double var = GetABS();
   if(ReadAbs.is_open())
@@ -276,8 +283,8 @@ void DetectorConstruction::DefineMaterials(){
       emission[absEntries] = ems;
       rIndex[absEntries] = 1.65;
       rIndex_fAir[absEntries] = 1.0;
-      emsAbs[absEntries] = 0.02;
-      emission_fibre[absEntries] = 1.0;
+      //emsAbs[absEntries] = 0.02;
+      //emission_fibre[absEntries] = 1.0;
       absEntries++;
     }
   }
@@ -517,7 +524,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4NistManager* man = G4NistManager::Instance();
 
   G4Material* teflon = man->FindOrBuildMaterial("G4_TEFLON");
-  G4Material* air = man->FindOrBuildMaterial("G4_AIR");
+  G4Material* polyethylene = man->FindOrBuildMaterial("G4_POLYETHYLENE");
+  //G4Material* air = man->FindOrBuildMaterial("G4_AIR");
 
 // ============================================================= Define Volumes =============================================================
 
@@ -526,30 +534,44 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   logicWorldBox = new G4LogicalVolume(fWorldBox,fAir,"World",0,0,0);
   physicWorldBox = new G4PVPlacement(0,G4ThreeVector(),logicWorldBox,"World",0,false,0);
 
+  //Define size of the PEN samples used for the study
   double halfPenSampleWidth = 4.5*mm;//9 mm width samples being used
   double halfPenSampleLength = 37*mm;//74 mm length samples being used
   halfPenSampleThickness = 0.85*mm;//1.7 mm measured thickness
-  double reflectorFoilThickness = 25*um;
 
   penSampleBox = new G4Box("target", halfPenSampleLength, halfPenSampleThickness, halfPenSampleWidth);
   penLogicBox = new G4LogicalVolume(penSampleBox,PenMaterial, "target",0,0,0);
-  G4LogicalVolume* tileLog = new G4LogicalVolume(penSampleBox,PenMaterial, "target",0,0,0);
-  G4Box* reflectorFoilBox = new G4Box("foil", halfPenSampleWidth, reflectorFoilThickness, halfPenSampleWidth);
-  G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, teflon, "foil", 0, 0, 0);
-  double position = 0;
 
+  double reflectorFoilThickness = 25*um;
+
+  //Reflector foil to be placed over pen samples, not used in attenuation
+  G4Box* reflectorFoilBox = new G4Box("foil", halfPenSampleLength, reflectorFoilThickness, halfPenSampleWidth);
+  G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, teflon, "foil", 0, 0, 0);
+
+  //EJ212 foil scintillator used for trigger
   double halfThicknessTriggerFoilEJ212 = 50.*um;//100 um thickness EJ foil for trigger
   double halfWidthTriggerFoilEJ212 = 7.5*mm;
   double halfLengthTriggerFoilEJ212 = 15.*mm;
   G4Box* boxTriggerFoilEJ212 = new G4Box("trigger", halfLengthTriggerFoilEJ212, halfThicknessTriggerFoilEJ212, halfWidthTriggerFoilEJ212);
   G4LogicalVolume* logicBoxTriggerFoilEJ212 = new G4LogicalVolume(boxTriggerFoilEJ212, fScintilator, "trigger", 0, 0, 0);
 
+  //Reflector foil around EJ212 scintillator
+  //Define a box with larger dimmensions than EJ212 bos and then subract EJ212 scintillator
   double halfThicknessReflectorFoil = 100.*um;
   double halfWidththReflectorFoil = 7.8*mm;
   double halfLengthReflectorFoil = 15.5*mm;
-  G4VSolid* boxReflectorFoil = new G4Box("foil", halfLengthReflectorFoil, halfThicknessReflectorFoil, halfLengthReflectorFoil);
+  G4VSolid* boxReflectorFoil = new G4Box("foil", halfLengthReflectorFoil, halfThicknessReflectorFoil, halfWidththReflectorFoil);
   G4SubtractionSolid* reflectorFoilAroundEJ212Foil = new G4SubtractionSolid("reflectorFoilAroundEJ212Foil", boxReflectorFoil, boxTriggerFoilEJ212, 0, G4ThreeVector(0, 0, 0));
   G4LogicalVolume* logicReflectorFoilAroundEJ212Foil = new G4LogicalVolume(reflectorFoilAroundEJ212Foil, teflon, "foil", 0, 0, 0);
+
+  //Passive collimator
+  double innerRadiusCollimator = 1.*mm; 
+  double externalRadiusCollimator = 12.*mm; 
+  double halfcollimatorThickness= 5.*mm; 
+  
+  G4Tubs* collimatorTube = new G4Tubs("collimator",innerRadiusCollimator,externalRadiusCollimator,halfcollimatorThickness,0.,360.*deg);
+  G4LogicalVolume* logicCollimator = new G4LogicalVolume(collimatorTube,polyethylene,"collimator",0,0,0); 
+
 
   G4ThreeVector point = G4ThreeVector(0,0,5*cm);
   G4Navigator* pointNavigator = new G4Navigator();
@@ -566,11 +588,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double perfectEff[57];
   G4double perfectRefl[57];
   G4double photocathRefl[57]={0};
-  G4String pmt_file = "../input_files/pmtQE.csv";
+  G4String pmtFile = "../input_files/pmtQE.csv";
 
   ifstream ReadEff;
   G4int effCounter = 0;
-  ReadEff.open(pmt_file);
+  ReadEff.open(pmtFile);
 
   if(ReadEff.is_open())
   {
@@ -588,7 +610,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     }
   }
 
-  else G4cout<<"Error opening file: " <<pmt_file<<G4endl;
+  else G4cout<<"Error opening file: " <<pmtFile<<G4endl;
   ReadEff.close();
   effCounter--;
 
@@ -618,13 +640,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   AirPEN -> SetPolish(fSigAlpha);
   AirPEN -> SetMaterialPropertiesTable(fTargetMPT);
 
-  G4double casingLength = 30*mm / 2;
-  G4double casingHeight = 32.5*mm / 2;
-  G4double casingHole = 29*mm / 2;
-  G4double casingHoleHeight = 31.5*mm / 2;
+  G4double casingLength = 30.*mm / 2.;
+  G4double casingHeight = 32.5*mm / 2.;
+  G4double casingHole = 29.*mm / 2.;
+  G4double casingHoleHeight = 31.5*mm / 2.;
 
-  G4double photoCathLength = 26*mm / 2;
-  G4double photoCathEffLength = 23*mm / 2;
+  G4double photoCathLength = 26.*mm / 2.;
+  G4double photoCathEffLength = 23.*mm / 2.;
   G4double photoCathEffHeight = 0.8*mm;
 
   G4Box* pmtCase = new G4Box("case",casingLength,casingLength,casingHeight);
@@ -657,6 +679,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4RotationMatrix* rotationMatrix5 = new G4RotationMatrix(0,0,0);
   rotationMatrix5->rotateZ(90*deg);
   rotationMatrix5->rotateX(90*deg);
+  G4RotationMatrix* rotationMatrixCollimator = new G4RotationMatrix(0,0,0);
+  rotationMatrixCollimator->rotateX(90*deg);
+
+  
 
   G4VPhysicalVolume* pmtPlacement;
   G4VPhysicalVolume* incathPlacement;
@@ -675,6 +701,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4VPhysicalVolume* physicPenStackedSamples;
 
   G4VPhysicalVolume* physicTriggerFoilEJ212;
+  G4VPhysicalVolume* physicCollimator;
   G4VPhysicalVolume* physicReflectorFoilAroundEJ212Foil;
   G4VPhysicalVolume* guidePlacement;
   G4VPhysicalVolume* greasePlacement;
@@ -685,25 +712,34 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   logicWorldBox->SetVisAttributes(visAttr);
   pmtVoid->SetVisAttributes(visAttr);
 
-  G4VisAttributes* tileAttr = new G4VisAttributes(G4Colour::Blue());
-  tileAttr->SetVisibility(true);
-  penLogicBox->SetVisAttributes(tileAttr);
+  //PEN and EJ212 
+  G4VisAttributes* visualAttributesScintillators = new G4VisAttributes(G4Colour::Blue());
+  visualAttributesScintillators->SetVisibility(true);
+  penLogicBox->SetVisAttributes(visualAttributesScintillators);
+  logicBoxTriggerFoilEJ212->SetVisAttributes(visualAttributesScintillators);
 
-  G4VisAttributes* opticalAttributes = new G4VisAttributes(G4Colour::Red());
-  opticalAttributes->SetVisibility(true);
-  logicReflectorFoilAroundEJ212Foil->SetVisAttributes(opticalAttributes);
-  logicReflectorFoilBox->SetVisAttributes(opticalAttributes);
+  //Collimator
+  G4VisAttributes* visAttributesCollimator = new G4VisAttributes(G4Colour::Green());
+  visAttributesCollimator->SetVisibility(true);
+  visAttributesCollimator->SetForceSolid(true);
+  logicCollimator->SetVisAttributes(visAttributesCollimator);
+
+  //reflector foils
+  G4VisAttributes* visulaAttributesReflectors = new G4VisAttributes(G4Colour::Red());
+  visulaAttributesReflectors->SetVisibility(true);
+  logicReflectorFoilAroundEJ212Foil->SetVisAttributes(visulaAttributesReflectors);
+  logicReflectorFoilBox->SetVisAttributes(visulaAttributesReflectors);
 
   // Active Detectors
-  G4VisAttributes* detectorAttr = new G4VisAttributes(G4Colour::Green());
-  detectorAttr->SetVisibility(true);
-  detectorAttr->SetForceSolid(false);
-  pmtCathLog->SetVisAttributes(detectorAttr);
+  G4VisAttributes* visulaAttributesDetectors = new G4VisAttributes(G4Colour::Yellow());
+  visulaAttributesDetectors->SetVisibility(true);
+  visulaAttributesDetectors->SetForceSolid(true);
+  pmtCathLog->SetVisAttributes(visulaAttributesDetectors);
 
   // Inactive volumes
-  G4VisAttributes* innactiveAttr = new G4VisAttributes(G4Colour::Gray());
-  pmtInactiveCathLog->SetVisAttributes(innactiveAttr);
-  pmtCaseLog->SetVisAttributes(innactiveAttr);
+  G4VisAttributes* visualAttributesInactiveMaterials = new G4VisAttributes(G4Colour::Gray());
+  pmtInactiveCathLog->SetVisAttributes(visualAttributesInactiveMaterials);
+  pmtCaseLog->SetVisAttributes(visualAttributesInactiveMaterials);
 
   man = G4NistManager::Instance();
 
@@ -714,20 +750,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4Tubs* grease_cyl = new G4Tubs("dip", 0, pmtDiamater/2, pmtDepth/2, 0, 360*deg);
 
   G4LogicalVolume* greaseLog = new G4LogicalVolume(grease_cyl, ej_550, "greaseLog");
-  greaseLog->SetVisAttributes(opticalAttributes);
+  greaseLog->SetVisAttributes(visulaAttributesReflectors);
 
   //  ============================================================= Place volumes =============================================================
   fDetectorType = 1;
-
+  
+  //G4double positionSourceX = fSourcePositionX->GetSourcePositionX();
   // Place main tile at centre of world volume
   switch(fDetectorType){
 
   case 0:
     physicPenSampleBox = new G4PVPlacement(0, G4ThreeVector(0,0,0),penLogicBox,"target",logicWorldBox,false,0,false);
-    //pen_physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, G4ThreeVector(0,reflectorFoilThickness+halfPenSampleThickness,0),logicReflectorFoilBox,"target",logicWorldBox,false,0,false);
-
     // Trigger and light guide placment, with trigger PMT
-
      physicTriggerFoilEJ212 = new G4PVPlacement(0, G4ThreeVector(0,18*mm,0), logicBoxTriggerFoilEJ212, "trigger", logicWorldBox, false, 0, false);
      physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, G4ThreeVector(0,18*mm,0), logicReflectorFoilAroundEJ212Foil, "foil", logicWorldBox, false, 0, false);
      guidePlacement = new G4PVPlacement(rotationMatrix4, G4ThreeVector(-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm), (18*mm+14*mm-1.75*mm), 0),plateLog,"target",logicWorldBox,false,0,false);
@@ -753,13 +787,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
   //pen_foilPlacement = new G4PVPlacement(0, G4ThreeVector(0,reflectorFoilThickness+halfPenSampleThickness*10,0),logicReflectorFoilBox,"target",logicWorldBox,false,0,false);
-
-  // Trigger and light guide placment, with trigger PMT
-
-   physicTriggerFoilEJ212 = new G4PVPlacement(0, G4ThreeVector(0,18*mm,0), logicBoxTriggerFoilEJ212, "trigger", logicWorldBox, false, 0, false);
-   physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, G4ThreeVector(0,18*mm,0), logicReflectorFoilAroundEJ212Foil, "foil", logicWorldBox, false, 0, false);
-   guidePlacement = new G4PVPlacement(rotationMatrix4, G4ThreeVector(-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm), (18*mm+14*mm-1.75*mm), 0),plateLog,"target",logicWorldBox,false,0,false);
-   greasePlacement =  new G4PVPlacement(rotationMatrix5, G4ThreeVector(-19*mm-(halfLengthTriggerFoilEJ212+20*mm),(18*mm+14*mm-1.75*mm),0), greaseLog, "grease", logicWorldBox, false, 0, false);
+  // Collimator, Trigger and light guide placement, with trigger PMT
+   physicTriggerFoilEJ212 = new G4PVPlacement(0, G4ThreeVector(fDetectorSourceX,18*mm,0), logicBoxTriggerFoilEJ212, "trigger", logicWorldBox, false, 0, false);
+   physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, G4ThreeVector(fDetectorSourceX,18*mm,0), logicReflectorFoilAroundEJ212Foil, "foil", logicWorldBox, false, 0, false);
+   physicCollimator = new G4PVPlacement(rotationMatrixCollimator, G4ThreeVector(fDetectorSourceX,19*mm+halfcollimatorThickness,0), logicCollimator, "collimator", logicWorldBox, false, 0, false);
+   guidePlacement = new G4PVPlacement(rotationMatrix4, G4ThreeVector(-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm)+fDetectorSourceX, (18*mm+14*mm-1.75*mm), 0),plateLog,"target",logicWorldBox,false,0,false);
+   greasePlacement =  new G4PVPlacement(rotationMatrix5, G4ThreeVector(-19*mm-(halfLengthTriggerFoilEJ212+20*mm)+fDetectorSourceX,(18*mm+14*mm-1.75*mm),0), greaseLog, "grease", logicWorldBox, false, 0, false);
   cathPlacement = new G4PVPlacement(rotationMatrix,G4ThreeVector(-(20*mm+photoCathEffHeight),0,0),pmtCathLog,"trigger_pmt",plateLog,false,0,false);
   incathPlacement= new G4PVPlacement(0,G4ThreeVector(0,0,0),pmtInactiveCathLog,"inactive_detector1",pmtCathLog,false,0,false);
   pmtPlacement = new G4PVPlacement(0,G4ThreeVector(0,-(casingLength+photoCathEffHeight),0),pmtCaseLog,"pmt1", pmtCathLog,false,0,false);

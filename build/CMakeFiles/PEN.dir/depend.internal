@@ -936,6 +936,8 @@ CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o
  ../include/DetectorConstruction.hh
  ../include/DetectorMessenger.hh
  ../include/LightGuideConstruction.hh
+ ../include/PrimaryGeneratorAction.hh
+ ../include/PrimaryGeneratorMessenger.hh
  ../include/SiliconPlateConstruction.hh
  /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/DetectorConstruction.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
@@ -1328,6 +1330,7 @@ CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o
  /opt/geant4/include/Geant4/G4VTrajectory.hh
  /opt/geant4/include/Geant4/G4VUserDetectorConstruction.hh
  /opt/geant4/include/Geant4/G4VUserEventInformation.hh
+ /opt/geant4/include/Geant4/G4VUserPrimaryGeneratorAction.hh
  /opt/geant4/include/Geant4/G4VUserTrackInformation.hh
  /opt/geant4/include/Geant4/G4VVolumeMaterialScanner.hh
  /opt/geant4/include/Geant4/G4Vector3D.hh

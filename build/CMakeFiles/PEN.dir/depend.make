@@ -935,6 +935,8 @@ CMakeFiles/PEN.dir/src/ActionInitialization.cc.o: /opt/geant4/include/Geant4/trk
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../include/DetectorConstruction.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../include/DetectorMessenger.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../include/LightGuideConstruction.hh
+CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../include/PrimaryGeneratorAction.hh
+CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../include/PrimaryGeneratorMessenger.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../include/SiliconPlateConstruction.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../src/DetectorConstruction.cc
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
@@ -1327,6 +1329,7 @@ CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4V
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4VTrajectory.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4VUserDetectorConstruction.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4VUserEventInformation.hh
+CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4VUserPrimaryGeneratorAction.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4VUserTrackInformation.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4VVolumeMaterialScanner.hh
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: /opt/geant4/include/Geant4/G4Vector3D.hh

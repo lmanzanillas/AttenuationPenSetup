@@ -16,6 +16,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
  fWMaterCMD(0),
  fSizeCMD(0),
  fTypeCMD(0),
+ fSourcePositionX(0),
  fLYCMD(0),fResCMD(0),fDetNameCMD(0),fABSCMD(0), fAbsFileCMD(0)
 {
   fDetDir = new G4UIdirectory("/PEN/det/");
@@ -45,6 +46,15 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   fTypeCMD->SetGuidance("Set detector type");
   fTypeCMD->AvailableForStates(G4State_PreInit,G4State_Idle);
   fTypeCMD->SetToBeBroadcasted(false);
+
+  
+  fSourcePositionX = new G4UIcmdWithADoubleAndUnit("/PEN/det/setSourcePositionX",this);
+  fSourcePositionX ->SetGuidance("Set position of source in x");
+  fSourcePositionX ->SetParameterName("xPosition",false);
+  fSourcePositionX ->SetRange("xPosition>-37.4&&xPosition<37.4");//limits according to the size of the samples
+  fSourcePositionX ->SetUnitCategory("Length");
+  fSourcePositionX ->AvailableForStates(G4State_PreInit,G4State_Idle);
+  fSourcePositionX ->SetToBeBroadcasted(false);
 
   fLYCMD = new G4UIcmdWithADouble("/PEN/det/setLY",this);
   fLYCMD->SetGuidance("Set scint LY");
@@ -89,6 +99,7 @@ DetectorMessenger::~DetectorMessenger()
   delete fWMaterCMD;
   delete fSizeCMD;
   delete fTypeCMD;
+  delete fSourcePositionX;
   delete fDetDir;
   delete fPENDir;
   delete fLYCMD;
@@ -103,32 +114,35 @@ DetectorMessenger::~DetectorMessenger()
 void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 {
    if( command == fTMaterCMD )
-    { fDetector->SetTargetMaterial(newValue);}
+   	{fDetector->SetTargetMaterial(newValue);}
 
    if( command == fWMaterCMD )
-    { fDetector->SetWorldMaterial(newValue);}
+   	{fDetector->SetWorldMaterial(newValue);}
 
-    if( command == fDetNameCMD )
-     { fDetector->SetDetectorName(newValue);}
+   if( command == fDetNameCMD )
+   	{fDetector->SetDetectorName(newValue);}
 
    if( command == fSizeCMD )
-    { fDetector->SetSize(fSizeCMD->GetNewDoubleValue(newValue));}
+   	{fDetector->SetSize(fSizeCMD->GetNewDoubleValue(newValue));}
 
-  if( command == fTypeCMD )
-    { fDetector->SetDetectorType(fTypeCMD->GetNewIntValue(newValue));}
+   if( command == fTypeCMD )
+   	{fDetector->SetDetectorType(fTypeCMD->GetNewIntValue(newValue));}
+  
+   if( command == fSourcePositionX )
+   	{fDetector->SetDetectorSourceX(fSourcePositionX->GetNewDoubleValue(newValue));}  
 
-  if(command == fLYCMD)
-  {fDetector->SetLY(fLYCMD->GetNewDoubleValue(newValue));}
+   if(command == fLYCMD)
+   	{fDetector->SetLY(fLYCMD->GetNewDoubleValue(newValue));}
 
-  if(command==fResCMD)
-  {fDetector->SetRes(fResCMD->GetNewDoubleValue(newValue));}
+   if(command==fResCMD)
+   	{fDetector->SetRes(fResCMD->GetNewDoubleValue(newValue));}
 
-  if(command==fABSCMD)
-  {fDetector->SetABS(fABSCMD->GetNewDoubleValue(newValue));}
+   if(command==fABSCMD)
+   	{fDetector->SetABS(fABSCMD->GetNewDoubleValue(newValue));}
 
-  if(command==fAlphaCMD)
-  {fDetector->SetSigAlpha(fAlphaCMD->GetNewDoubleValue(newValue));}
+   if(command==fAlphaCMD)
+   	{fDetector->SetSigAlpha(fAlphaCMD->GetNewDoubleValue(newValue));}
 
-  if(command==fAbsFileCMD)
-  {fDetector->SetABSFile(newValue);}
+   if(command==fAbsFileCMD)
+   	{fDetector->SetABSFile(newValue);}
 }

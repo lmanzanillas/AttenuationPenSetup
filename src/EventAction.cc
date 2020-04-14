@@ -58,7 +58,7 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 		analysisManager->FillNtupleDColumn(0,fDetectedPhotons);
 		analysisManager->FillNtupleDColumn(1,fDepositedEnergyTrigger);
 
-		if(fLeftPhoton > 50 || fRightPhoton > 50 || fBottomPhoton > 50 || fFrontPhoton > 50 || fBackPhoton > 50){
+		if(fLeftPhoton > 5 || fRightPhoton > 5 || fBottomPhoton > 5 || fFrontPhoton > 5 || fBackPhoton > 5){
 			analysisManager->FillNtupleDColumn(2, fDepositedEnergy);
 			analysisManager->FillNtupleDColumn(3, fLeftPhoton);
 			analysisManager->FillNtupleDColumn(4, fRightPhoton);

@@ -63,6 +63,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetPropertyTable(G4Material* mat, G4MaterialPropertiesTable* tab);
     void SetDetectorType(G4int);
     G4int GetDetectorType(){return fDetectorType;};
+    void SetDetectorSourceX(G4double);
+    G4double GetDetectorSourceX(){return fDetectorSourceX;};
     void SetLY(G4double);
     void SetRes(G4double);
     void SetABS(G4double);
@@ -106,6 +108,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double fABSL;
     G4double fSigAlpha;
     G4double fRI;
+    //add position
 
     G4double fThickness;
     G4double halfPenSampleThickness;
@@ -141,6 +144,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material* ej_550;
 
     G4int fDetectorType;
+    G4double fDetectorSourceX;
     G4String fDetectorName;
     G4String fVolName;
     G4String fABSFile;
