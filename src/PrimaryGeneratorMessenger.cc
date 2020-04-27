@@ -27,17 +27,24 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* Gun
   fSourceEnergy->SetDefaultValue(2000.*keV);
   fSourceType->AvailableForStates(G4State_Idle);
 
+  fSourcePositionX = new G4UIcmdWithADoubleAndUnit("/PEN/gun/sourcePositionX",this);
+  fSourcePositionX->SetGuidance("Set Source x position");
+  fSourcePositionX->SetParameterName("fPositionX",true);
+  fSourcePositionX->SetDefaultValue(0.*mm);
+  fSourcePositionX->AvailableForStates(G4State_Idle);
+
+  fSourcePositionY = new G4UIcmdWithADoubleAndUnit("/PEN/gun/sourcePositionY",this);
+  fSourcePositionY->SetGuidance("Set Source y position");
+  fSourcePositionY->SetParameterName("fPositionY",true);
+  fSourcePositionY->SetDefaultValue(0.*mm);
+  fSourcePositionY->AvailableForStates(G4State_Idle);
+
   fSourcePositionZ = new G4UIcmdWithADoubleAndUnit("/PEN/gun/sourcePositionZ",this);
   fSourcePositionZ->SetGuidance("Set Source z position");
   fSourcePositionZ->SetParameterName("fPositionZ",true);
   fSourcePositionZ->SetDefaultValue(30.*mm);
   fSourcePositionZ->AvailableForStates(G4State_Idle);
 
-  fSourcePositionX = new G4UIcmdWithADoubleAndUnit("/PEN/gun/sourcePositionX",this);
-  fSourcePositionX->SetGuidance("Set Source x position");
-  fSourcePositionX->SetParameterName("fPositionX",true);
-  fSourcePositionX->SetDefaultValue(0.*mm);
-  fSourcePositionX->AvailableForStates(G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -47,8 +54,9 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete fSourceType;
   delete fSourceEnergy;
   delete fGunDir;
-  delete fSourcePositionZ;
   delete fSourcePositionX;
+  delete fSourcePositionY;
+  delete fSourcePositionZ;
   //delete fAction;//debug
 }
 
@@ -64,11 +72,14 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
   	fAction->SetSourceType(3);
   	fAction->SetSourceEnergy(fSourceEnergy->GetNewDoubleValue(newValue));
   }
-  if(command == fSourcePositionZ){
-  	fAction->SetSourcePositionZ(fSourcePositionZ->GetNewDoubleValue(newValue));
-  }
   if(command == fSourcePositionX){
   	fAction->SetSourcePositionX(fSourcePositionX->GetNewDoubleValue(newValue));
+  }
+  if(command == fSourcePositionY){
+  	fAction->SetSourcePositionY(fSourcePositionY->GetNewDoubleValue(newValue));
+  }
+  if(command == fSourcePositionZ){
+  	fAction->SetSourcePositionZ(fSourcePositionZ->GetNewDoubleValue(newValue));
   }
 }
 

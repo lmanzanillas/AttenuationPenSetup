@@ -1026,11 +1026,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			"foil", 
 			logicWorldBox, false, 0, false);
      }
-     physicCollimator = new G4PVPlacement(rotationMatrixCollimator, 
-			G4ThreeVector(fDetectorCollimatorX,19*mm+halfCollimatorThickness,0), 
-			logicCollimator, 
-			"collimator", 
-			logicWorldBox, false, 0, false);
+     //physicCollimator = new G4PVPlacement(rotationMatrixCollimator, 
+     //			G4ThreeVector(fDetectorCollimatorX,19*mm+halfCollimatorThickness,0), 
+     //			logicCollimator, 
+     //			"collimator", 
+     //			logicWorldBox, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm)+fDetectorCollimatorX, (18*mm+14*mm-1.75*mm), 0),
 			logicLightGuidePMMA,

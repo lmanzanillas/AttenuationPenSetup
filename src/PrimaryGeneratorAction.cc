@@ -27,11 +27,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* det)
 	G4int n_particle = 1;
 	fParticleGun = new G4ParticleGun(n_particle);
 	//fParticleGun = new G4ParticleGun();
-	fPositionZ = 30.*mm;
 	//m_detectorConstruction = det;
 	//m_detectorConstruction->GetMinDetectorLimits();
 	//fPositionX = fDetector -> GetDetectorCollimatorX();
 	fPositionX = 0. *mm;
+	fPositionY = 30. *mm;
+	fPositionZ = 0.*mm;
 	fSourceType = 1;
  	//default kinematic
 	//G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
@@ -74,11 +75,14 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
 	G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 	//G4cout << "Gen Primaries" <<G4endl;
+	if (fDetector->GetDetectorType() == 2){
+		fPositionY = 25.*mm;
+	}
 	G4double ionCharge   = 0.*eplus;
 	G4double excitEnergy = 0.*eV;
 	G4int Z=0, A=0;
 	G4ParticleDefinition* ion;
-	G4ThreeVector position = G4ThreeVector(fPositionX, 30*mm, 0*mm);
+	G4ThreeVector position = G4ThreeVector(fPositionX, fPositionY, fPositionZ);
 	//G4ThreeVector position = G4ThreeVector(fPositionX, 30*mm, 0*mm);
         //G4cout<<" position x "<<GetSourcePositionX()<<G4endl;
 	//G4String name;
@@ -136,11 +140,16 @@ void PrimaryGeneratorAction::SetParticleName(G4int Z, G4int A, G4double excitEne
 	fParticleName = G4IonTable::GetIonTable()->GetIonName(Z,A,excitEnergy);
 }
 
-void PrimaryGeneratorAction::SetSourcePositionZ(G4double newPosition){
-	fPositionZ = newPosition;
-}
 void PrimaryGeneratorAction::SetSourcePositionX(G4double newPosition){
 	fPositionX = newPosition;
+}
+
+void PrimaryGeneratorAction::SetSourcePositionY(G4double newPosition){
+	fPositionY = newPosition;
+}
+
+void PrimaryGeneratorAction::SetSourcePositionZ(G4double newPosition){
+	fPositionZ = newPosition;
 }
 
 void PrimaryGeneratorAction::SetSourceType(G4int newType)
