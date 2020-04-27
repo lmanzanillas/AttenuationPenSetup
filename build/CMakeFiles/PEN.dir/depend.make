@@ -1660,6 +1660,7 @@ CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UBox
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UCons.hh
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UExtrudedSolid.hh
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UHype.hh
+CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UIcmdWithABool.hh
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UIcmdWithADouble.hh
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UIcmdWithADoubleAndUnit.hh
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: /opt/geant4/include/Geant4/G4UIcmdWithAString.hh

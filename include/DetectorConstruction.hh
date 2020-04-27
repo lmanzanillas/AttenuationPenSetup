@@ -75,6 +75,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void MaterialPropertiesScintillator();
     void SetVolName(G4ThreeVector);
     void SetRI(G4double);
+    void SetReflectorOn(G4bool );     
 
     void SetDetectorName(G4String);
     void SetABSFile(G4String);
@@ -103,6 +104,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material*        GetWorldMaterial()   {return fWorldMaterial;};
     G4Material*        GetTargetMaterial()   {return fTargetMaterial;};
     G4ThreeVector* fSourceVector;
+    G4bool GetReflectorOn(){return reflectorOn;}
 
     void               DefineMaterials();
 
@@ -161,6 +163,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* physicReflectorFoilAroundEJ212Foil;
     G4VPhysicalVolume* physicLightGuide;
     G4VPhysicalVolume* physicOpticalGrease;
+
+    G4bool reflectorOn;
 
 
     G4OpticalSurface* AirPEN;

@@ -7,6 +7,7 @@
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithAnInteger.hh"
+#include "G4UIcmdWithABool.hh"
 
 #include "G4RunManager.hh"
 
@@ -19,7 +20,9 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
  commandSetDetectorName(0),
  commandSetDetectorType(0),
  commandSetNumberOfTargetSamples(0),
+ commandSetTargetSampleLength(0),
  commandSetTargetSampleThickness(0),
+ commandSetTargetSampleWidth(0),
  commandSetTargetMaterial(0),
  commandSetAlphaSigma(0),
  commandSetCollimatorPositionX(0),
@@ -27,6 +30,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
  commandSetResolutionLY(0),
  commandSetPenAbsorption(0), 
  commandSetAbsorptionFile(0)
+ //commandSetReflectorOn(false),
  {
   fDetDir = new G4UIdirectory("/PEN/det/");
   fDetDir->SetGuidance("detector construction commands");
@@ -43,13 +47,29 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   commandSetWorldMaterial->AvailableForStates(G4State_PreInit,G4State_Idle);
   commandSetWorldMaterial->SetToBeBroadcasted(false);
 
+  commandSetTargetSampleLength = new G4UIcmdWithADoubleAndUnit("/PEN/det/setTargetLength",this);
+  commandSetTargetSampleLength->SetGuidance("Set length of target samples");
+  commandSetTargetSampleLength->SetParameterName("SampleLength",false);
+  commandSetTargetSampleLength->SetRange("SampleLength>0.");
+  commandSetTargetSampleLength->SetUnitCategory("Length");
+  commandSetTargetSampleLength->AvailableForStates(G4State_PreInit,G4State_Idle);
+  commandSetTargetSampleLength->SetToBeBroadcasted(false);
+
   commandSetTargetSampleThickness = new G4UIcmdWithADoubleAndUnit("/PEN/det/setTargetThickness",this);
   commandSetTargetSampleThickness->SetGuidance("Set thickness of target samples");
-  commandSetTargetSampleThickness->SetParameterName("Size",false);
-  commandSetTargetSampleThickness->SetRange("Size>0.");
+  commandSetTargetSampleThickness->SetParameterName("SampleThickness",false);
+  commandSetTargetSampleThickness->SetRange("SampleThickness>0.");
   commandSetTargetSampleThickness->SetUnitCategory("Length");
   commandSetTargetSampleThickness->AvailableForStates(G4State_PreInit,G4State_Idle);
   commandSetTargetSampleThickness->SetToBeBroadcasted(false);
+
+  commandSetTargetSampleWidth = new G4UIcmdWithADoubleAndUnit("/PEN/det/setTargetWidth",this);
+  commandSetTargetSampleWidth->SetGuidance("Set width of target samples");
+  commandSetTargetSampleWidth->SetParameterName("SampleWidth",false);
+  commandSetTargetSampleWidth->SetRange("SampleWidth>0.");
+  commandSetTargetSampleWidth->SetUnitCategory("Length");
+  commandSetTargetSampleWidth->AvailableForStates(G4State_PreInit,G4State_Idle);
+  commandSetTargetSampleWidth->SetToBeBroadcasted(false);
 
   commandSetDetectorType = new G4UIcmdWithAnInteger("/PEN/det/setDetectorType",this);
   commandSetDetectorType->SetGuidance("Set detector type");
@@ -103,6 +123,11 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   commandSetAbsorptionFile->AvailableForStates(G4State_PreInit,G4State_Idle);
   commandSetAbsorptionFile->SetToBeBroadcasted(false);
 
+  commandSetReflectorOn = new G4UIcmdWithABool("/PEN/det/setReflectorOn",this);
+  commandSetReflectorOn->SetGuidance("Enable/Disable reflector.");
+  commandSetReflectorOn->AvailableForStates(G4State_PreInit,G4State_Idle);
+  commandSetReflectorOn->SetToBeBroadcasted(false);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -115,7 +140,9 @@ DetectorMessenger::~DetectorMessenger()
   delete commandSetDetectorName;
   delete commandSetDetectorType;
   delete commandSetNumberOfTargetSamples;
+  delete commandSetTargetSampleLength;
   delete commandSetTargetSampleThickness;
+  delete commandSetTargetSampleWidth;
   delete commandSetTargetMaterial;
   delete commandSetAlphaSigma;
   delete commandSetCollimatorPositionX;
@@ -123,6 +150,7 @@ DetectorMessenger::~DetectorMessenger()
   delete commandSetResolutionLY;
   delete commandSetPenAbsorption;
   delete commandSetAbsorptionFile;
+  delete commandSetReflectorOn;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -141,8 +169,16 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	fDetector->SetDetectorName(newValue);
    }
 
+   if( command == commandSetTargetSampleLength ){
+	fDetector->SetTargetSampleLength(commandSetTargetSampleLength->GetNewDoubleValue(newValue));
+   }
+
    if( command == commandSetTargetSampleThickness ){
 	fDetector->SetTargetSampleThickness(commandSetTargetSampleThickness->GetNewDoubleValue(newValue));
+   }
+
+   if( command == commandSetTargetSampleWidth ){
+	fDetector->SetTargetSampleWidth(commandSetTargetSampleWidth->GetNewDoubleValue(newValue));
    }
 
    if( command == commandSetDetectorType ){
@@ -176,5 +212,9 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 
    if(command == commandSetAbsorptionFile){
 	fDetector->SetABSFile(newValue);
+   }
+   
+   if(command == commandSetReflectorOn){
+	fDetector->SetReflectorOn(newValue);
    }
 }

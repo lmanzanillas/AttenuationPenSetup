@@ -60,6 +60,7 @@ using namespace std;
 /*
 Constructs DetectorConstruction, defines default values.
 */
+
 DetectorConstruction::DetectorConstruction()
 : G4VUserDetectorConstruction(),  penSampleBox(nullptr), penLogicBox(nullptr), 
 physicPenSampleBox(nullptr),physicCollimator(nullptr),
@@ -70,6 +71,7 @@ MPT_PEN(nullptr)
   //MPT_PEN = new G4MaterialPropertiesTable();
   halfSizeDarkBoxX = halfSizeDarkBoxY = halfSizeDarkBoxZ = 1.*m;
   fTargetName = "holder";
+  reflectorOn = false;
   halfPenSampleLength = 37.*mm;
   halfPenSampleThickness = 0.85*mm;
   halfPenSampleWidth = 4.5*mm;
@@ -105,6 +107,11 @@ void DetectorConstruction::SetDetectorCollimatorX(G4double value){
 void DetectorConstruction::SetLY(G4double value){
   fLY=value;
   MPT_PEN->AddConstProperty("SCINTILLATIONYIELD",fLY/MeV);
+}
+
+void DetectorConstruction::SetReflectorOn(G4bool b) {   
+  reflectorOn = b;  
+  G4RunManager::GetRunManager()->ReinitializeGeometry(); 
 }
 
 void DetectorConstruction::SetRes(G4double value){
@@ -598,11 +605,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   penSampleBox = new G4Box("target", halfPenSampleLength, halfPenSampleThickness, halfPenSampleWidth);
   penLogicBox = new G4LogicalVolume(penSampleBox,PenMaterial, "target",0,0,0);
 
-  double reflectorFoilThickness = 25*um;
-
-  //Reflector foil to be placed over pen samples, not used in attenuation
-  G4Box* reflectorFoilBox = new G4Box("foil", halfPenSampleLength, reflectorFoilThickness, halfPenSampleWidth);
-  G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, teflon, "foil", 0, 0, 0);
 
   //EJ212 foil scintillator used for trigger
   double halfThicknessTriggerFoilEJ212 = 50.*um;//100 um thickness EJ foil for trigger
@@ -612,13 +614,23 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* logicBoxTriggerFoilEJ212 = new G4LogicalVolume(boxTriggerFoilEJ212, materialTriggerFoilEJ212, "triggerFoilEJ212", 0, 0, 0);
 
   //Reflector foil around EJ212 scintillator
-  //Define a box with larger dimmensions than EJ212 bos and then subract EJ212 scintillator
+  //Define a box with larger dimmensions than EJ212 box and then subract EJ212 scintillator
   double halfThicknessReflectorFoil = 100.*um;
   double halfWidththReflectorFoil = 7.8*mm;
-  double halfLengthReflectorFoil = 15.0*mm;
+  double halfLengthReflectorFoil = 14.0*mm;
   G4VSolid* boxReflectorFoil = new G4Box("foil", halfLengthReflectorFoil, halfThicknessReflectorFoil, halfWidththReflectorFoil);
   G4SubtractionSolid* reflectorFoilAroundEJ212Foil = new G4SubtractionSolid("reflectorFoilAroundEJ212Foil", boxReflectorFoil, boxTriggerFoilEJ212, 0, G4ThreeVector(0, 0, 0));
   G4LogicalVolume* logicReflectorFoilAroundEJ212Foil = new G4LogicalVolume(reflectorFoilAroundEJ212Foil, teflon, "foil", 0, 0, 0);
+
+  //Reflector foil to be placed over pen samples, not used in attenuation
+  double halfReflectorFoilThickness = 50.*um;
+  double halfReflectorBoxOverPEN = 3.0*mm;
+
+  G4VSolid* boxReflectorPEN = new G4Box("foilPEN",halfPenSampleLength, halfReflectorBoxOverPEN, halfPenSampleWidth);
+  G4Box* reflectorFoilBox = new G4Box("foil", halfPenSampleLength-halfReflectorFoilThickness, halfReflectorBoxOverPEN, halfPenSampleWidth-halfReflectorFoilThickness);
+  G4SubtractionSolid* reflectorFoilOverPEN = new G4SubtractionSolid("reflectorFoilOverPEN",boxReflectorPEN,reflectorFoilBox,0,G4ThreeVector(0, halfReflectorFoilThickness, 0));
+  //G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, teflon, "foil", 0, 0, 0);
+  G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilOverPEN, teflon, "foil", 0, 0, 0);
 
   //Passive collimator
   double innerRadiusCollimator = 1.*mm; 
@@ -658,10 +670,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       if(ReadEff.eof()){
         break;
       }
-      photocathEnergy[effCounter] = (1240/wavelength)*eV;
+      photocathEnergy[effCounter] = (1240./wavelength)*eV;
       photoCathodeQuantumEfficiency[effCounter] = cathodeEfficiency/100.;
-      perfectEfficiency[effCounter] = 1;
-      photoCathodeRelectivity[effCounter] = 0;
+      perfectEfficiency[effCounter] = 1.;
+      photoCathodeRelectivity[effCounter] = 0.;
       effCounter++;
     }
   }
@@ -820,11 +832,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      //			"target",
      //			logicWorldBox,false,0,false);
      // Trigger and light guide placement, with triggerFoilEJ212 PMT
-     physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
+     if(reflectorOn){
+     		physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
 			G4ThreeVector(0,18.*mm,0), 
 			logicReflectorFoilAroundEJ212Foil, 
 			"foil", 
 			logicWorldBox, false, 0, false);
+     }
      physicTriggerFoilEJ212 = new G4PVPlacement(0, 
 			//G4ThreeVector(0,0,0), 
 			G4ThreeVector(0,18.*mm,0), 
@@ -902,7 +916,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      }
      //Reflector foil over PEN samples, uncomment if needed
      //physicReflectorFoilBoxOverPEN = new G4PVPlacement(0, 
-     //				G4ThreeVector(0,reflectorFoilThickness+halfPenSampleThickness*10,0),
+     //				G4ThreeVector(0,halfReflectorFoilThickness+halfPenSampleThickness*10,0),
      //				logicReflectorFoilBox,
      //				"target",
      //				logicWorldBox,false,0,false);
@@ -912,11 +926,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			logicBoxTriggerFoilEJ212, 
 			"triggerFoilEJ212",
 			logicWorldBox, false, 0, false);
-     physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
+     if(reflectorOn){
+     		physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
 			G4ThreeVector(fDetectorCollimatorX,18*mm,0), 
 			logicReflectorFoilAroundEJ212Foil, 
 			"foil", 
 			logicWorldBox, false, 0, false);
+     }
      physicCollimator = new G4PVPlacement(rotationMatrixCollimator, 
 			G4ThreeVector(fDetectorCollimatorX,19*mm+halfCollimatorThickness,0), 
 			logicCollimator, 
@@ -993,7 +1009,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      }
      //Reflector foil over PEN samples, uncomment if needed
      physicReflectorFoilBoxOverPEN = new G4PVPlacement(0, 
-     				G4ThreeVector(0,reflectorFoilThickness + 2*halfPenSampleThickness*(nSamples)-halfPenSampleThickness + (nSamples)*5.*um,0),
+     				G4ThreeVector(0,halfReflectorBoxOverPEN + 2*halfPenSampleThickness*(nSamples)-halfPenSampleThickness + (nSamples)*5.*um,0),
      				logicReflectorFoilBox,
      				"reflector",
      				logicWorldBox,false,0,false);
@@ -1003,11 +1019,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			logicBoxTriggerFoilEJ212, 
 			"triggerFoilEJ212",
 			logicWorldBox, false, 0, false);
-     physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
+     if(reflectorOn){
+     		physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
 			G4ThreeVector(fDetectorCollimatorX,18*mm,0), 
 			logicReflectorFoilAroundEJ212Foil, 
 			"foil", 
 			logicWorldBox, false, 0, false);
+     }
      physicCollimator = new G4PVPlacement(rotationMatrixCollimator, 
 			G4ThreeVector(fDetectorCollimatorX,19*mm+halfCollimatorThickness,0), 
 			logicCollimator, 
