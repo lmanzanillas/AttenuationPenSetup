@@ -74,9 +74,9 @@ void PrimaryGeneratorAction::DefineParticle(){
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
 	G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-	//G4cout << "Gen Primaries" <<G4endl;
 	if (fDetector->GetDetectorType() == 2){
 		fPositionY = 25.*mm;
+		//G4cout << " fPositionY detector type 2 "<<fPositionY<<G4endl;
 	}
 	G4double ionCharge   = 0.*eplus;
 	G4double excitEnergy = 0.*eV;

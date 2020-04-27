@@ -35,6 +35,21 @@ namespace {
 
 int main(int argc,char** argv)
 {
+    G4cout << " " << G4endl
+    << "================================="<< G4endl
+    << "                                 " << G4endl
+    << "    #####   #####  #      #      " << G4endl
+    << "   #     #  #      # #    #      " << G4endl
+    << "   #     #  #      #  #   #      " << G4endl
+    << "   # ####   #####  #   #  #      " << G4endl
+    << "   #        #      #    # #      " << G4endl
+    << "   #        #      #     ##      " << G4endl
+    << "   #        #####  #      #      " << G4endl
+    << "                                 " << G4endl
+    << "================================="<< G4endl
+    << "Luis Manzanillas, Connor Hayward "<< G4endl
+    << "================================="<< G4endl
+    << G4endl << G4endl;
   // Evaluate arguments
   //
   if ( argc > 9 ) {
