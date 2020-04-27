@@ -25,7 +25,7 @@ public:
 
 public:
 	virtual void GeneratePrimaries(G4Event*);
-	void DefineParticle();
+	//void DefineParticle();
 	void  SetSourceType(G4int newType);
 	void SetSourceEnergy(G4double newEnergy);
 	G4int GetSourceType(void){return fSourceType;};

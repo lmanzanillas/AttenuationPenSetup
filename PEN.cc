@@ -95,6 +95,7 @@ int main(int argc,char** argv)
 
   // User action initialization
   runManager->SetUserInitialization(new ActionInitialization(det));
+  //runManager->SetUserInitialization(new ActionInitialization());
   //G4cout<<"All init"<<G4endl;
   runManager->Initialize();
 

@@ -27,19 +27,22 @@ class DetectorMessenger: public G4UImessenger
 
     DetectorConstruction*      fDetector;
 
+
     G4UIdirectory*             fPENDir;
     G4UIdirectory*             fDetDir;
-    G4UIcmdWithAString*        fTMaterCMD;
-    G4UIcmdWithAString*        fWMaterCMD;
-    G4UIcmdWithADoubleAndUnit* fSizeCMD;
-    G4UIcmdWithAnInteger* fTypeCMD;
-    G4UIcmdWithADoubleAndUnit* fSourcePositionX;
-    G4UIcmdWithADouble* fLYCMD;
-    G4UIcmdWithADouble* fResCMD;
-    G4UIcmdWithADouble* fABSCMD;
-    G4UIcmdWithADouble* fAlphaCMD;
-    G4UIcmdWithAString* fDetNameCMD;
-    G4UIcmdWithAString* fAbsFileCMD;
+
+    G4UIcmdWithAString*         commandSetWorldMaterial;
+    G4UIcmdWithAString* 	commandSetDetectorName;
+    G4UIcmdWithAnInteger*       commandSetDetectorType;
+    G4UIcmdWithAnInteger*       commandSetNumberOfTargetSamples;
+    G4UIcmdWithADoubleAndUnit*  commandSetTargetSampleThickness;
+    G4UIcmdWithAString*         commandSetTargetMaterial;
+    G4UIcmdWithADouble* 	commandSetAlphaSigma;
+    G4UIcmdWithADoubleAndUnit*  commandSetCollimatorPositionX;
+    G4UIcmdWithADouble*	        commandSetLY;
+    G4UIcmdWithADouble* 	commandSetResolutionLY;
+    G4UIcmdWithADouble* 	commandSetPenAbsorption;
+    G4UIcmdWithAString* 	commandSetAbsorptionFile;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

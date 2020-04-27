@@ -32,19 +32,33 @@ SteppingAction::~SteppingAction() {}
 
 void SteppingAction::UserSteppingAction(const G4Step * theStep)
 {
-	auto analysisManager = G4AnalysisManager::Instance();
+	//auto analysisManager = G4AnalysisManager::Instance();
 	G4Track* theTrack = theStep->GetTrack();
 	//G4cout << "Begin Stepping" << G4endl;
 	fExpectedNextStatus = Undefined;
 
 	G4StepPoint* thePrePoint = theStep->GetPreStepPoint();
 	G4VPhysicalVolume* thePrePV = thePrePoint->GetPhysicalVolume();
+	//G4TouchableHistory* theTouchable = (G4TouchableHistory*)(thePrePoint->GetTouchable());
+	//G4int copyNo = theTouchable->GetVolume()->GetCopyNo();
 
-	if ( thePrePV->GetName()=="target"){
-		fEventAction->AddDepositedEnergy(theStep->GetTotalEnergyDeposit()/keV);
+
+	if ( thePrePV->GetName()=="target_1" ){
+		fEventAction->AddDepositedEnergyPENStackedSample1(theStep->GetTotalEnergyDeposit()/keV);
 	}
-	else if ( thePrePV->GetName()=="trigger"){
-		fEventAction->AddDepositedEnergyTrigger(theStep->GetTotalEnergyDeposit()/keV);
+	else if ( thePrePV->GetName()=="target_2" ){
+		fEventAction->AddDepositedEnergyPENStackedSample2(theStep->GetTotalEnergyDeposit()/keV);
+        }
+	else if ( thePrePV->GetName()=="target_3" ){
+		fEventAction->AddDepositedEnergyPENStackedSample3(theStep->GetTotalEnergyDeposit()/keV);
+        }
+	else if ( thePrePV->GetName()=="target_4" ){
+		fEventAction->AddDepositedEnergyPENStackedSample4(theStep->GetTotalEnergyDeposit()/keV);
+        }
+	else if ( thePrePV->GetName()=="triggerFoilEJ212"){
+		fEventAction->AddDepositedEnergyEJ212TriggerFoil(theStep->GetTotalEnergyDeposit()/keV);
+	}else{
+		fEventAction->AddDepositedEnergyInactiveMaterial(theStep->GetTotalEnergyDeposit()/keV);
 	}
 
 	G4StepPoint* thePostPoint = theStep->GetPostStepPoint();
@@ -55,7 +69,7 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 
 
 
-  //find the boundary process only once
+  	//find the boundary process only once
 	if(!boundary){
 		G4ProcessManager* pm	= theStep->GetTrack()->GetDefinition()->GetProcessManager();
 		G4int nprocesses = pm->GetProcessListLength();
@@ -80,9 +94,9 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
   	{
 	  	boundaryStatus=boundary->GetStatus();
 
-	    //Check to see if the partcile was actually at a boundary
-	    //Otherwise the boundary status may not be valid
-	    //Prior to Geant4.6.0-p1 this would not have been enough to check
+	    	//Check to see if the partcile was actually at a boundary
+	    	//Otherwise the boundary status may not be valid
+	    	//Prior to Geant4.6.0-p1 this would not have been enough to check
 	  	if(thePostPoint->GetStepStatus()==fGeomBoundary){
 	  		if(fExpectedNextStatus==StepTooSmall){
 	  			if(boundaryStatus!=StepTooSmall){
@@ -97,33 +111,31 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 	  		}
 	  		fExpectedNextStatus=Undefined;
 	  		switch(boundaryStatus){
-		  		case Absorption:
-					{
-						// fEventAction->AddAbsorbedPhoton();
-					}
-
-		  			break;
+		  		case Absorption:{
+					// fEventAction->AddAbsorbedPhoton();
+				}
+		  		break;
 		      	case Detection:
 		      	{
-							G4String pvName = thePostPV->GetName();
-							if(pvName == "trigger_pmt"){
- 							 fEventAction->AddDetectedPhoton();
-							}
-							else if(pvName == "main_pmt_1"){
-								fEventAction->AddLeftPhoton();
-							}
-							else if(pvName == "main_pmt_2"){
-								fEventAction->AddRightPhoton();
-							}
-							else if(pvName == "main_pmt_3"){
-								fEventAction->AddBottomPhoton();
-							}
-							else if(pvName == "main_pmt_4"){
-								fEventAction->AddFrontPhoton();
-							}
-							else if(pvName == "main_pmt_5"){
-								fEventAction->AddBackPhoton();
-							}
+				G4String pvName = thePostPV->GetName();
+				if(pvName == "trigger_pmt"){
+ 					fEventAction->AddDetectedPhoton();
+				}
+				else if(pvName == "main_pmt_1"){
+					fEventAction->AddLeftPhoton();
+				}
+				else if(pvName == "main_pmt_2"){
+					fEventAction->AddRightPhoton();
+				}
+				else if(pvName == "main_pmt_3"){
+					fEventAction->AddBottomPhoton();
+				}
+				else if(pvName == "main_pmt_4"){
+					fEventAction->AddFrontPhoton();
+				}
+				else if(pvName == "main_pmt_5"){
+					fEventAction->AddBackPhoton();
+				}
 			      	break;
 		      	}
 		      	case FresnelReflection:

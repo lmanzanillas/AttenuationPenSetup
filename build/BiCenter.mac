@@ -13,8 +13,8 @@
 # viewing in a VRML viewer:
 #/vis/open VRML2FILE
 #
-/PEN/det/setDetectorType 1
-/PEN/gun/sourceType 3
+#/PEN/det/setDetectorType 1
+/PEN/gun/sourceType 1
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
 /vis/viewer/set/autoRefresh false
@@ -60,7 +60,7 @@
 /vis/modeling/trajectories/drawByParticleID-0/set gamma blue
 #
 # To superimpose all of the events from a given run:
-#/vis/scene/endOfEventAction accumulate
+/vis/scene/endOfEventAction accumulate
 #
 # Re-establish auto refreshing and verbosity:
 /vis/viewer/set/autoRefresh true
@@ -68,3 +68,4 @@
 #
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
+/run/beamOn 100

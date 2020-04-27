@@ -13,7 +13,7 @@
 # viewing in a VRML viewer:
 #/vis/open VRML2FILE
 #
-/PEN/det/setDetectorType 0
+/PEN/det/setDetectorType 1
 /PEN/gun/sourceType 3
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
@@ -60,7 +60,7 @@
 /vis/modeling/trajectories/drawByParticleID-0/set gamma blue
 #
 # To superimpose all of the events from a given run:
-/vis/scene/endOfEventAction accumulate
+#/vis/scene/endOfEventAction accumulate
 #
 # Re-establish auto refreshing and verbosity:
 /vis/viewer/set/autoRefresh true

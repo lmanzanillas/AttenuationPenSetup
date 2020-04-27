@@ -62,23 +62,19 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void UpdateGeometry(void);
     void SetPropertyTable(G4Material* mat, G4MaterialPropertiesTable* tab);
     void SetDetectorType(G4int);
-    G4int GetDetectorType(){return fDetectorType;};
-    void SetDetectorSourceX(G4double);
-    G4double GetDetectorSourceX(){return fDetectorSourceX;};
+    void SetTargetSampleLength(G4double);
+    void SetTargetSampleThickness(G4double);
+    void SetTargetSampleWidth(G4double);
+    void SetDetectorCollimatorX(G4double);
+    void SetDetectorCollimatorThickness(G4double);
+    void SetNumberOfTargetSamples(G4int);
     void SetLY(G4double);
     void SetRes(G4double);
     void SetABS(G4double);
     void SetSigAlpha(G4double);
     void MaterialPropertiesScintillator();
-    G4double GetLY(){return fLY;};
-    G4double GetRes(){return fRES;};
-    G4double GetABS(){return fABSL;};
-    G4double GetSigAlpha(){return fSigAlpha;};
-    G4String GetDetectorName(){return fDetectorName;};
     void SetVolName(G4ThreeVector);
-    G4String GetVolName(){return fVolName;};
     void SetRI(G4double);
-    G4double GetRI(){return fRI;};
 
     void SetDetectorName(G4String);
     void SetABSFile(G4String);
@@ -86,10 +82,23 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
 
   public:
-    const G4VPhysicalVolume* GetWorld() {return physicPenSampleBox;};
+    //const G4VPhysicalVolume* GetWorld() {return physicPenSampleBox;};
+    const G4VPhysicalVolume* GetWorld() {return physicWorldBox;};
+    G4int GetDetectorType(){return fDetectorType;};
+    G4double GetDetectorCollimatorX(){return fDetectorCollimatorX;};
+    G4double GetLY(){return fLY;};
+    G4double GetRes(){return fRES;};
+    G4double GetABS(){return AbsorptionLength;};
+    G4double GetSigAlpha(){return fSigAlpha;};
+    G4String GetDetectorName(){return fDetectorName;};
+    G4String GetVolName(){return fVolName;};
+    G4double GetRI(){return fRI;};
 
-    G4double GetSize()  {return fThickness;};
-    G4double GetTargetSize()  {return halfPenSampleThickness;};
+    G4double GetCollimatorThickness()  {return halfCollimatorThickness;};
+    G4double GetTargetSampleLength()  {return halfPenSampleLength;};
+    G4double GetTargetSampleThickness()  {return halfPenSampleThickness;};
+    G4double GetTargetSampleWidth()  {return halfPenSampleWidth;};
+    G4int GetNumberOfTargetSamples()  {return nSamples;};
     G4String GetTargetMaterialName(){return fTargetName;};
     G4Material*        GetWorldMaterial()   {return fWorldMaterial;};
     G4Material*        GetTargetMaterial()   {return fTargetMaterial;};
@@ -105,15 +114,15 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     G4double fLY;
     G4double fRES;
-    G4double fABSL;
+    G4double AbsorptionLength;
     G4double fSigAlpha;
     G4double fRI;
     //add position
-
-    G4double fThickness;
+    G4double halfPenSampleLength;
     G4double halfPenSampleThickness;
-    G4MaterialPropertiesTable* fTargetMPT;
-    G4MaterialPropertiesTable* fWorldMPT;
+    G4double halfPenSampleWidth;
+    G4int nSamples;
+
 
     G4double fSiliconPlate_h;
     G4double fHolderWidth;
@@ -121,30 +130,73 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material* fWorldMaterial;
     G4Material* fTargetMaterial;
     G4String fTargetName;
-    G4VPhysicalVolume* physicPenSampleBox;
-    G4LogicalVolume* penLogicBox;
+    G4double halfCollimatorThickness;
+    G4Box* fWorldBox;
     G4Box* penSampleBox;
 
-    G4VPhysicalVolume* physicWorldBox;
+    G4LogicalVolume* penLogicBox;
     G4LogicalVolume* logicWorldBox;
-    G4Box* fWorldBox;
     G4ThreeVector fPMTPlacement = G4ThreeVector(0,0,63.5*mm+halfPenSampleThickness);
 
+    G4VPhysicalVolume* physicWorldBox;
+    G4VPhysicalVolume* physicPenSampleBox;
+    G4VPhysicalVolume* physicCollimator;
+    G4VPhysicalVolume* physicBoxPMTShell;
+    G4VPhysicalVolume* physicBoxPhotoCathodeSupport;
+    G4VPhysicalVolume* physicActivePhotoCathodeTriggerPMT;
+    G4VPhysicalVolume* physicBoxEmptyInsidePMT;
+
+    G4VPhysicalVolume* physicActivePhotoCathodePMT1;
+    G4VPhysicalVolume* physicActivePhotoCathodePMT2;
+    G4VPhysicalVolume* physicActivePhotoCathodePMT3;
+    G4VPhysicalVolume* physicActivePhotoCathodePMT4;
+    G4VPhysicalVolume* physicActivePhotoCathodePMT5;
+
+    G4VPhysicalVolume* physicReflectorFoilBoxOverPEN;
+    G4VPhysicalVolume* vacPlacement;
+
+    G4VPhysicalVolume* physicPenStackedSamples;
+
+    G4VPhysicalVolume* physicTriggerFoilEJ212;
+    G4VPhysicalVolume* physicReflectorFoilAroundEJ212Foil;
+    G4VPhysicalVolume* physicLightGuide;
+    G4VPhysicalVolume* physicOpticalGrease;
+
+
+    G4OpticalSurface* AirPEN;
+
+    G4MaterialPropertiesTable* MPT_PEN;
+    G4MaterialPropertiesTable* MPT_World;
+
+    G4LogicalBorderSurface* logicSurfaceAirPEN;
+    G4LogicalBorderSurface* logicSurfacePENAir;
+    G4LogicalBorderSurface* logicSurfaceAirPENStacked;
+    G4LogicalBorderSurface* logicSurfacePENStackedAir;
+    G4LogicalBorderSurface* logicSurfaceEJ212PMMA;
+    G4LogicalBorderSurface* logicSurfacePMMAEJ212;
+    G4LogicalBorderSurface* logicSurfaceAirPMMA;
+    G4LogicalBorderSurface* logicSurfacePMMAAir;
+    G4LogicalBorderSurface* logicSurfacePENStackedReflectorFoilBoxOverPEN;
+    G4LogicalBorderSurface* logicSurfaceReflectorFoilBoxOverPENPENStacked;
+    G4LogicalBorderSurface* logicSurfaceEJ212Reflector;
+    G4LogicalBorderSurface* logicSurfaceReflectorEJ212;
+    G4LogicalBorderSurface* logicSurfacePenReflectorFoilBoxOverPEN;
+
     G4Material* PenMaterial;
-    G4Material* fSi;
+    G4Material* materialSi;
     G4Material* fGe;
-    G4Material* fAir;
+    G4Material* materialAir;
     G4Material* fVacuum;
-    G4Material* fScintilator;
+    G4Material* materialTriggerFoilEJ212;
     G4Material* Pstyrene;
     G4Material* fGlass;
     G4Material* fPOM;
     G4Material* fABS;
-    G4Material* fPMMA;
+    G4Material* materialPMMA;
     G4Material* ej_550;
 
     G4int fDetectorType;
-    G4double fDetectorSourceX;
+    G4double fDetectorCollimatorX;
     G4String fDetectorName;
     G4String fVolName;
     G4String fABSFile;

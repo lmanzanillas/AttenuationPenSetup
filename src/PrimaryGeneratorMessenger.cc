@@ -7,8 +7,7 @@
 #include "G4SystemOfUnits.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorMessenger::
-  PrimaryGeneratorMessenger(PrimaryGeneratorAction* Gun)
+PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* Gun)
   : G4UImessenger(),
     fAction(Gun),fGunDir(0)
 {
@@ -25,19 +24,19 @@ PrimaryGeneratorMessenger::
   fSourceEnergy = new G4UIcmdWithADoubleAndUnit("/PEN/gun/sourceEnergy", this);
   fSourceEnergy->SetGuidance("Choose source energy");
   fSourceEnergy->SetParameterName("sourceEnergy",true);
-  fSourceEnergy->SetDefaultValue(60*keV);
+  fSourceEnergy->SetDefaultValue(2000.*keV);
   fSourceType->AvailableForStates(G4State_Idle);
 
   fSourcePositionZ = new G4UIcmdWithADoubleAndUnit("/PEN/gun/sourcePositionZ",this);
   fSourcePositionZ->SetGuidance("Set Source z position");
   fSourcePositionZ->SetParameterName("fPositionZ",true);
-  fSourcePositionZ->SetDefaultValue(3*cm);
+  fSourcePositionZ->SetDefaultValue(30.*mm);
   fSourcePositionZ->AvailableForStates(G4State_Idle);
 
   fSourcePositionX = new G4UIcmdWithADoubleAndUnit("/PEN/gun/sourcePositionX",this);
   fSourcePositionX->SetGuidance("Set Source x position");
   fSourcePositionX->SetParameterName("fPositionX",true);
-  fSourcePositionX->SetDefaultValue(2*cm);
+  fSourcePositionX->SetDefaultValue(0.*mm);
   fSourcePositionX->AvailableForStates(G4State_Idle);
 }
 
@@ -50,19 +49,19 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete fGunDir;
   delete fSourcePositionZ;
   delete fSourcePositionX;
+  //delete fAction;//debug
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void PrimaryGeneratorMessenger::SetNewValue(
-                                        G4UIcommand* command, G4String newValue)
+void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
 {
   if(command == fSourceType) {
   	fAction->SetSourceType(fSourceType->GetNewIntValue(newValue));
   }
 
   if(command == fSourceEnergy){
-  	fAction->SetSourceType(0);
+  	fAction->SetSourceType(3);
   	fAction->SetSourceEnergy(fSourceEnergy->GetNewDoubleValue(newValue));
   }
   if(command == fSourcePositionZ){

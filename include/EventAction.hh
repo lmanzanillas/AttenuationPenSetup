@@ -20,8 +20,12 @@ class EventAction : public G4UserEventAction
     virtual void EndOfEventAction(const G4Event* event);
     void    AddDetectedPhoton(void){fDetectedPhotons++;};
     G4double   GetNumberDetectedPhotons(void){return fDetectedPhotons;};
-    void    AddDepositedEnergy(G4double newEnergy){fDepositedEnergy += newEnergy;};
-    void    AddDepositedEnergyTrigger(G4double newEnergy){fDepositedEnergyTrigger += newEnergy;};
+    void    AddDepositedEnergyPENStackedSample1(G4double newEnergy){depositedEnergyPENStackedSample1 += newEnergy;};
+    void    AddDepositedEnergyPENStackedSample2(G4double newEnergy){depositedEnergyPENStackedSample2 += newEnergy;};
+    void    AddDepositedEnergyPENStackedSample3(G4double newEnergy){depositedEnergyPENStackedSample3 += newEnergy;};
+    void    AddDepositedEnergyPENStackedSample4(G4double newEnergy){depositedEnergyPENStackedSample4 += newEnergy;};
+    void    AddDepositedEnergyEJ212TriggerFoil(G4double newEnergy){depositedEnergyTriggerFoilEJ212 += newEnergy;};
+    void    AddDepositedEnergyInactiveMaterial(G4double newEnergy){depositedEnergyInactiveMaterial += newEnergy;};
     void    AddWavelength(G4double newWavelength);
     void    AddIWavelength(G4double startWavelength);
 
@@ -34,8 +38,12 @@ class EventAction : public G4UserEventAction
   private:
     RunAction* 	fRunAction;
 
-    G4double fDepositedEnergy;
-    G4double fDepositedEnergyTrigger;
+    G4double depositedEnergyPENStackedSample1;
+    G4double depositedEnergyPENStackedSample2;
+    G4double depositedEnergyPENStackedSample3;
+    G4double depositedEnergyPENStackedSample4;
+    G4double depositedEnergyTriggerFoilEJ212;
+    G4double depositedEnergyInactiveMaterial;
 
     G4double fDetectedPhotons;
     G4double fFrontPhoton;

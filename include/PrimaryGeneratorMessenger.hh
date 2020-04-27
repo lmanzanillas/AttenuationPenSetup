@@ -27,7 +27,6 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit* fSourceEnergy;
     G4UIcmdWithADoubleAndUnit* fSourcePositionZ;
     G4UIcmdWithADoubleAndUnit* fSourcePositionX;
-    G4UIcmdWithADoubleAndUnit* fLYCMD;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

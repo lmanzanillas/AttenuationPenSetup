@@ -60,9 +60,9 @@ class RunAction : public G4UserRunAction
 
   private:
     G4AnalysisManager* fMan;
-    G4Timer* fTimer;
     DetectorConstruction*   fDetector;
     PrimaryGeneratorAction* fPrimary;
+    G4Timer* fTimer;
     G4String fFileName;
 
     RunActionMessenger* fRunActionMessenger;

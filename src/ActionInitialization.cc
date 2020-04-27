@@ -39,37 +39,39 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ActionInitialization::ActionInitialization(DetectorConstruction* det)
- : G4VUserActionInitialization(),fDetector(det)
-{ }
+//ActionInitialization::ActionInitialization()
+: G4VUserActionInitialization()
+{ 
+  fDetector = det;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ActionInitialization::~ActionInitialization()
-{ }
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ActionInitialization::BuildForMaster() const
 {
-  PrimaryGeneratorAction* prim = new PrimaryGeneratorAction(fDetector);
-  // SetUserAction(prim);
- SetUserAction(new RunAction(fDetector, prim));
+  //PrimaryGeneratorAction* prim = new PrimaryGeneratorAction(fDetector);
+  //SetUserAction(new RunAction(fDetector, prim));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void ActionInitialization::Build() const
 {
-
   PrimaryGeneratorAction* prim = new PrimaryGeneratorAction(fDetector);
   SetUserAction(prim);
-//G4cout << "Prim"<<G4endl;
+  //G4cout << "Prim"<<G4endl;
   RunAction* run = new RunAction(fDetector,prim);
   SetUserAction(run);
-//G4cout << "Run"<<G4endl;
+  //G4cout << "Run"<<G4endl;
   EventAction* event = new EventAction(run);
   SetUserAction(event);
-//G4cout<<"Event"<<G4endl;
+  //G4cout<<"Event"<<G4endl;
   SetUserAction(new SteppingAction(event));
 
 }

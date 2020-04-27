@@ -46,7 +46,7 @@ G4VSolid* LightGuideConstruction::ConstructPlate(){
   G4RotationMatrix* rm3 = new G4RotationMatrix();
   rm3->rotateY(90.*deg);
 
-  char solidname[100];
+  //char solidname[100];
 
   G4VSolid* initialBlock = new G4Box("lg_block", rectX, rectY, rectY);
   G4VSolid* angleBlock = new G4Box("angleBlock", 35*mm, 20*mm, 15*mm);
@@ -56,7 +56,7 @@ G4VSolid* LightGuideConstruction::ConstructPlate(){
 
   G4VSolid* slit = new G4Box("slit", slitDepth, slitHeight, rectY);
 
-  G4VSolid* pmtHole = new G4Tubs("dip", 0, pmtDiameter/2, pmtDepth/2, 0, TubsSpanningAngle);
+  G4VSolid* pmtHole = new G4Tubs("dip", 0, pmtDiameter/2, pmtDepth/2, TubsStartAngle, TubsSpanningAngle);
 
   G4SubtractionSolid* oneEdge = new G4SubtractionSolid("oneEdge", initialBlock, chamferEdge, rm, G4ThreeVector(0*mm,rectY, rectY));
   oneEdge = new G4SubtractionSolid("oneEdge", oneEdge, chamferEdge, rm, G4ThreeVector(0*mm,-rectY, rectY));

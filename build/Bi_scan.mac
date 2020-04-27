@@ -1,0 +1,9 @@
+/PEN/det/setDetectorType 1
+/PEN/det/setCollimatorPositionX 5.0 mm
+/PEN/det/setLY 4500.0
+/PEN/det/setABS 10.0
+/PEN/det/setSigAlpha 0.7
+/PEN/gun/sourcePositionX 5.0 mm
+/PEN/gun/sourceType 1
+
+/run/beamOn 10000000

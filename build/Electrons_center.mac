@@ -1,0 +1,8 @@
+/PEN/det/setCollimatorPositionX 0.0 mm
+/PEN/det/setLY 7500.0
+/PEN/det/setABS 20.0
+/PEN/det/setSigAlpha 0.5
+/PEN/gun/sourcePositionX 0.0 mm
+/PEN/gun/sourceType 3
+
+/run/beamOn 12000
