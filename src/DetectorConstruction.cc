@@ -623,12 +623,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* logicReflectorFoilAroundEJ212Foil = new G4LogicalVolume(reflectorFoilAroundEJ212Foil, teflon, "foil", 0, 0, 0);
 
   //Reflector foil to be placed over pen samples, not used in attenuation
-  double halfReflectorFoilThickness = 50.*um;
+  double totalReflectorFoilThickness = 100.*um;
   double halfReflectorBoxOverPEN = 3.0*mm;
 
   G4VSolid* boxReflectorPEN = new G4Box("foilPEN",halfPenSampleLength, halfReflectorBoxOverPEN, halfPenSampleWidth);
-  G4Box* reflectorFoilBox = new G4Box("foil", halfPenSampleLength-halfReflectorFoilThickness, halfReflectorBoxOverPEN, halfPenSampleWidth-halfReflectorFoilThickness);
-  G4SubtractionSolid* reflectorFoilOverPEN = new G4SubtractionSolid("reflectorFoilOverPEN",boxReflectorPEN,reflectorFoilBox,0,G4ThreeVector(0, halfReflectorFoilThickness, 0));
+  G4Box* reflectorFoilBox = new G4Box("foil", halfPenSampleLength-totalReflectorFoilThickness, halfReflectorBoxOverPEN, halfPenSampleWidth-totalReflectorFoilThickness);
+  G4SubtractionSolid* reflectorFoilOverPEN = new G4SubtractionSolid("reflectorFoilOverPEN",boxReflectorPEN,reflectorFoilBox,0,G4ThreeVector(0, totalReflectorFoilThickness, 0));
   //G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, teflon, "foil", 0, 0, 0);
   G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilOverPEN, teflon, "foil", 0, 0, 0);
 
@@ -916,7 +916,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      }
      //Reflector foil over PEN samples, uncomment if needed
      //physicReflectorFoilBoxOverPEN = new G4PVPlacement(0, 
-     //				G4ThreeVector(0,halfReflectorFoilThickness+halfPenSampleThickness*10,0),
+     //				G4ThreeVector(0,totalReflectorFoilThickness+halfPenSampleThickness*10,0),
      //				logicReflectorFoilBox,
      //				"target",
      //				logicWorldBox,false,0,false);
