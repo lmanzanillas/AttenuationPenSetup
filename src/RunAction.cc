@@ -91,7 +91,7 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   //G4String alpha_string = std::to_string(fDetector->GetSigAlpha());
   //replace(alpha_string.begin(),alpha_string.end(),'.',',');
 
-  G4String directorName = "../output/"+sourceString+"_" + datetime()+"_x_"+positionX+"_mm_LY_" + std::to_string((int)fDetector->GetLY())+"ph_MeV_ABS_"+abs_string+"_SigAlpha_"+std::to_string(fDetector->GetSigAlpha())+"/";
+  G4String directorName = "../output/"+sourceString+"_" + datetime()+"_x_"+positionX+"_mm_LY_" + std::to_string((int)fDetector->GetLY())+"ph_MeV_ABS_"+abs_string+"_SigAlpha_"+std::to_string(fDetector->GetSigAlpha())+"_Detector_"+std::to_string(fDetector->GetDetectorType())+"/";
   mkdir(directorName, 0777);
   fFileName = directorName+fDetector->GetDetectorName()+".csv";
 

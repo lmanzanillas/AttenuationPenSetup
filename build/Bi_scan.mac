@@ -1,4 +1,5 @@
 /PEN/det/setDetectorType 1
+/PEN/det/setReflectorON true
 /PEN/det/setCollimatorPositionX 5.0 mm
 /PEN/det/setLY 4500.0
 /PEN/det/setABS 10.0

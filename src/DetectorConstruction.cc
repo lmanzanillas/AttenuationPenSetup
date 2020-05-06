@@ -517,8 +517,8 @@ void DetectorConstruction::DefineMaterials(){
   MPT_FoilEJ212->AddProperty("FASTCOMPONENT", scintEnergy,  scintEmit,  scintEntries);
   MPT_FoilEJ212->AddProperty("SLOWCOMPONENT",scintEnergy, scintEmitSlow,     scintEntries);
 
-  MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",11520./MeV);
-  //MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",1000./MeV);
+  //MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",11520./MeV);
+  MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",10./MeV);
   MPT_FoilEJ212->AddConstProperty("RESOLUTIONSCALE",4.0);
   MPT_FoilEJ212->AddConstProperty("FASTTIMECONSTANT", 2.1*ns);
   MPT_FoilEJ212->AddConstProperty("SLOWTIMECONSTANT",14.2*ns);
@@ -627,7 +627,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   double halfReflectorBoxOverPEN = 3.0*mm;
 
   G4VSolid* boxReflectorPEN = new G4Box("foilPEN",halfPenSampleLength, halfReflectorBoxOverPEN, halfPenSampleWidth);
-  G4Box* reflectorFoilBox = new G4Box("foil", halfPenSampleLength-totalReflectorFoilThickness, halfReflectorBoxOverPEN, halfPenSampleWidth-totalReflectorFoilThickness);
+  G4VSolid* reflectorFoilBox = new G4Box("foil", halfPenSampleLength-totalReflectorFoilThickness, halfReflectorBoxOverPEN, halfPenSampleWidth-totalReflectorFoilThickness);
   G4SubtractionSolid* reflectorFoilOverPEN = new G4SubtractionSolid("reflectorFoilOverPEN",boxReflectorPEN,reflectorFoilBox,0,G4ThreeVector(0, totalReflectorFoilThickness, 0));
   //G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, teflon, "foil", 0, 0, 0);
   G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilOverPEN, teflon, "foil", 0, 0, 0);
@@ -701,6 +701,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   LightGuideConstruction guide;
   G4VSolid* LightGuidePMMA = guide.ConstructPlate();
+  G4double halfLightGuideSizeX = guide.GetLighGuideSizeX();
+  G4double halfLightGuideSizeY = guide.GetLighGuideSizeY();
+  //G4double halfLightGuideSizeZ = guide.GetLighGuideSizeZ();
+  G4double depthGreaseHole = guide.GetDepthGreaseHole();
+  G4double diameterGreaseHole = guide.GetDiameterGreaseHole();
+  G4double slitToPlaceThinSintillatorOffset = guide.GetSlitToPlaceThinSintillatorOffset();
+  G4double slitToPlaceThinSintillatorDepth = guide.GetSlitToPlaceThinSintillatorDepth();
+  //G4double slitToPlaceThinSintillatorHeight = guide.GetSlitToPlaceThinSintillatorHeight();
+  G4cout<<" guide size x "<<guide.GetLighGuideSizeX()<<" slid depth "<<slitToPlaceThinSintillatorDepth<<G4endl;
   //G4cout <<  G4BestUnit(logicLightGuidePMMA->GetMass(true),"Mass") << G4endl;
 
 
@@ -717,6 +726,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double activePhotoCathodePMTLength = 23.*mm / 2.;
   G4double activePhotoCathodePMTWidth = 23.*mm / 2.;
   G4double activePhotoCathodePMTThickness = 0.8*mm;
+
+  //Placement of trigger foil and others
+  G4double offSetCollimator = 2.*mm;
+  G4double offSetTriggerSetup = 2.*mm;
+  //-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm)+fDetectorCollimatorX
+  G4double xPositionLightGuide = fDetectorCollimatorX - halfLengthTriggerFoilEJ212 - halfLightGuideSizeX + slitToPlaceThinSintillatorDepth;
+  G4double yPositionLightGuide = casingPMTHeight  + offSetTriggerSetup + halfLightGuideSizeY;
+  G4double xPositionGrease = xPositionLightGuide - halfLightGuideSizeX + depthGreaseHole/2.;
+  G4double positionYTriggerFoil = yPositionLightGuide - halfLightGuideSizeY + slitToPlaceThinSintillatorOffset;
+  G4cout<<" positionYTriggerFoil "<<positionYTriggerFoil<<G4endl;
+  //position of PMT with respect to Light Guide
+  G4double xPositionPMT = fDetectorCollimatorX - halfLightGuideSizeX - activePhotoCathodePMTThickness;
 
   G4Box* boxCasingPMT = new G4Box("case",casingPMTLength,casingPMTWidth,casingPMTHeight);
   G4Box* boxEmptyInsidePMT = new G4Box("hole",casingPMTHoleLength,casingPMTHoleWidth,casingPMTHoleHeight);
@@ -804,8 +825,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4LogicalVolume* logicLightGuidePMMA = new G4LogicalVolume(LightGuidePMMA, materialPMMA, "Ligh_guideLog");
 
-  G4double greaseHoleDiameter = 23.5*mm;
-  G4double greaseHoleDepth = 1*mm;
+  G4double greaseHoleDiameter = diameterGreaseHole*mm;
+  G4double greaseHoleDepth = depthGreaseHole*mm;
   G4Tubs* tubeSiGrease = new G4Tubs("SiGrease", 0, greaseHoleDiameter/2., greaseHoleDepth/2., 0, 360*deg);
 
   G4LogicalVolume* logicTubeSiGrease = new G4LogicalVolume(tubeSiGrease, ej_550, "logicTubeSiGrease");
@@ -826,38 +847,33 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 				logicWorldBox,false,iSample,false);
      }
 
-     //physicPenSampleBox = new G4PVPlacement(0, 
-     //			G4ThreeVector(0,0,0),
-     //			penLogicBox,
-     //			"target",
-     //			logicWorldBox,false,0,false);
      // Trigger and light guide placement, with triggerFoilEJ212 PMT
      if(reflectorOn){
      		physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
-			G4ThreeVector(0,18.*mm,0), 
+			G4ThreeVector(0,positionYTriggerFoil,0), 
 			logicReflectorFoilAroundEJ212Foil, 
 			"foil", 
 			logicWorldBox, false, 0, false);
      }
      physicTriggerFoilEJ212 = new G4PVPlacement(0, 
 			//G4ThreeVector(0,0,0), 
-			G4ThreeVector(0,18.*mm,0), 
+			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
 			logicBoxTriggerFoilEJ212, 
 			"triggerFoilEJ212", 
 			logicWorldBox, false, 0, false);
 			//logicReflectorFoilAroundEJ212Foil, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
-			G4ThreeVector(-(halfLengthTriggerFoilEJ212 + 20*mm - 0.4*mm), (18*mm + 14*mm - 1.75*mm), 0),
+			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
 			logicLightGuidePMMA,
 			"LightGuide",
 			logicWorldBox,false,0,false);
      physicOpticalGrease =  new G4PVPlacement(rotationMatrix5, 
-			G4ThreeVector(-19*mm - (halfLengthTriggerFoilEJ212 + 20*mm), (18*mm + 14*mm - 1.75*mm),0), 
+			G4ThreeVector(xPositionGrease,yPositionLightGuide,0), 
 			logicTubeSiGrease, 
 			"grease", 
 			logicWorldBox, false, 0, false);
      physicActivePhotoCathodeTriggerPMT = new G4PVPlacement(rotationMatrix,
-			G4ThreeVector(-(20*mm + activePhotoCathodePMTThickness),0,0),
+			G4ThreeVector(xPositionPMT,0,0),
 			logicBoxActivePhotoCathodePMT,
 			"trigger_pmt",
 			logicLightGuidePMMA,false,0,false);
@@ -922,34 +938,34 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      //				logicWorldBox,false,0,false);
      //Collimator, Trigger and light guide placement, with triggerFoilEJ212 PMT
      physicTriggerFoilEJ212 = new G4PVPlacement(0,
-			G4ThreeVector(fDetectorCollimatorX,18*mm,0), 
+			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
 			logicBoxTriggerFoilEJ212, 
 			"triggerFoilEJ212",
 			logicWorldBox, false, 0, false);
      if(reflectorOn){
      		physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
-			G4ThreeVector(fDetectorCollimatorX,18*mm,0), 
+			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
 			logicReflectorFoilAroundEJ212Foil, 
 			"foil", 
 			logicWorldBox, false, 0, false);
      }
      physicCollimator = new G4PVPlacement(rotationMatrixCollimator, 
-			G4ThreeVector(fDetectorCollimatorX,19*mm+halfCollimatorThickness,0), 
+			G4ThreeVector(0*mm + fDetectorCollimatorX,positionYTriggerFoil+halfCollimatorThickness+offSetCollimator,0), 
 			logicCollimator, 
 			"collimator", 
 			logicWorldBox, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
-			G4ThreeVector(-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm)+fDetectorCollimatorX, (18*mm+14*mm-1.75*mm), 0),
+			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
 			logicLightGuidePMMA,
 			"LightGuide",
 			logicWorldBox,false,0,false);
      physicOpticalGrease =  new G4PVPlacement(rotationMatrix5, 
-			G4ThreeVector(-19*mm-(halfLengthTriggerFoilEJ212+20*mm)+fDetectorCollimatorX,(18*mm+14*mm-1.75*mm),0), 
+			G4ThreeVector(xPositionGrease,yPositionLightGuide,0), 
 			logicTubeSiGrease, 
 			"grease", 
 			logicWorldBox, false, 0, false);
      physicActivePhotoCathodeTriggerPMT = new G4PVPlacement(rotationMatrix,
-			G4ThreeVector(-(20*mm+activePhotoCathodePMTThickness),0,0),
+			G4ThreeVector(xPositionPMT,0,0),
 			logicBoxActivePhotoCathodePMT,
 			"trigger_pmt",
 			logicLightGuidePMMA,false,0,false);
@@ -981,21 +997,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			"main_pmt_2", 
 			logicWorldBox, false, 0, false);
      G4MTRunManager::GetRunManager()->GeometryHasBeenModified();
-     //physicActivePhotoCathodePMT3 = new G4PVPlacement(0, 
-     //			G4ThreeVector(0,-(halfPenSampleThickness+activePhotoCathodePMTThickness),0), 
-     //			logicBoxActivePhotoCathodePMT, 
-     //			"main_pmt_3", 
-     //			logicWorldBox, false, 0, false);
-     //physicActivePhotoCathodePMT4 = new G4PVPlacement(rotationMatrix2, 
-     //			G4ThreeVector(0,0,(halfPenSampleWidth+activePhotoCathodePMTThickness)),
-     //			logicBoxActivePhotoCathodePMT, 
-     //			"main_pmt_4", 
-     //			logicWorldBox, false, 0, false);
-     //physicActivePhotoCathodePMT5 = new G4PVPlacement(rotationMatrix3, 
-     //			G4ThreeVector(0,0,-(halfPenSampleWidth+activePhotoCathodePMTThickness)),
-     //			logicBoxActivePhotoCathodePMT, 
-     //			"main_pmt_5", 
-     //			logicWorldBox, false, 0, false);
      break;
 
      case 2:
@@ -1015,13 +1016,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      				logicWorldBox,false,0,false);
      //Collimator, Trigger and light guide placement, with triggerFoilEJ212 PMT
      physicTriggerFoilEJ212 = new G4PVPlacement(0,
-			G4ThreeVector(fDetectorCollimatorX,18*mm,0), 
+			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
 			logicBoxTriggerFoilEJ212, 
 			"triggerFoilEJ212",
 			logicWorldBox, false, 0, false);
      if(reflectorOn){
      		physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
-			G4ThreeVector(fDetectorCollimatorX,18*mm,0), 
+			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
 			logicReflectorFoilAroundEJ212Foil, 
 			"foil", 
 			logicWorldBox, false, 0, false);
@@ -1032,17 +1033,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      //			"collimator", 
      //			logicWorldBox, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
-			G4ThreeVector(-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm)+fDetectorCollimatorX, (18*mm+14*mm-1.75*mm), 0),
+			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
 			logicLightGuidePMMA,
 			"LightGuide",
 			logicWorldBox,false,0,false);
      physicOpticalGrease =  new G4PVPlacement(rotationMatrix5, 
-			G4ThreeVector(-19*mm-(halfLengthTriggerFoilEJ212+20*mm)+fDetectorCollimatorX,(18*mm+14*mm-1.75*mm),0), 
+			G4ThreeVector(xPositionGrease,yPositionLightGuide,0), 
 			logicTubeSiGrease, 
 			"grease", 
 			logicWorldBox, false, 0, false);
      physicActivePhotoCathodeTriggerPMT = new G4PVPlacement(rotationMatrix,
-			G4ThreeVector(-(20*mm+activePhotoCathodePMTThickness),0,0),
+			G4ThreeVector(xPositionPMT,0,0),
 			logicBoxActivePhotoCathodePMT,
 			"trigger_pmt",
 			logicLightGuidePMMA,false,0,false);

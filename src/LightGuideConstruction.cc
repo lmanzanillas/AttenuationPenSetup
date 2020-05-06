@@ -20,21 +20,22 @@
 // Class to define logical / virtual volume for the light guide
 
 G4VSolid* LightGuideConstruction::ConstructPlate(){
-  fSiliconPlate_h = 1.5*mm;
-  fHolderWidth=90.00*mm;
 
-  G4double TubsStartAngle =  0;
-  G4double TubsSpanningAngle = 360 * deg;
+  //Hole dimensions for grease hole
+  TubsStartAngle =  0;
+  TubsSpanningAngle = 360 * deg;
+  diameterGreaseHole = 25.5*mm;
+  depthGreaseHole = 1.*mm;
 
-  G4double rectX = 20*mm;
-  G4double rectY = 14*mm;
-  G4double chamderSize = 2.25*mm;
-  G4double slitHeight = 0.125*mm;
-  G4double slitOffset = 1.75*mm;
-  G4double slitDepth = 0.5*mm;
+  //Initial block dimensions
+  LighGuideSizeX = 20.*mm;
+  LighGuideSizeY = 14.*mm;
+  LighGuideSizeZ = 14.*mm;
+  chamderSize = 2.25*mm;
+  slitToPlaceThinSintillatorHeight = 0.125*mm;
+  slitToPlaceThinSintillatorOffset = 1.75*mm;
+  slitToPlaceThinSintillatorDepth = 0.5*mm;
 
-  G4double pmtDiameter = 25.5*mm;
-  G4double pmtDepth = 1*mm;
 
   G4RotationMatrix* rm = new G4RotationMatrix();
   rm->rotateX(45.*deg);
@@ -48,28 +49,28 @@ G4VSolid* LightGuideConstruction::ConstructPlate(){
 
   //char solidname[100];
 
-  G4VSolid* initialBlock = new G4Box("lg_block", rectX, rectY, rectY);
-  G4VSolid* angleBlock = new G4Box("angleBlock", 35*mm, 20*mm, 15*mm);
+  G4VSolid* initialBlock = new G4Box("lg_block", LighGuideSizeX, LighGuideSizeY, LighGuideSizeZ);
+  G4VSolid* angleBlock = new G4Box("angleBlock", 35.*mm, 20.*mm, 15.*mm);
 
-  G4VSolid* chamferEdge = new G4Box("chamfer", rectX+1*mm, chamderSize, chamderSize);
-  G4VSolid* chamferTwo = new G4Box("chamferTwo", 35*mm, chamderSize+1*mm, chamderSize+1*mm);
+  G4VSolid* chamferEdge = new G4Box("chamfer", LighGuideSizeX+1.*mm, chamderSize, chamderSize);
+  G4VSolid* chamferTwo = new G4Box("chamferTwo", 35.*mm, chamderSize+1.*mm, chamderSize+1.*mm);
 
-  G4VSolid* slit = new G4Box("slit", slitDepth, slitHeight, rectY);
+  G4VSolid* boxSlitToPlaceThinSintillator = new G4Box("boxSlitToPlaceThinSintillator", slitToPlaceThinSintillatorDepth, slitToPlaceThinSintillatorHeight, LighGuideSizeY);
 
-  G4VSolid* pmtHole = new G4Tubs("dip", 0, pmtDiameter/2, pmtDepth/2, TubsStartAngle, TubsSpanningAngle);
+  G4VSolid* holeForOpticalGrease = new G4Tubs("dip", 0, diameterGreaseHole/2., depthGreaseHole/2., TubsStartAngle, TubsSpanningAngle);
 
-  G4SubtractionSolid* oneEdge = new G4SubtractionSolid("oneEdge", initialBlock, chamferEdge, rm, G4ThreeVector(0*mm,rectY, rectY));
-  oneEdge = new G4SubtractionSolid("oneEdge", oneEdge, chamferEdge, rm, G4ThreeVector(0*mm,-rectY, rectY));
-  oneEdge = new G4SubtractionSolid("oneEdge", oneEdge, chamferEdge, rm, G4ThreeVector(0*mm,-rectY, -rectY));
-  oneEdge = new G4SubtractionSolid("oneEdge", oneEdge, chamferEdge, rm, G4ThreeVector(0*mm, rectY, -rectY));
+  G4SubtractionSolid* oneEdge = new G4SubtractionSolid("oneEdge", initialBlock, chamferEdge, rm, G4ThreeVector(0*mm,LighGuideSizeY, LighGuideSizeY));
+  oneEdge = new G4SubtractionSolid("oneEdge", oneEdge, chamferEdge, rm, G4ThreeVector(0*mm,-LighGuideSizeY, LighGuideSizeY));
+  oneEdge = new G4SubtractionSolid("oneEdge", oneEdge, chamferEdge, rm, G4ThreeVector(0*mm,-LighGuideSizeY, -LighGuideSizeY));
+  oneEdge = new G4SubtractionSolid("oneEdge", oneEdge, chamferEdge, rm, G4ThreeVector(0*mm, LighGuideSizeY, -LighGuideSizeY));
 
-  G4SubtractionSolid* twoEdge = new G4SubtractionSolid("twoEdge", oneEdge,angleBlock,rm1, G4ThreeVector(rectX,-rectY, 0));
+  G4SubtractionSolid* twoEdge = new G4SubtractionSolid("twoEdge", oneEdge,angleBlock,rm1, G4ThreeVector(LighGuideSizeX,-LighGuideSizeY, 0));
 
-  G4SubtractionSolid* threeEdge = new G4SubtractionSolid("threeEdge", twoEdge, chamferTwo, rm2, G4ThreeVector(+chamderSize, -chamderSize, chamderSize+rectY));
-  threeEdge = new G4SubtractionSolid("threeEdge", threeEdge, chamferTwo, rm2, G4ThreeVector(+chamderSize, -chamderSize, -chamderSize-rectY));
-  threeEdge = new G4SubtractionSolid("threeEdge", threeEdge, pmtHole, rm3, G4ThreeVector(-rectX+0.5*mm, 0, 0));
+  G4SubtractionSolid* threeEdge = new G4SubtractionSolid("threeEdge", twoEdge, chamferTwo, rm2, G4ThreeVector(+chamderSize, -chamderSize, chamderSize+LighGuideSizeY));
+  threeEdge = new G4SubtractionSolid("threeEdge", threeEdge, chamferTwo, rm2, G4ThreeVector(+chamderSize, -chamderSize, -chamderSize-LighGuideSizeY));
+  threeEdge = new G4SubtractionSolid("threeEdge", threeEdge, holeForOpticalGrease, rm3, G4ThreeVector(-LighGuideSizeX+0.5*mm, 0, 0));
 
-  G4SubtractionSolid* guide = new G4SubtractionSolid("final_guide", threeEdge, slit, 0, G4ThreeVector(rectX, rectY-slitOffset, 0));
+  G4SubtractionSolid* guide = new G4SubtractionSolid("final_guide", threeEdge, boxSlitToPlaceThinSintillator, 0, G4ThreeVector(LighGuideSizeX, LighGuideSizeY-slitToPlaceThinSintillatorOffset, 0));
 
   G4VSolid* finalPlate = guide;
   return finalPlate;
