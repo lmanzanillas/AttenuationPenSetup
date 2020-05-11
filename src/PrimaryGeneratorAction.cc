@@ -31,7 +31,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* det)
 	//m_detectorConstruction->GetMinDetectorLimits();
 	//fPositionX = fDetector -> GetDetectorCollimatorX();
 	fPositionX = 0. *mm;
-	fPositionY = 30. *mm;
+	//fPositionY = 30. *mm;
+	fPositionY = fDetector -> GetDetectorCollimatorY() + fDetector -> GetCollimatorThickness();
 	fPositionZ = 0.*mm;
 	fSourceType = 1;
  	//default kinematic

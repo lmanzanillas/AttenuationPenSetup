@@ -499,7 +499,7 @@ void DetectorConstruction::DefineMaterials(){
       {
           ReadWLSAbsorb>>wavelength>>filler>>varAbsorbLength;
           wlsAbsorbEnergy[wlsAbsorbEntries]=(1240./wavelength)*eV;
-          wlsAbsorb[wlsAbsorbEntries]=varAbsorbLength*m;
+          wlsAbsorb[wlsAbsorbEntries]=varAbsorbLength*mm;
           wlsAbsorbEntries++;
       }
   }else G4cout<<"Error opening file: "<<ReadWLSAbsorb<<G4endl;
@@ -738,6 +738,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4cout<<" positionYTriggerFoil "<<positionYTriggerFoil<<G4endl;
   //position of PMT with respect to Light Guide
   G4double xPositionPMT = fDetectorCollimatorX - halfLightGuideSizeX - activePhotoCathodePMTThickness;
+  fDetectorCollimatorY = positionYTriggerFoil+halfCollimatorThickness+offSetCollimator;
 
   G4Box* boxCasingPMT = new G4Box("case",casingPMTLength,casingPMTWidth,casingPMTHeight);
   G4Box* boxEmptyInsidePMT = new G4Box("hole",casingPMTHoleLength,casingPMTHoleWidth,casingPMTHoleHeight);
@@ -850,7 +851,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      // Trigger and light guide placement, with triggerFoilEJ212 PMT
      if(reflectorOn){
      		physicReflectorFoilAroundEJ212Foil = new G4PVPlacement(0, 
-			G4ThreeVector(0,positionYTriggerFoil,0), 
+			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
 			logicReflectorFoilAroundEJ212Foil, 
 			"foil", 
 			logicWorldBox, false, 0, false);
@@ -950,7 +951,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			logicWorldBox, false, 0, false);
      }
      physicCollimator = new G4PVPlacement(rotationMatrixCollimator, 
-			G4ThreeVector(0*mm + fDetectorCollimatorX,positionYTriggerFoil+halfCollimatorThickness+offSetCollimator,0), 
+			G4ThreeVector(0*mm + fDetectorCollimatorX,fDetectorCollimatorY,0), 
 			logicCollimator, 
 			"collimator", 
 			logicWorldBox, false, 0, false);

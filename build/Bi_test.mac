@@ -15,4 +15,4 @@
 #Choise of source type: 0 Cs-137; 1 Bi-207; 2 Sr-90; 3 e-
 /PEN/gun/sourceType 1
 
-/run/beamOn 10000000
+/run/beamOn 100000

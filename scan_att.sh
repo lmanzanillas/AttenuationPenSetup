@@ -3,7 +3,7 @@ declare -a position=(-25. -20. -15. -10. -5. 0. 5. 10. 15. 20. 25.)
 #declare -a LY=(5500. 6500. 7500.)
 declare -a LY=(5500.)
 #declare -a attenuation=(10. 15. 20. 25.)
-declare -a attenuation=(10.)
+declare -a attenuation=(15.)
 cd ./build/
 for i in "${position[@]}"
 do

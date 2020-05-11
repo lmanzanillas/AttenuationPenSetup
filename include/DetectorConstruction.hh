@@ -87,6 +87,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     const G4VPhysicalVolume* GetWorld() {return physicWorldBox;};
     G4int GetDetectorType(){return fDetectorType;};
     G4double GetDetectorCollimatorX(){return fDetectorCollimatorX;};
+    G4double GetDetectorCollimatorY(){return fDetectorCollimatorY;};
     G4double GetLY(){return fLY;};
     G4double GetRes(){return fRES;};
     G4double GetABS(){return AbsorptionLength;};
@@ -201,6 +202,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     G4int fDetectorType;
     G4double fDetectorCollimatorX;
+    G4double fDetectorCollimatorY;
     G4String fDetectorName;
     G4String fVolName;
     G4String fABSFile;
