@@ -1,9 +1,10 @@
 #!/bin/bash
 declare -a position=(-25. -20. -15. -10. -5. 0. 5. 10. 15. 20. 25.)
+#declare -a position=(-10. -5. 0. 5. 10. 15. 20. 25.)
 #declare -a LY=(5500. 6500. 7500.)
 declare -a LY=(5500.)
 #declare -a attenuation=(10. 15. 20. 25.)
-declare -a attenuation=(15.)
+declare -a attenuation=(20.)
 cd ./build/
 for i in "${position[@]}"
 do
@@ -19,6 +20,7 @@ do
 /PEN/det/setCollimatorPositionX $i mm
 /PEN/det/setLY $j
 /PEN/det/setABS $k
+/PEN/det/setSigAlpha 0.0
 /PEN/gun/sourcePositionX $i mm
 /PEN/gun/sourceType 1
 
