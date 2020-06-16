@@ -38,7 +38,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* det)
  	//default kinematic
 	//G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 	//G4ParticleDefinition* particle = particleTable->FindParticle("e-");
-	fSourceEnergy = 1000*keV;
+	fSourceEnergy = 2000*keV;
 	fPhotonWavelength = 0;
 	fParticleName = "void";
 	// fPoint = G4ThreeVector();
@@ -84,6 +84,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	G4int Z=0, A=0;
 	G4ParticleDefinition* ion;
 	G4ThreeVector position = G4ThreeVector(fPositionX, fPositionY, fPositionZ);
+        //G4cout<<" source energy "<<fSourceEnergy<<G4endl;
 	//G4ThreeVector position = G4ThreeVector(fPositionX, 30*mm, 0*mm);
         //G4cout<<" position x "<<GetSourcePositionX()<<G4endl;
 	//G4String name;
@@ -121,7 +122,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			break;
 		case 3:
 			fParticleGun->SetParticleDefinition(particleTable->FindParticle("e-"));
-			fParticleGun->SetParticleEnergy(2000.*keV);
+			fParticleGun->SetParticleEnergy(fSourceEnergy);
 			fParticleGun->SetParticlePosition(position);
 			//rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			//ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);

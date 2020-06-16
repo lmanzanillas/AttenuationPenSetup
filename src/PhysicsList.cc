@@ -48,11 +48,35 @@ G4ThreadLocal G4OpBoundaryProcess* PhysicsList::fBoundaryProcess = 0;
 
 PhysicsList::PhysicsList()
  : G4VUserPhysicsList() {
+	//modified by Luis
+	defaultCutValue     = 1.0*micrometer; //
+        cutForGamma         = defaultCutValue;
+        cutForElectron      = 1.0*nanometer;
+  	cutForPositron      = defaultCutValue;
+
+  	VerboseLevel = 0;
+  	OpVerbLevel = 0;
+
+  	SetVerboseLevel(VerboseLevel);
+	//end modifs
+        //read new PhotonEvaporation data set 
+  // mandatory for G4NuclideTable
+  //
+  G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(0.1*picosecond);
+  G4NuclideTable::GetInstance()->SetLevelTolerance(1.0*eV);
+  //
+  G4DeexPrecoParameters* deex =
+    G4NuclearLevelData::GetInstance()->GetParameters();
+  deex->SetCorrelatedGamma(false);
+  deex->SetStoreAllLevels(true);
+  deex->SetMaxLifeTime(G4NuclideTable::GetInstance()->GetThresholdOfHalfLife()
+                /std::log(2.));	
  }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PhysicsList::~PhysicsList() {}
+PhysicsList::~PhysicsList()
+{;}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -121,6 +145,7 @@ void PhysicsList::ConstructDecay()
   G4RadioactiveDecay* radioactiveDecay = new G4RadioactiveDecay();
 
   radioactiveDecay->SetARM(false);               //Atomic Rearangement
+  //radioactiveDecay->SetARM(true);               //Atomic Rearangement
 
   G4PhysicsListHelper* ph = G4PhysicsListHelper::GetPhysicsListHelper();
   ph->RegisterProcess(radioactiveDecay, G4GenericIon::GenericIon());
@@ -137,6 +162,7 @@ void PhysicsList::ConstructDecay()
   // mandatory for G4NuclideTable
   //
   G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(0.1*picosecond);
+  //G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(1.1*picosecond);
   G4NuclideTable::GetInstance()->SetLevelTolerance(1.0*eV);
 }
 
@@ -152,6 +178,8 @@ void PhysicsList::ConstructDecay()
 
 #include "G4eIonisation.hh"
 #include "G4eBremsstrahlung.hh"
+#include "G4LivermoreBremsstrahlungModel.hh"
+#include "G4LivermoreIonisationModel.hh"
 #include "G4eplusAnnihilation.hh"
 
 #include "G4MuIonisation.hh"
@@ -180,10 +208,26 @@ void PhysicsList::ConstructEM()
 
     } else if (particleName == "e-") {
     //electron
-      // Construct processes for electron
-      pmanager->AddProcess(new G4eMultipleScattering(),-1, 1, 1);
-      pmanager->AddProcess(new G4eIonisation(),       -1, 2, 2);
-      pmanager->AddProcess(new G4eBremsstrahlung(),   -1, 3, 3);
+      //Modified by Luis
+      G4eMultipleScattering* msc = new G4eMultipleScattering();
+      msc->SetStepLimitType(fUseDistanceToBoundary);
+      pmanager->AddProcess(msc,-1, 1, -1);
+
+      // Ionisation
+      G4eIonisation* eIonisation = new G4eIonisation();
+      eIonisation->SetEmModel(new G4LivermoreIonisationModel());
+      eIonisation->SetStepFunction(0.2, 100*um); //improved precision in tracking 
+      pmanager->AddProcess(eIonisation,-1, 2, 2);
+
+      // Bremsstrahlung
+      G4eBremsstrahlung* eBremsstrahlung = new G4eBremsstrahlung();
+      eBremsstrahlung->SetEmModel(new G4LivermoreBremsstrahlungModel());
+      pmanager->AddProcess(eBremsstrahlung, -1,-3, 3);
+      //End of modifs by Luis
+      //Construct processes for electron
+      //pmanager->AddProcess(new G4eMultipleScattering(),-1, 1, 1);
+      //pmanager->AddProcess(new G4eIonisation(),       -1, 2, 2);
+      //pmanager->AddProcess(new G4eBremsstrahlung(),   -1, 3, 3);
 
     } else if (particleName == "e+") {
     //positron
@@ -223,17 +267,37 @@ void PhysicsList::ConstructOp()
   fCerenkovProcess->SetMaxNumPhotonsPerStep(fMaxNumPhotonStep);
   fCerenkovProcess->SetMaxBetaChangePerStep(10.0);
   fCerenkovProcess->SetTrackSecondariesFirst(true);
+
   fScintillationProcess = new G4Scintillation("Scintillation");
-  fScintillationProcess->SetScintillationYieldFactor(1.);
+  fScintillationProcess->SetScintillationYieldFactor(1.0);
+  fScintillationProcess->SetScintillationExcitationRatio(0.0);//Line added by Luis
   fScintillationProcess->SetTrackSecondariesFirst(true);
+  fScintillationProcess->SetVerboseLevel(OpVerbLevel);
+
+  // scintillation process for alpha:
+  G4Scintillation* theScintProcessAlpha = new G4Scintillation("Scintillation");
+  // theScintProcessNuc->DumpPhysicsTable();
+  theScintProcessAlpha->SetTrackSecondariesFirst(true);
+  theScintProcessAlpha->SetScintillationYieldFactor(1.1);
+  theScintProcessAlpha->SetScintillationExcitationRatio(1.0);
+  theScintProcessAlpha->SetVerboseLevel(OpVerbLevel);
+
+  // scintillation process for heavy nuclei
+  G4Scintillation* theScintProcessNuc = new G4Scintillation("Scintillation");
+  // theScintProcessNuc->DumpPhysicsTable();
+  theScintProcessNuc->SetTrackSecondariesFirst(true);
+  theScintProcessNuc->SetScintillationYieldFactor(0.2);
+  theScintProcessNuc->SetScintillationExcitationRatio(1.0);
+  theScintProcessNuc->SetVerboseLevel(OpVerbLevel);
+
   fAbsorptionProcess = new G4OpAbsorption();
   fRayleighScatteringProcess = new G4OpRayleigh();
   fMieHGScatteringProcess = new G4OpMieHG();
   fBoundaryProcess = new G4OpBoundaryProcess();
 
   fCerenkovProcess->SetVerboseLevel(fVerboseLevel);
-  fScintillationProcess->SetVerboseLevel(fVerboseLevel);
-  fAbsorptionProcess->SetVerboseLevel(fVerboseLevel);
+  fScintillationProcess->SetVerboseLevel(OpVerbLevel);
+  fAbsorptionProcess->SetVerboseLevel(OpVerbLevel);
   fRayleighScatteringProcess->SetVerboseLevel(fVerboseLevel);
   fMieHGScatteringProcess->SetVerboseLevel(fVerboseLevel);
   fBoundaryProcess->SetVerboseLevel(fVerboseLevel);
@@ -241,9 +305,8 @@ void PhysicsList::ConstructOp()
   // Use Birks Correction in the Scintillation process
   if(G4Threading::IsMasterThread())
   {
-    G4EmSaturation* emSaturation =
-              G4LossTableManager::Instance()->EmSaturation();
-      fScintillationProcess->AddSaturation(emSaturation);
+    G4EmSaturation* emSaturation = G4LossTableManager::Instance()->EmSaturation();
+       fScintillationProcess->AddSaturation(emSaturation);
   }
 
   auto particleIterator=GetParticleIterator();
@@ -256,10 +319,23 @@ void PhysicsList::ConstructOp()
       pmanager->AddProcess(fCerenkovProcess);
       pmanager->SetProcessOrdering(fCerenkovProcess,idxPostStep);
     }
-    if (fScintillationProcess->IsApplicable(*particle) && particle->GetParticleType() != "nucleus") {
-      pmanager->AddProcess(fScintillationProcess);
-      pmanager->SetProcessOrderingToLast(fScintillationProcess, idxAtRest);
-      pmanager->SetProcessOrderingToLast(fScintillationProcess, idxPostStep);
+    //if (fScintillationProcess->IsApplicable(*particle) && particle->GetParticleType() != "nucleus") {
+    if (fScintillationProcess->IsApplicable(*particle)) {
+      if(particle->GetParticleName() == "GenericIon") {
+          pmanager->AddProcess(theScintProcessNuc); // AtRestDiscrete
+          pmanager->SetProcessOrderingToLast(theScintProcessNuc,idxAtRest);
+          pmanager->SetProcessOrderingToLast(theScintProcessNuc,idxPostStep);
+        }
+        else if(particle->GetParticleName() == "alpha") {
+          pmanager->AddProcess(theScintProcessAlpha);
+          pmanager->SetProcessOrderingToLast(theScintProcessAlpha,idxAtRest);
+          pmanager->SetProcessOrderingToLast(theScintProcessAlpha,idxPostStep);
+        }
+        else {
+          pmanager->AddProcess(fScintillationProcess);
+          pmanager->SetProcessOrderingToLast(fScintillationProcess, idxAtRest);
+          pmanager->SetProcessOrderingToLast(fScintillationProcess, idxPostStep);
+       }
     }
     if (particleName == "opticalphoton") {
       G4cout << " AddDiscreteProcess to OpticalPhoton " << G4endl;
@@ -275,10 +351,10 @@ void PhysicsList::ConstructOp()
 
 void PhysicsList::SetVerbose(G4int verbose)
 {
-  fVerboseLevel = 0;
+  fVerboseLevel = verbose;
 
   fCerenkovProcess->SetVerboseLevel(fVerboseLevel);
-  fScintillationProcess->SetVerboseLevel(fVerboseLevel);
+  fScintillationProcess->SetVerboseLevel(OpVerbLevel);
   fAbsorptionProcess->SetVerboseLevel(fVerboseLevel);
   fRayleighScatteringProcess->SetVerboseLevel(fVerboseLevel);
   fMieHGScatteringProcess->SetVerboseLevel(fVerboseLevel);
@@ -301,7 +377,17 @@ void PhysicsList::SetCuts()
   //  " G4VUserPhysicsList::SetCutsWithDefault" method sets
   //   the default cut value for all particle types
   //
-  SetCutsWithDefault();
+  //SetCutsWithDefault();
+  //special for low energy physics
+  G4double lowlimit=250*eV;
+  G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowlimit,100.*GeV);
+
+  // set cut values for gamma at first and for e- second and next for e+,
+  // because some processes for e+/e- need cut values for gamma 
+  SetCutValue(cutForGamma, "gamma");
+  SetCutValue(cutForElectron, "e-");
+  SetCutValue(cutForPositron, "e+");
+
 
 //  if (verboseLevel>0) DumpCutValuesTable();
 }

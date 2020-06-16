@@ -72,7 +72,14 @@ class PhysicsList : public G4VUserPhysicsList
     void SetNbOfPhotonsCerenkov(G4int);
 
   private:
+    //added by Luis
+    G4int VerboseLevel;
+    G4int OpVerbLevel;
 
+    G4double cutForGamma;
+    G4double cutForElectron;
+    G4double cutForPositron;
+    //end of adds
     static G4ThreadLocal G4int fVerboseLevel;
     static G4ThreadLocal G4int fMaxNumPhotonStep;
 

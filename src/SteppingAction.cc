@@ -34,6 +34,7 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 {
 	//auto analysisManager = G4AnalysisManager::Instance();
 	G4Track* theTrack = theStep->GetTrack();
+  	G4ParticleDefinition* particleType = theTrack->GetDefinition();
 	//G4cout << "Begin Stepping" << G4endl;
 	fExpectedNextStatus = Undefined;
 
@@ -42,24 +43,27 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 	//G4TouchableHistory* theTouchable = (G4TouchableHistory*)(thePrePoint->GetTouchable());
 	//G4int copyNo = theTouchable->GetVolume()->GetCopyNo();
 
+       G4double edepStep = theStep->GetTotalEnergyDeposit()/keV; 
 
-	if ( thePrePV->GetName()=="target_1" ){
-		fEventAction->AddDepositedEnergyPENStackedSample1(theStep->GetTotalEnergyDeposit()/keV);
-	}
-	else if ( thePrePV->GetName()=="target_2" ){
-		fEventAction->AddDepositedEnergyPENStackedSample2(theStep->GetTotalEnergyDeposit()/keV);
-        }
-	else if ( thePrePV->GetName()=="target_3" ){
-		fEventAction->AddDepositedEnergyPENStackedSample3(theStep->GetTotalEnergyDeposit()/keV);
-        }
-	else if ( thePrePV->GetName()=="target_4" ){
-		fEventAction->AddDepositedEnergyPENStackedSample4(theStep->GetTotalEnergyDeposit()/keV);
-        }
-	else if ( thePrePV->GetName()=="triggerFoilEJ212"){
-		fEventAction->AddDepositedEnergyEJ212TriggerFoil(theStep->GetTotalEnergyDeposit()/keV);
-	}else{
-		fEventAction->AddDepositedEnergyInactiveMaterial(theStep->GetTotalEnergyDeposit()/keV);
-	}
+       //if ( particleType != G4OpticalPhoton::OpticalPhotonDefinition()){
+	   if ( thePrePV->GetName()=="target_1"){
+		fEventAction->AddDepositedEnergyPENStackedSample1(edepStep);
+  	   }
+	   else if ( thePrePV->GetName()=="target_2"){
+		fEventAction->AddDepositedEnergyPENStackedSample2(edepStep);
+           }
+	   else if ( thePrePV->GetName()=="target_3"){
+		fEventAction->AddDepositedEnergyPENStackedSample3(edepStep);
+           }
+	   else if ( thePrePV->GetName()=="target_4"){
+		fEventAction->AddDepositedEnergyPENStackedSample4(edepStep);
+           }
+	   else if ( thePrePV->GetName()=="triggerFoilEJ212"){
+		fEventAction->AddDepositedEnergyEJ212TriggerFoil(edepStep);
+	   }else{
+		fEventAction->AddDepositedEnergyInactiveMaterial(edepStep);
+	   }
+        //}
 
 	G4StepPoint* thePostPoint = theStep->GetPostStepPoint();
 	G4VPhysicalVolume* thePostPV = thePostPoint->GetPhysicalVolume();
@@ -89,7 +93,7 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
   		return;
   	}
 
-  	G4ParticleDefinition* particleType = theTrack->GetDefinition();
+  	//G4ParticleDefinition* particleType = theTrack->GetDefinition();
   	if(particleType==G4OpticalPhoton::OpticalPhotonDefinition())
   	{
 	  	boundaryStatus=boundary->GetStatus();
@@ -115,40 +119,39 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 					// fEventAction->AddAbsorbedPhoton();
 				}
 		  		break;
-		      	case Detection:
-		      	{
-				G4String pvName = thePostPV->GetName();
-				if(pvName == "trigger_pmt"){
- 					fEventAction->AddDetectedPhoton();
-				}
-				else if(pvName == "main_pmt_1"){
-					fEventAction->AddLeftPhoton();
-				}
-				else if(pvName == "main_pmt_2"){
-					fEventAction->AddRightPhoton();
-				}
-				else if(pvName == "main_pmt_3"){
-					fEventAction->AddBottomPhoton();
-				}
-				else if(pvName == "main_pmt_4"){
-					fEventAction->AddFrontPhoton();
-				}
-				else if(pvName == "main_pmt_5"){
-					fEventAction->AddBackPhoton();
-				}
-			      	break;
-		      	}
-		      	case FresnelReflection:
-		      	case TotalInternalReflection:
-		      	case LambertianReflection:
-		      	case LobeReflection:
-		      	case SpikeReflection:
-		      	case BackScattering:
-		      	//trackInformation->IncReflections();
-		      	fExpectedNextStatus=StepTooSmall;
-		      		break;
-		      	default:
-		      		break;
+		      		case Detection:
+		      		{
+					G4String pvName = thePostPV->GetName();
+					if(pvName == "trigger_pmt"){
+ 						fEventAction->AddDetectedPhoton();
+					}
+					else if(pvName == "main_pmt_1"){
+						fEventAction->AddLeftPhoton();
+					}
+					else if(pvName == "main_pmt_2"){
+						fEventAction->AddRightPhoton();
+					}
+					else if(pvName == "main_pmt_3"){
+						fEventAction->AddBottomPhoton();
+					}
+					else if(pvName == "main_pmt_4"){
+						fEventAction->AddFrontPhoton();
+					}
+					else if(pvName == "main_pmt_5"){
+						fEventAction->AddBackPhoton();
+					}
+			      		break;
+		      		}
+		      		case FresnelReflection:
+		      		case TotalInternalReflection:
+		      		case LambertianReflection:
+		      		case LobeReflection:
+		      		case SpikeReflection:
+		      		case BackScattering:
+		      			fExpectedNextStatus=StepTooSmall;
+		      			break;
+		      		default:
+		      			break;
 	  		}
 		}
 	}

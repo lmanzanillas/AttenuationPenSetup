@@ -4,6 +4,8 @@
 #include "LightGuideConstruction.hh"
 #include "PrimaryGeneratorAction.hh"
 
+#include "G4MaterialTable.hh"
+#include "PenMaterials.hh"
 #include "G4Material.hh"
 #include "G4Element.hh"
 #include "G4LogicalBorderSurface.hh"
@@ -52,6 +54,7 @@
 #include <G4VisAttributes.hh>
 #include <iostream>
 #include <fstream>
+#include <iterator>
 
 using namespace std;
 
@@ -68,9 +71,9 @@ AirPEN(nullptr),
 MPT_PEN(nullptr)
 {
   fDetectorMessenger = new DetectorMessenger(this);
-  //MPT_PEN = new G4MaterialPropertiesTable();
+  MPT_PEN = new G4MaterialPropertiesTable();
   halfSizeDarkBoxX = halfSizeDarkBoxY = halfSizeDarkBoxZ = 1.*m;
-  fTargetName = "holder";
+  fTargetName = "PEN";
   reflectorOn = false;
   halfPenSampleLength = 37.*mm;
   halfPenSampleThickness = 0.85*mm;
@@ -79,16 +82,20 @@ MPT_PEN(nullptr)
   nSamples = 4;
   fDetectorType = 1;
   fDetectorCollimatorX = 0*mm;
-  AbsorptionLength = 20.;//value at 400 nm
+  AbsorptionLength = 1.5;//value at 400 nm
   fRES = 1.0;
   fLY = 5500./MeV;
   fDetectorName = "PenAttenuationSetup";
-  fABSFile = "Exp4_long";
+  fABSFile = "PEN_ABS";
   fVolName = "World";
-  fSigAlpha = 0.50;
+  fSigAlpha = 1.00;
+  materialConstruction = new PenMaterials;
   DefineMaterials();
-  SetTargetMaterial("PEN");
+  fTargetMaterial = G4Material::GetMaterial("PEN");
+  SetABS(AbsorptionLength);
   SetWorldMaterial("Air");
+  //Construct();
+  SetTargetMaterial("PEN");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -116,9 +123,7 @@ void DetectorConstruction::SetReflectorOn(G4bool b) {
 
 void DetectorConstruction::SetRes(G4double value){
   fRES=value;
-  DefineMaterials();
-  UpdateGeometry();
-  G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+  G4RunManager::GetRunManager()->ReinitializeGeometry(); 
 }
 
 /*
@@ -187,7 +192,7 @@ void DetectorConstruction::SetABS(G4double value){
         break;
       }
       wlPhotonEnergy[absEntries] = (1240./wavelength)*eV;
-      ABSORPTION_PEN[absEntries] = (varAbsorLength + AbsorptionLength)*mm;
+      ABSORPTION_PEN[absEntries] = (varAbsorLength*AbsorptionLength)*mm; //use measured value of attenuation to constrain curve and then change values multiplying the curve for a given factor
       absEntries++;
     }
   }
@@ -204,7 +209,8 @@ void DetectorConstruction::SetABS(G4double value){
 void DetectorConstruction::SetSigAlpha(G4double value){
   fSigAlpha=value;
   AirPEN -> SetPolish(fSigAlpha);
-  AirPEN -> SetMaterialPropertiesTable(MPT_PEN);
+  //AirPEN -> SetMaterialPropertiesTable(MPT_PEN);
+  AirPEN -> SetMaterialPropertiesTable(MPT_Target);
 }
 
 void DetectorConstruction::SetDetectorName(G4String name){
@@ -213,8 +219,6 @@ void DetectorConstruction::SetDetectorName(G4String name){
 
 void DetectorConstruction::SetABSFile(G4String fileName){
   fABSFile = fileName;
-  DefineMaterials();
-  UpdateGeometry();
   G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
   DefineMaterials();
 }
@@ -226,24 +230,31 @@ Sets material of target.
 void DetectorConstruction::SetTargetMaterial(G4String materialChoice)
 {
   // search the material by its name
-  G4Material* pttoMaterial = G4NistManager::Instance()->FindOrBuildMaterial(materialChoice);
+  //G4Material* pttoMaterial = G4NistManager::Instance()->FindOrBuildMaterial(materialChoice);
+  G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
 
   if (pttoMaterial) {
     fTargetMaterial = pttoMaterial;
     fTargetName = fTargetMaterial->GetName();
-    if ( penLogicBox ) { penLogicBox->SetMaterial(fTargetMaterial); }
+    if(penLogicBox)penLogicBox->SetMaterial(fTargetMaterial);
+    G4cout<<" light yield: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("SCINTILLATIONYIELD")<<" photons/MeV"<<G4endl;  
+    //G4cout<<" abs: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("ABSLENGTH")<<" mm"<<G4endl;  
+    //G4cout<<" surface: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("ABSLENGTH")<<" mm"<<G4endl;  
   } else {
     G4cout << "\n--> warning from DetectorConstruction::SetMaterial : "
            << materialChoice << " not found" << G4endl;
   }
-  G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+  //if(MPT_Target)MPT_Target->AddConstProperty("SCINTILLATIONYIELD",10000./MeV);
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+  //G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
 
 void DetectorConstruction::SetRI(G4double value){
   fRI = value;
   UpdateGeometry();
-  G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
-  DefineMaterials();
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+  //G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+  //DefineMaterials();
 }
 
 /*
@@ -269,45 +280,24 @@ Defines materials used in simulation. Sets material properties for PEN and other
 */
 void DetectorConstruction::DefineMaterials(){
   // ============================================================= Materials =============================================================
-  G4double a, z, density;
-  G4int nelements;
+  //materialConstruction = new PenMaterials;
+  materialConstruction-> Construct();
+  materialAir = G4Material::GetMaterial("Air");
+  fGlass = G4Material::GetMaterial("G4_Pyrex_Glass");
+  fPOM = G4Material::GetMaterial("POM");
+  fABS = G4Material::GetMaterial("ABS");
+  PenMaterial = G4Material::GetMaterial("PEN");
+  materialSi = G4Material::GetMaterial("G4_Si");
+  materialTriggerFoilEJ212 = G4Material::GetMaterial("EJ212");
+  Pstyrene = G4Material::GetMaterial("Polystyrene");
+  materialPMMA = G4Material::GetMaterial("PMMA");
+  fVacuum = G4Material::GetMaterial("Vacuum");
+  materialGreaseEJ550 = G4Material::GetMaterial("Grease");
+  materialTeflon = G4Material::GetMaterial("G4_TEFLON");
+  materialVikuiti = G4Material::GetMaterial("Vikuiti");
+  materialPolyethylene = G4Material::GetMaterial("G4_POLYETHYLENE");
 
-  // materialAir
-  G4Element* N = new G4Element("Nitrogen", "N", z=7 , a=14.01*g/mole);
-  G4Element* O = new G4Element("Oxygen"  , "O", z=8 , a=16.00*g/mole);
-
-  materialAir = new G4Material("Air", density=1.29*mg/cm3, nelements=2);
-  materialAir->AddElement(N, 70.*perCent);
-  materialAir->AddElement(O, 30.*perCent);
-
-  G4NistManager* man = G4NistManager::Instance();
-  // Water
-  G4Element* H = new G4Element("Hydrogen", "H", z=1 , a=1.01*g/mole);
-
-  G4Material* water = new G4Material("Water", density= 1.0*g/cm3, nelements=2);
-  water->AddElement(H, 2);
-  water->AddElement(O, 1);
-
-  G4Element* C = new G4Element("Carbon", "C", z=12, a=12*g/mole);
-  //G4Element* Pb = new G4Element("Lead", "Pb", z=87, a=207*g/mole);
-  fGlass = man->FindOrBuildMaterial("G4_Pyrex_Glass");
-  fPOM = new G4Material("POM",density=1.41*g/cm3,nelements=3);
-  fPOM->AddElement(O,1);
-  fPOM->AddElement(C,1);
-  fPOM->AddElement(H,2);
-
-  fABS = new G4Material("ABS",density=1.07*g/cm3,nelements=3);
-  fABS->AddElement(C,15);
-  fABS->AddElement(H,17);
-  fABS->AddElement(N,1);
-
-  // Scintillators
-  G4int number_of_atoms;
-  PenMaterial = new G4Material("PEN", density= 1.3*g/cm3, nelements=3);
-  PenMaterial->AddElement(O, number_of_atoms=4);
-  PenMaterial->AddElement(H, number_of_atoms=10);
-  PenMaterial->AddElement(C, number_of_atoms=14);
-
+  G4cout<<" materials ok "<<G4endl;
   G4double wavelength;
   char filler;
   G4double varAbsorLength;
@@ -316,10 +306,7 @@ void DetectorConstruction::DefineMaterials(){
 
   G4double wlPhotonEnergy[102]  = {0};
   G4double ABSORPTION_PEN[102] = {0};
-  G4double EMISSION_PEN[102] = {0};
   G4double RINDEX_PEN[102] = {0};
-  G4double RINDEX_Air[102] = {0};
-  //G4double emsAbs[102] = {0};
 
   G4int absEntries = 0;
   ifstream ReadAbs;
@@ -335,14 +322,8 @@ void DetectorConstruction::DefineMaterials(){
         break;
       }
       wlPhotonEnergy[absEntries] = (1240/wavelength)*eV;
-      //ABSORPTION_PEN[absEntries] = (varAbsorLength+AbsorptionLength)*mm;
       ABSORPTION_PEN[absEntries] = (varAbsorLength)*mm;
-      EMISSION_PEN[absEntries] = emission;
       RINDEX_PEN[absEntries] = rindex;
-      RINDEX_Air[absEntries] = 1.0;
-      //RINDEX_PEN[absEntries] = 1.65;
-      //emsAbs[absEntries] = 0.02;
-      //emission_fibre[absEntries] = 1.0;
       absEntries++;
     }
   }
@@ -355,46 +336,59 @@ void DetectorConstruction::DefineMaterials(){
   assert(sizeof(RINDEX_PEN) == sizeof(wlPhotonEnergy));
   assert(sizeof(ABSORPTION_PEN) == sizeof(wlPhotonEnergy));
   assert(sizeof(EMISSION_PEN) == sizeof(wlPhotonEnergy));
-  assert(sizeof(RINDEX_Air == sizeof(wlPhotonEnergy)));
   
   MPT_PEN = new G4MaterialPropertiesTable();
 
   MPT_PEN->AddProperty("RINDEX",       wlPhotonEnergy, RINDEX_PEN, nEntries1)->SetSpline(true);
   MPT_PEN->AddProperty("ABSLENGTH",    wlPhotonEnergy, ABSORPTION_PEN, nEntries1)->SetSpline(true); // *
-  MPT_PEN->AddProperty("FASTCOMPONENT",wlPhotonEnergy, EMISSION_PEN, nEntries1)->SetSpline(true);
-  MPT_PEN->AddProperty("SLOWCOMPONENT",wlPhotonEnergy, EMISSION_PEN, nEntries1)->SetSpline(true);
+
+  // Read primary emission spectrum from PEN
+  // Measurements from MPP Munich
+  G4double pWavelength;
+  G4String  Scint_file ="../properties/PEN_EM_SPECTRUM.dat";
+  std::ifstream ReadScint2(Scint_file),ReadScintPEN;
+  //count number of entries
+  ReadScint2.unsetf(std::ios_base::skipws);
+  //unsigned line_count = std::count(
+  int line_count = std::count(
+        std::istream_iterator<char>(ReadScint2),
+        std::istream_iterator<char>(), 
+        '\n');
+  std::cout << "Lines: " << line_count << "\n";
+  ReadScint2.close();
+  G4double PEN_EMISSION[500]; 
+  G4double PEN_WL_ENERGY[500]; 
+  G4int nEntriesPEN = 0;
+  ReadScintPEN.open(Scint_file);
+  if(ReadScintPEN.is_open()){
+        while(!ReadScintPEN.eof()){
+                 ReadScintPEN>>pWavelength>>PEN_EMISSION[nEntriesPEN];
+                 PEN_WL_ENERGY[nEntriesPEN] = (1240./pWavelength)*eV;//convert wavelength to eV
+ 	         G4cout<<nEntriesPEN<<" wl "<<PEN_WL_ENERGY[nEntriesPEN]<<" "<<PEN_EMISSION[nEntriesPEN]<<G4endl;
+                 nEntriesPEN++;
+	         if(nEntriesPEN > (line_count-1)){ G4cout << " entries completed " << G4endl; break;}
+        }
+  }
+  else
+       G4cout << "Error opening file: " << Scint_file << G4endl;
+  ReadScintPEN.close();
+  G4cout<<" nEntriesPEN "<<nEntriesPEN<<G4endl;
+
+  MPT_PEN->AddProperty("FASTCOMPONENT",PEN_WL_ENERGY, PEN_EMISSION, line_count)->SetSpline(true);
+  MPT_PEN->AddProperty("SLOWCOMPONENT",PEN_WL_ENERGY, PEN_EMISSION, line_count)->SetSpline(true);
 
   MPT_PEN->AddConstProperty("SCINTILLATIONYIELD",fLY/MeV); // * 2.5 * PEN = PS, 10*PEN=PS
   MPT_PEN->AddConstProperty("RESOLUTIONSCALE",fRES); // * 1, 4, 8
   MPT_PEN->AddConstProperty("FASTTIMECONSTANT", 5.198*ns);
   MPT_PEN->AddConstProperty("SLOWTIMECONSTANT",24.336*ns);
-  MPT_PEN->AddConstProperty("YIELDRATIO",1.0);
+  MPT_PEN->AddConstProperty("YIELDRATIO",1.);
 
   PenMaterial->SetMaterialPropertiesTable(MPT_PEN);
+  //pvt_structure->SetMaterialPropertiesTable(MPT_PEN);
 
-  AirPEN = new G4OpticalSurface("AirPEN",glisur, ground, dielectric_dielectric);
-  AirPEN -> SetPolish(fSigAlpha);
-  AirPEN -> SetMaterialPropertiesTable(MPT_PEN);
+  
+  G4cout<<" pen ok "<<G4endl;
 
-  density = universe_mean_density;    //from PhysicalConstants.h
-  fVacuum = new G4Material("Galactic", z=1., a=1.008*g/mole, density,
-                           kStateGas,2.73*kelvin,3.e-18*pascal);
-  //
-  // fAir
-  G4MaterialPropertiesTable* MPT_Air = new G4MaterialPropertiesTable();
-  MPT_Air->AddProperty("RINDEX", wlPhotonEnergy, RINDEX_Air, nEntries1)->SetSpline(true);
-
-  materialAir->SetMaterialPropertiesTable(MPT_Air);
-  fVacuum->SetMaterialPropertiesTable(MPT_Air);
-  materialSi = man->FindOrBuildMaterial("G4_Si");
-
-  materialTriggerFoilEJ212 = new G4Material("EJ212", density= 1.03*g/cm3, 2);
-  materialTriggerFoilEJ212->AddElement(C, 0.475);
-  materialTriggerFoilEJ212->AddElement(H, 0.525);
-
-  Pstyrene = new G4Material("Polystyrene", density= 1.03*g/cm3, 2);
-  Pstyrene->AddElement(C, 8);
-  Pstyrene->AddElement(H, 8);
 
   G4double rindexEnergy[500] = {0};
   G4double scintIndex[500] = {0};
@@ -424,7 +418,7 @@ void DetectorConstruction::DefineMaterials(){
   G4int scintEntries = 0;
   ifstream ReadScint;
 
-  G4String Scint_file="../input_files/pTP_emission.txt";
+  Scint_file="../input_files/pTP_emission.txt";
   ReadScint.open(Scint_file);
 
   if(ReadScint.is_open())
@@ -456,7 +450,7 @@ void DetectorConstruction::DefineMaterials(){
       {
           ReadAbsorb>>wavelength>>filler>>varAbsorbLength;
           absorbEnergy[absorbEntries]=(1240/wavelength)*eV;
-          Absorb[absorbEntries]=(varAbsorbLength+10.)*m;
+          Absorb[absorbEntries]=(varAbsorbLength)*m;
           absorbEntries++;
       }
   }else G4cout<<"Error opening file: "<<ReadAbsorb<<G4endl;
@@ -518,7 +512,7 @@ void DetectorConstruction::DefineMaterials(){
   MPT_FoilEJ212->AddProperty("SLOWCOMPONENT",scintEnergy, scintEmitSlow,     scintEntries);
 
   //MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",11520./MeV);
-  MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",10./MeV);
+  MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",10./MeV);//set low LY to make it faster, intead use Edep for coincidences
   MPT_FoilEJ212->AddConstProperty("RESOLUTIONSCALE",4.0);
   MPT_FoilEJ212->AddConstProperty("FASTTIMECONSTANT", 2.1*ns);
   MPT_FoilEJ212->AddConstProperty("SLOWTIMECONSTANT",14.2*ns);
@@ -526,16 +520,7 @@ void DetectorConstruction::DefineMaterials(){
 
   materialTriggerFoilEJ212->SetMaterialPropertiesTable(MPT_FoilEJ212);
 
-  // G4double density, a;
-  // G4int nelements, z;
-  // G4Element* O = new G4Element("Oxygen"  , "O", z=8 , a=16.00*g/mole);
-  // G4Element* C = new G4Element("Carbon", "C", z=12, a=12*g/mole);
-  // G4Element* H = new G4Element("Hydrogen", "H", z=1, a=1.01*g/mole);
-
-  materialPMMA = new G4Material("PMMA", density = 1.18*g/cm3, nelements = 3);
-  materialPMMA->AddElement(C, 5);
-  materialPMMA->AddElement(O, 2);
-  materialPMMA->AddElement(H, 8);
+  G4cout<<" EJ212 ok "<<G4endl;
 
   G4double refractive_index[] = {1.49, 1.49, 1.49, 1.49, 1.49, 1.49};
   G4double absPMMA[] = {5*m, 5*m, 5*m, 5*m, 5*m, 5*m};
@@ -549,12 +534,6 @@ void DetectorConstruction::DefineMaterials(){
   MPT_PMMA->AddProperty("REFLECTIVITY", energyPMMA, reflPMMA, nEntries3)->SetSpline(true);
   materialPMMA->SetMaterialPropertiesTable(MPT_PMMA);
 
-  ej_550 = man->FindOrBuildMaterial("G4_WATER");
-  G4MaterialPropertiesTable* MPT_EJ550Grease = new G4MaterialPropertiesTable();
-  G4double ej_refractive_index[] = {1.46, 1.46, 1.46, 1.46, 1.46, 1.46};
-  MPT_EJ550Grease->AddProperty("ABSLENGTH", energyPMMA, absPMMA, nEntries3);
-  MPT_EJ550Grease->AddProperty("RINDEX", energyPMMA, ej_refractive_index, nEntries3)->SetSpline(true);
-  ej_550->SetMaterialPropertiesTable(MPT_EJ550Grease);
 }
 
 void DetectorConstruction::SetVolName(G4ThreeVector thePoint){
@@ -589,12 +568,6 @@ Defines detector sensitivities and properties.
 */
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-  G4NistManager* man = G4NistManager::Instance();
-
-  G4Material* teflon = man->FindOrBuildMaterial("G4_TEFLON");
-  G4Material* polyethylene = man->FindOrBuildMaterial("G4_POLYETHYLENE");
-  //G4Material* air = man->FindOrBuildMaterial("G4_AIR");
-
 // ============================================================= Define Volumes =============================================================
 
   //The experimental Dark Box
@@ -603,11 +576,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   physicWorldBox = new G4PVPlacement(0,G4ThreeVector(),logicWorldBox,"World",0,false,0);
 
   penSampleBox = new G4Box("target", halfPenSampleLength, halfPenSampleThickness, halfPenSampleWidth);
-  penLogicBox = new G4LogicalVolume(penSampleBox,PenMaterial, "target",0,0,0);
+  penLogicBox = new G4LogicalVolume(penSampleBox,fTargetMaterial, "target",0,0,0);
 
 
   //EJ212 foil scintillator used for trigger
-  double halfThicknessTriggerFoilEJ212 = 50.*um;//100 um thickness EJ foil for trigger
+  double halfThicknessTriggerFoilEJ212 = 45.*um;//100 um thickness EJ foil for trigger
   double halfWidthTriggerFoilEJ212 = 7.5*mm;
   double halfLengthTriggerFoilEJ212 = 15.*mm;
   G4Box* boxTriggerFoilEJ212 = new G4Box("triggerFoilEJ212", halfLengthTriggerFoilEJ212, halfThicknessTriggerFoilEJ212, halfWidthTriggerFoilEJ212);
@@ -620,17 +593,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   double halfLengthReflectorFoil = 14.0*mm;
   G4VSolid* boxReflectorFoil = new G4Box("foil", halfLengthReflectorFoil, halfThicknessReflectorFoil, halfWidththReflectorFoil);
   G4SubtractionSolid* reflectorFoilAroundEJ212Foil = new G4SubtractionSolid("reflectorFoilAroundEJ212Foil", boxReflectorFoil, boxTriggerFoilEJ212, 0, G4ThreeVector(0, 0, 0));
-  G4LogicalVolume* logicReflectorFoilAroundEJ212Foil = new G4LogicalVolume(reflectorFoilAroundEJ212Foil, teflon, "foil", 0, 0, 0);
+  G4LogicalVolume* logicReflectorFoilAroundEJ212Foil = new G4LogicalVolume(reflectorFoilAroundEJ212Foil, materialVikuiti, "foil", 0, 0, 0);
 
   //Reflector foil to be placed over pen samples, not used in attenuation
-  double totalReflectorFoilThickness = 100.*um;
+  double totalReflectorFoilThickness = 150.*um;
   double halfReflectorBoxOverPEN = 3.0*mm;
 
   G4VSolid* boxReflectorPEN = new G4Box("foilPEN",halfPenSampleLength, halfReflectorBoxOverPEN, halfPenSampleWidth);
   G4VSolid* reflectorFoilBox = new G4Box("foil", halfPenSampleLength-totalReflectorFoilThickness, halfReflectorBoxOverPEN, halfPenSampleWidth-totalReflectorFoilThickness);
   G4SubtractionSolid* reflectorFoilOverPEN = new G4SubtractionSolid("reflectorFoilOverPEN",boxReflectorPEN,reflectorFoilBox,0,G4ThreeVector(0, totalReflectorFoilThickness, 0));
-  //G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, teflon, "foil", 0, 0, 0);
-  G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilOverPEN, teflon, "foil", 0, 0, 0);
+  //G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilBox, materialTeflon, "foil", 0, 0, 0);
+  G4LogicalVolume* logicReflectorFoilBox = new G4LogicalVolume(reflectorFoilOverPEN, materialVikuiti, "foil", 0, 0, 0);
 
   //Passive collimator
   double innerRadiusCollimator = 1.*mm; 
@@ -638,7 +611,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   halfCollimatorThickness= 5.*mm; 
   
   G4Tubs* collimatorTube = new G4Tubs("collimator",innerRadiusCollimator,externalRadiusCollimator,halfCollimatorThickness,0.,360.*deg);
-  G4LogicalVolume* logicCollimator = new G4LogicalVolume(collimatorTube,polyethylene,"collimator",0,0,0); 
+  G4LogicalVolume* logicCollimator = new G4LogicalVolume(collimatorTube,materialPolyethylene,"collimator",0,0,0); 
 
 
   G4ThreeVector point = G4ThreeVector(0,0,5*cm);
@@ -655,7 +628,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double photoCathodeQuantumEfficiency[37];
   G4double perfectEfficiency[37];
   G4double photoCathodeRelectivity[37];
-  //G4String pmtFile = "../input_files/pmtQE.csv";
   G4String pmtFile = "../input_files/QE_H11934_300.csv";
 
   ifstream ReadEff;
@@ -696,8 +668,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   MPT_PMT->AddProperty("REFLECTIVITY", photocathEnergy, photoCathodeRelectivity,nPMT_EFF);
   pmtOpticalSurface->SetMaterialPropertiesTable(MPT_PMT);
 
-  G4LogicalVolume* tileDetectorLog = new G4LogicalVolume(penSampleBox,materialSi, "tile_sensor");
-  new G4LogicalSkinSurface("pen_det_surf",tileDetectorLog,perfectOptSurf);
+  //G4LogicalVolume* tileDetectorLog = new G4LogicalVolume(penSampleBox,materialSi, "tile_sensor");
+  //new G4LogicalSkinSurface("pen_det_surf",tileDetectorLog,perfectOptSurf);
 
   LightGuideConstruction guide;
   G4VSolid* LightGuidePMMA = guide.ConstructPlate();
@@ -822,7 +794,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   logicBoxPhotoCathodeSupport->SetVisAttributes(visualAttributesInactiveMaterials);
   logicBoxPMTShell->SetVisAttributes(visualAttributesInactiveMaterials);
 
-  man = G4NistManager::Instance();
 
   G4LogicalVolume* logicLightGuidePMMA = new G4LogicalVolume(LightGuidePMMA, materialPMMA, "Ligh_guideLog");
 
@@ -830,7 +801,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double greaseHoleDepth = depthGreaseHole*mm;
   G4Tubs* tubeSiGrease = new G4Tubs("SiGrease", 0, greaseHoleDiameter/2., greaseHoleDepth/2., 0, 360*deg);
 
-  G4LogicalVolume* logicTubeSiGrease = new G4LogicalVolume(tubeSiGrease, ej_550, "logicTubeSiGrease");
+  G4LogicalVolume* logicTubeSiGrease = new G4LogicalVolume(tubeSiGrease, materialGreaseEJ550, "logicTubeSiGrease");
   logicTubeSiGrease->SetVisAttributes(visulaAttributesReflectors);
 
 
@@ -923,7 +894,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      break;
 
   case 1:
-     //physicPenSampleBox = new G4PVPlacement(0, G4ThreeVector(0,0,0),penLogicBox,"target",logicWorldBox,false,0,false);
      for(int iSample = 0; iSample < nSamples; iSample++){
   	physicPenStackedSamples = new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness+iSample*5.*um,0),
@@ -1001,7 +971,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      break;
 
      case 2:
-     //physicPenSampleBox = new G4PVPlacement(0, G4ThreeVector(0,0,0),penLogicBox,"target",logicWorldBox,false,0,false);
      for(int iSample = 0; iSample < nSamples; iSample++){
   	physicPenStackedSamples = new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*5.*um,0),
@@ -1098,6 +1067,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   }
 
   //============================================================= Surfaces =============================================================
+  AirPEN = new G4OpticalSurface("AirPEN",glisur, ground, dielectric_dielectric);
+  AirPEN -> SetPolish(fSigAlpha);
+  MPT_Target = new G4MaterialPropertiesTable();
+  MPT_Target = fTargetMaterial->GetMaterialPropertiesTable();
+  //G4MaterialPropertyVector *check_values = MPT_Target->GetProperty("RINDEX");
+  //check_values->DumpValues ();
+  AirPEN -> SetMaterialPropertiesTable(MPT_Target);
+
 
   G4OpticalSurface* AirEJ212 = new G4OpticalSurface("AirEJ212", 
 				glisur, 

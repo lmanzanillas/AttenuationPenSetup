@@ -43,10 +43,10 @@ RM = /opt/cmake/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup
+CMAKE_SOURCE_DIR = /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build
+CMAKE_BINARY_DIR = /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/PEN.dir/depend.make
@@ -59,172 +59,172 @@ include CMakeFiles/PEN.dir/flags.make
 
 CMakeFiles/PEN.dir/PEN.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/PEN.cc.o: ../PEN.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/PEN.dir/PEN.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/PEN.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/PEN.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/PEN.dir/PEN.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/PEN.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/PEN.cc
 
 CMakeFiles/PEN.dir/PEN.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/PEN.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/PEN.cc > CMakeFiles/PEN.dir/PEN.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/PEN.cc > CMakeFiles/PEN.dir/PEN.cc.i
 
 CMakeFiles/PEN.dir/PEN.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/PEN.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/PEN.cc -o CMakeFiles/PEN.dir/PEN.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/PEN.cc -o CMakeFiles/PEN.dir/PEN.cc.s
 
 CMakeFiles/PEN.dir/src/ActionInitialization.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/ActionInitialization.cc.o: ../src/ActionInitialization.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/PEN.dir/src/ActionInitialization.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/ActionInitialization.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/ActionInitialization.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/PEN.dir/src/ActionInitialization.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/ActionInitialization.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/ActionInitialization.cc
 
 CMakeFiles/PEN.dir/src/ActionInitialization.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/ActionInitialization.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/ActionInitialization.cc > CMakeFiles/PEN.dir/src/ActionInitialization.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/ActionInitialization.cc > CMakeFiles/PEN.dir/src/ActionInitialization.cc.i
 
 CMakeFiles/PEN.dir/src/ActionInitialization.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/ActionInitialization.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/ActionInitialization.cc -o CMakeFiles/PEN.dir/src/ActionInitialization.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/ActionInitialization.cc -o CMakeFiles/PEN.dir/src/ActionInitialization.cc.s
 
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o: ../src/DetectorConstruction.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/DetectorConstruction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorConstruction.cc
 
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/DetectorConstruction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/DetectorConstruction.cc > CMakeFiles/PEN.dir/src/DetectorConstruction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorConstruction.cc > CMakeFiles/PEN.dir/src/DetectorConstruction.cc.i
 
 CMakeFiles/PEN.dir/src/DetectorConstruction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/DetectorConstruction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/DetectorConstruction.cc -o CMakeFiles/PEN.dir/src/DetectorConstruction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorConstruction.cc -o CMakeFiles/PEN.dir/src/DetectorConstruction.cc.s
 
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o: ../src/DetectorMessenger.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/DetectorMessenger.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorMessenger.cc
 
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/DetectorMessenger.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/DetectorMessenger.cc > CMakeFiles/PEN.dir/src/DetectorMessenger.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorMessenger.cc > CMakeFiles/PEN.dir/src/DetectorMessenger.cc.i
 
 CMakeFiles/PEN.dir/src/DetectorMessenger.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/DetectorMessenger.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/DetectorMessenger.cc -o CMakeFiles/PEN.dir/src/DetectorMessenger.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorMessenger.cc -o CMakeFiles/PEN.dir/src/DetectorMessenger.cc.s
 
 CMakeFiles/PEN.dir/src/EventAction.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/EventAction.cc.o: ../src/EventAction.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/PEN.dir/src/EventAction.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/EventAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/EventAction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/PEN.dir/src/EventAction.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/EventAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/EventAction.cc
 
 CMakeFiles/PEN.dir/src/EventAction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/EventAction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/EventAction.cc > CMakeFiles/PEN.dir/src/EventAction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/EventAction.cc > CMakeFiles/PEN.dir/src/EventAction.cc.i
 
 CMakeFiles/PEN.dir/src/EventAction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/EventAction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/EventAction.cc -o CMakeFiles/PEN.dir/src/EventAction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/EventAction.cc -o CMakeFiles/PEN.dir/src/EventAction.cc.s
 
 CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o: ../src/LightGuideConstruction.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/LightGuideConstruction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/LightGuideConstruction.cc
 
 CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/LightGuideConstruction.cc > CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/LightGuideConstruction.cc > CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.i
 
 CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/LightGuideConstruction.cc -o CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/LightGuideConstruction.cc -o CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.s
 
 CMakeFiles/PEN.dir/src/PenMaterials.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/PenMaterials.cc.o: ../src/PenMaterials.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/PEN.dir/src/PenMaterials.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PenMaterials.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PenMaterials.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/PEN.dir/src/PenMaterials.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PenMaterials.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PenMaterials.cc
 
 CMakeFiles/PEN.dir/src/PenMaterials.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/PenMaterials.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PenMaterials.cc > CMakeFiles/PEN.dir/src/PenMaterials.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PenMaterials.cc > CMakeFiles/PEN.dir/src/PenMaterials.cc.i
 
 CMakeFiles/PEN.dir/src/PenMaterials.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/PenMaterials.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PenMaterials.cc -o CMakeFiles/PEN.dir/src/PenMaterials.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PenMaterials.cc -o CMakeFiles/PEN.dir/src/PenMaterials.cc.s
 
 CMakeFiles/PEN.dir/src/PhysicsList.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/PhysicsList.cc.o: ../src/PhysicsList.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/PEN.dir/src/PhysicsList.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PhysicsList.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PhysicsList.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/PEN.dir/src/PhysicsList.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PhysicsList.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PhysicsList.cc
 
 CMakeFiles/PEN.dir/src/PhysicsList.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/PhysicsList.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PhysicsList.cc > CMakeFiles/PEN.dir/src/PhysicsList.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PhysicsList.cc > CMakeFiles/PEN.dir/src/PhysicsList.cc.i
 
 CMakeFiles/PEN.dir/src/PhysicsList.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/PhysicsList.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PhysicsList.cc -o CMakeFiles/PEN.dir/src/PhysicsList.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PhysicsList.cc -o CMakeFiles/PEN.dir/src/PhysicsList.cc.s
 
 CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o: ../src/PrimaryGeneratorAction.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PrimaryGeneratorAction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorAction.cc
 
 CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PrimaryGeneratorAction.cc > CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorAction.cc > CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.i
 
 CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PrimaryGeneratorAction.cc -o CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorAction.cc -o CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.s
 
 CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.o: ../src/PrimaryGeneratorMessenger.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc
 
 CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc > CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc > CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.i
 
 CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc -o CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc -o CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.s
 
 CMakeFiles/PEN.dir/src/RunAction.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/RunAction.cc.o: ../src/RunAction.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/PEN.dir/src/RunAction.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/RunAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/RunAction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/PEN.dir/src/RunAction.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/RunAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/RunAction.cc
 
 CMakeFiles/PEN.dir/src/RunAction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/RunAction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/RunAction.cc > CMakeFiles/PEN.dir/src/RunAction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/RunAction.cc > CMakeFiles/PEN.dir/src/RunAction.cc.i
 
 CMakeFiles/PEN.dir/src/RunAction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/RunAction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/RunAction.cc -o CMakeFiles/PEN.dir/src/RunAction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/RunAction.cc -o CMakeFiles/PEN.dir/src/RunAction.cc.s
 
 CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.o: ../src/SiliconPlateConstruction.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/SiliconPlateConstruction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SiliconPlateConstruction.cc
 
 CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/SiliconPlateConstruction.cc > CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SiliconPlateConstruction.cc > CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.i
 
 CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/SiliconPlateConstruction.cc -o CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SiliconPlateConstruction.cc -o CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.s
 
 CMakeFiles/PEN.dir/src/SteppingAction.cc.o: CMakeFiles/PEN.dir/flags.make
 CMakeFiles/PEN.dir/src/SteppingAction.cc.o: ../src/SteppingAction.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/PEN.dir/src/SteppingAction.cc.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/SteppingAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/SteppingAction.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/PEN.dir/src/SteppingAction.cc.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PEN.dir/src/SteppingAction.cc.o -c /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SteppingAction.cc
 
 CMakeFiles/PEN.dir/src/SteppingAction.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PEN.dir/src/SteppingAction.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/SteppingAction.cc > CMakeFiles/PEN.dir/src/SteppingAction.cc.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SteppingAction.cc > CMakeFiles/PEN.dir/src/SteppingAction.cc.i
 
 CMakeFiles/PEN.dir/src/SteppingAction.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PEN.dir/src/SteppingAction.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/src/SteppingAction.cc -o CMakeFiles/PEN.dir/src/SteppingAction.cc.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SteppingAction.cc -o CMakeFiles/PEN.dir/src/SteppingAction.cc.s
 
 # Object files for target PEN
 PEN_OBJECTS = \
@@ -312,7 +312,7 @@ PEN: /opt/geant4/lib64/libG4intercoms.so
 PEN: /opt/geant4/lib64/libG4global.so
 PEN: /opt/clhep/lib/libCLHEP-2.4.1.0.so
 PEN: CMakeFiles/PEN.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable PEN"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable PEN"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/PEN.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -325,6 +325,6 @@ CMakeFiles/PEN.dir/clean:
 .PHONY : CMakeFiles/PEN.dir/clean
 
 CMakeFiles/PEN.dir/depend:
-	cd /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/AttenuationPenSetup/build/CMakeFiles/PEN.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/build/CMakeFiles/PEN.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/PEN.dir/depend
 

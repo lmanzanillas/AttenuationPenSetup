@@ -41,7 +41,7 @@ void EventAction::BeginOfEventAction(const G4Event* myEvent)
 	fBottomPhoton = 0.;
 	fLeftPhoton = 0.;
 	fRightPhoton = 0.;
-	if (myEvent->GetEventID() % 1000 == 0)
+	if (myEvent->GetEventID() % 5000 == 0)
 		G4cout << "event no.: " << myEvent->GetEventID() << G4endl;
 }
 
@@ -58,7 +58,7 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 	auto analysisManager = G4AnalysisManager::Instance();
 
 	//if (fDetectedPhotons >= 0){
-	if (depositedEnergyTriggerFoilEJ212 > 0.){
+	//if (depositedEnergyTriggerFoilEJ212 > 0.){
 		//G4cout <<myEvent->GetEventID()<<": " << fDetectedPhotons << G4endl;
 		analysisManager->FillNtupleDColumn(0, myEvent->GetEventID());
 		analysisManager->FillNtupleDColumn(1, depositedEnergyTriggerFoilEJ212);
@@ -75,6 +75,6 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 		analysisManager->FillNtupleDColumn(12, fBackPhoton);
 		analysisManager->AddNtupleRow(0);
 
-	 }
+	// }
 
 }

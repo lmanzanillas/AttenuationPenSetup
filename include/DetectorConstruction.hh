@@ -39,10 +39,12 @@
 #include "DetectorMessenger.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4MaterialPropertiesTable.hh"
+#include "PenMaterials.hh"
 #include "G4GDMLParser.hh"
 class DetectorMessenger;
 class G4LogicalVolume;
 class G4Material;
+class PenMaterials;
 class G4Box;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -171,6 +173,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4OpticalSurface* AirPEN;
 
     G4MaterialPropertiesTable* MPT_PEN;
+    G4MaterialPropertiesTable* MPT_Target;
     G4MaterialPropertiesTable* MPT_World;
 
     G4LogicalBorderSurface* logicSurfaceAirPEN;
@@ -198,7 +201,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material* fPOM;
     G4Material* fABS;
     G4Material* materialPMMA;
-    G4Material* ej_550;
+    G4Material* materialGreaseEJ550;
+    G4Material* materialTeflon;
+    G4Material* materialVikuiti;
+    G4Material* materialPolyethylene;
 
     G4int fDetectorType;
     G4double fDetectorCollimatorX;
@@ -207,6 +213,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4String fVolName;
     G4String fABSFile;
 
+    PenMaterials* materialConstruction;
     DetectorMessenger* fDetectorMessenger;
 };
 
