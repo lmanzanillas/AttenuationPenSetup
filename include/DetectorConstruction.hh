@@ -74,6 +74,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetRes(G4double);
     void SetABS(G4double);
     void SetSigAlpha(G4double);
+    void SetPMTReflectivity(G4double);
     void MaterialPropertiesScintillator();
     void SetVolName(G4ThreeVector);
     void SetRI(G4double);
@@ -94,6 +95,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double GetRes(){return fRES;};
     G4double GetABS(){return AbsorptionLength;};
     G4double GetSigAlpha(){return fSigAlpha;};
+    G4double GetPMTReflectivity(){return pmtReflectivity;};
     G4String GetDetectorName(){return fDetectorName;};
     G4String GetVolName(){return fVolName;};
     G4double GetRI(){return fRI;};
@@ -121,6 +123,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double fRES;
     G4double AbsorptionLength;
     G4double fSigAlpha;
+    G4double pmtReflectivity;
     G4double fRI;
     //add position
     G4double halfPenSampleLength;
@@ -180,6 +183,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalBorderSurface* logicSurfacePENAir;
     G4LogicalBorderSurface* logicSurfaceAirPENStacked;
     G4LogicalBorderSurface* logicSurfacePENStackedAir;
+    G4LogicalBorderSurface* logicSurfacePENStackedPENStacked;
+    G4LogicalBorderSurface* logicSurfacePENStackedPENStackedCathodeSupport;
     G4LogicalBorderSurface* logicSurfaceEJ212PMMA;
     G4LogicalBorderSurface* logicSurfacePMMAEJ212;
     G4LogicalBorderSurface* logicSurfaceAirPMMA;

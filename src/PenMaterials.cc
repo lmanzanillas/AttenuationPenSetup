@@ -383,8 +383,6 @@ void PenMaterials::Construct()
     Li6ZnS_Li6pure->AddElement(Li6pure,100.0*perCent);
     
     G4int absorbEntries = 0;
-    // G4int wlsAbEntries  = 0;
-    // G4int wlsEmEntries  = 0;
     G4double varabsorblength;
     G4double absorbEnergy[500];
     G4double Absorb[500];
@@ -393,21 +391,16 @@ void PenMaterials::Construct()
     G4double scintReflect[500];
     
     // G4double wlsabsorblength;
-
     for (int i = 0; i < 500; i++){
         scintEnergyZnS[i] = 0;
         scintEmitZnS[i] = 0;
-        // scintSlow[i] = 0;
         ref_index_Energy[i] = 0;
         ref_index_value[i] = 0;
     }
     
     // Read primary emission spectrum
-    
     G4int scintEntries = 0;
-    
     G4String Scint_file="../properties/lif_zns_emission_spk2.txt";
-    
     std::ifstream ReadScint;
     ReadScint.open(Scint_file);
     if(ReadScint.is_open()){
@@ -426,7 +419,6 @@ void PenMaterials::Construct()
     // Read primary bulk absorption
     
     absorbEntries = 0;
-    //  Readabsorb;
     G4String Readabsorblength = "../properties/LiFZnS2.cfg";
     
     std::ifstream Readabsorb;
@@ -535,58 +527,42 @@ void PenMaterials::Construct()
 
     G4double scintEnergyPVT[115];
     G4double scintEmitPVT[115];
-    absorbEntries = 0;
-    // wlsAbEntries  = 0;
-    // wlsEmEntries  = 0;
-    
-    
-    for (int i = 0; i < 500; i++){
-        scintEnergyZnS[i] = 0;
-        scintEmitZnS[i] = 0;
-        ref_index_Energy[i] = 0;
-        ref_index_value[i] = 0;
-    }
-    
+    G4int scintEntries_pvt = 115;
     // Read primary emission spectrum
-    
-    scintEntries = 0;
-
-
     Scint_file ="../properties/PVTEmission.dat";
-    
-    std::ifstream ReadScint2;
-    ReadScint2.open(Scint_file);
-       
-    if(ReadScint2.is_open()){
-        while(!ReadScint2.eof()){
+    std::ifstream ReadPVTScint;
+    ReadPVTScint.open(Scint_file);
+    scintEntries = 0;
+    if(ReadPVTScint.is_open()){
+        while(!ReadPVTScint.eof()){
 	 
             G4String filler;
-            ReadScint2>>pWavelength>>filler>>scintEmitPVT[scintEntries];
-
+            ReadPVTScint>>pWavelength>>filler>>scintEmitPVT[scintEntries];
             scintEnergyPVT[scintEntries] = (1240./pWavelength)*eV;         //convert wavelength to eV
-            // scintSlow[scintEntries] = 0.0;  //arbitrary test value
             scintEntries++;
-	    if (scintEntries > 115){ G4cout << " ERROR < entries  out of range > " << G4endl; break;}
+	    if (scintEntries > (scintEntries_pvt-1)){ G4cout << " ERROR < scint entries  out of range > " << G4endl; break;}
         }
     }
     else
         G4cout << "Error opening file: " << Scint_file << G4endl;
-    //if (ReadScint2) ReadScint2.close();
-
+    ReadPVTScint.close();
      
     // Read primary bulk absorption
-    
-    absorbEntries = 0;
+    G4int abs_entries_pvt = 500;
+    G4double absorbEnergy_pvt[500];
+    G4double Absorb_pvt[500];
     Readabsorblength = "../properties/PVTAbsorption.dat";
     
     Readabsorb.open(Readabsorblength);
+    absorbEntries = 0;
     if (Readabsorb.is_open()){
         while(!Readabsorb.eof()){
             G4String filler;
             Readabsorb >> pWavelength >> filler >> varabsorblength;
-            absorbEnergy[absorbEntries] = (1240/pWavelength)*eV;
-            Absorb[absorbEntries] = varabsorblength * m;
+            absorbEnergy_pvt[absorbEntries] = (1240./pWavelength)*eV;
+            Absorb_pvt[absorbEntries] = varabsorblength * m;
             absorbEntries++;
+	    if(absorbEntries > (abs_entries_pvt-1)){G4cout << " ERROR < entries abs  out of range > " << G4endl; break;}
         }
     }
     else
@@ -594,35 +570,36 @@ void PenMaterials::Construct()
     Readabsorb.close();
 
     // Read scintillator refractive index
-    
-    ref_index_Entries = 0;
-    //  G4double ref_index_Energy[500];
-    //  G4double ref_index_value[500];
+    G4int entries_pvt_rindex = 11;
+    G4double ref_index_Energy_pvt[11];
+    G4double ref_index_value_pvt[11];
 
-    std::ifstream  Read_ref_index3;
+    std::ifstream  Read_ref_index_pvt;
     ref_index_emit = "../properties/PVTRefIndex.dat";
-    Read_ref_index3.open(ref_index_emit);
-    if(Read_ref_index3.is_open()){
-        while(!Read_ref_index3.eof()){
+    Read_ref_index_pvt.open(ref_index_emit);
+    ref_index_Entries = 0;
+    if(Read_ref_index_pvt.is_open()){
+        while(!Read_ref_index_pvt.eof()){
             G4String filler;
-            Read_ref_index3 >> pWavelength >> filler >> ref_index_value[ref_index_Entries];
-            ref_index_Energy[ref_index_Entries] = (1240./pWavelength)*eV;
+            Read_ref_index_pvt >> pWavelength >> filler >> ref_index_value_pvt[ref_index_Entries];
+            ref_index_Energy_pvt[ref_index_Entries] = (1240./pWavelength)*eV;
+	    G4cout<<ref_index_Entries<<" rindex "<<ref_index_value_pvt[ref_index_Entries]<<" energy "<<ref_index_Energy_pvt[ref_index_Entries]<<G4endl;
             ref_index_Entries++;
+	    if(ref_index_Entries > (entries_pvt_rindex-1)){G4cout << " ERROR < entries ref abs  out of range > " << G4endl;break;}
         }
     }
     else
         G4cout << "Error opening file: "<< ref_index_emit << G4endl;
-    Read_ref_index3.close();
+    Read_ref_index_pvt.close();
     
     // Now apply the properties table
     G4MaterialPropertiesTable* scintMPT = new G4MaterialPropertiesTable();
-    scintMPT->AddProperty("RINDEX",ref_index_Energy,ref_index_value,ref_index_Entries)->SetSpline(true);
-    scintMPT->AddProperty("ABSLENGTH",absorbEnergy,Absorb,absorbEntries)->SetSpline(true);
-    scintMPT->AddProperty("FASTCOMPONENT",scintEnergyPVT,scintEmitPVT,scintEntries)->SetSpline(true);
-    scintMPT->AddProperty("SLOWCOMPONENT",scintEnergyPVT,scintEmitPVT,scintEntries)->SetSpline(true);
+    scintMPT->AddProperty("RINDEX", ref_index_Energy_pvt, ref_index_value_pvt, entries_pvt_rindex)->SetSpline(true);
+    scintMPT->AddProperty("ABSLENGTH", absorbEnergy_pvt, Absorb_pvt, abs_entries_pvt)->SetSpline(true);
+    scintMPT->AddProperty("FASTCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt)->SetSpline(true);
+    scintMPT->AddProperty("SLOWCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt)->SetSpline(true);
     //efficiency = 1.0;
     //scintMPT->AddConstProperty("EFFICIENCY",efficiency);
-    //lightyield = 10000./MeV;
     scintMPT->AddConstProperty("SCINTILLATIONYIELD",lightyield);
     scintRes=1.0;
     scintMPT->AddConstProperty("RESOLUTIONSCALE",scintRes);
@@ -631,7 +608,8 @@ void PenMaterials::Construct()
     scintSlowconst=16.8*ns;  //phosphorescence
     scintMPT->AddConstProperty("SLOWTIMECONSTANT",scintSlowconst);
     scintMPT->AddConstProperty("YIELDRATIO",1.0); //was 1.0
-    
+   
+    G4cout<<" pvt table ok "<<G4endl; 
     pvt_nist->SetMaterialPropertiesTable(scintMPT);
     pvt_mixture->SetMaterialPropertiesTable(scintMPT);
     pvt_structure->SetMaterialPropertiesTable(scintMPT);
@@ -1037,7 +1015,7 @@ void PenMaterials::Construct()
             vikuiti_reflect[vikuiti_entries] = vikuiti_ref_coeff;
             zero_vikuiti[vikuiti_entries] = 1e-6;
             vikuiti_entries++;
-            if(vikuiti_entries > 202){break ;}
+            if(vikuiti_entries > 201){break ;}
         }
     }
     else

@@ -41,6 +41,7 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit*  commandSetTargetSampleWidth;
     G4UIcmdWithAString*         commandSetTargetMaterial;
     G4UIcmdWithADouble* 	commandSetAlphaSigma;
+    G4UIcmdWithADouble* 	commandSetPMTReflectivity;
     G4UIcmdWithADoubleAndUnit*  commandSetCollimatorPositionX;
     G4UIcmdWithADouble*	        commandSetLY;
     G4UIcmdWithADouble* 	commandSetResolutionLY;

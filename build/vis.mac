@@ -18,6 +18,7 @@
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
 /vis/viewer/set/autoRefresh false
+/vis/viewer/set/background white
 #/vis/verbose errors
 #
 # Draw geometry:
@@ -27,7 +28,7 @@
 #/vis/viewer/set/viewpointThetaPhi 45. 0.
 #
 # Specify zoom value:
-/vis/viewer/zoom 1.5
+/vis/viewer/zoom 1.0
 #
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe

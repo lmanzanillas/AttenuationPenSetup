@@ -79,20 +79,35 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 
   G4cout << sourceString << G4endl;
 
-
   //G4String positionZ = G4BestUnit((fDetector->GetTargetSampleThickness()-fPrimary->GetSourcePositionZ()),"Length");
-  G4String positionX = std::to_string((int)fPrimary->GetSourcePositionX());
+  G4String positionX ="_x_"+std::to_string((int)fPrimary->GetSourcePositionX())+"_mm";
 
 
   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
   fTimer->Start();
-  G4String abs_string = std::to_string((int)fDetector->GetABS());
-  //replace(abs_string.begin(),abs_string.end(),'.',',');
+  std::stringstream stream_abs;
+  stream_abs << std::fixed << std::setprecision(2) <<fDetector->GetABS();
+  G4String abs_string = stream_abs.str();
+  G4String s_LY = "_LY_"+std::to_string((int)fDetector->GetTargetMaterial()->GetMaterialPropertiesTable()->GetConstProperty("SCINTILLATIONYIELD"))+"ph_MeV_ABS_";
+  G4String s_detector_type = "_Det_"+std::to_string(fDetector->GetDetectorType())+"_";
+  std::stringstream stream_SigmaAlpha;
+  stream_SigmaAlpha << std::fixed << std::setprecision(2) <<fDetector->GetSigAlpha();
+  G4String s_SigAlpha ="_SigAlpha_"+ stream_SigmaAlpha.str();
+  std::stringstream stream_PMT_reflectivity;
+  stream_PMT_reflectivity << std::fixed << std::setprecision(2) <<fDetector->GetPMTReflectivity();
+  G4String s_PMT_reflectivity ="_PmtReflec_"+ stream_PMT_reflectivity.str();
+  G4String s_Target_Material = fDetector->GetTargetMaterialName();
 
-  //G4String alpha_string = std::to_string(fDetector->GetSigAlpha());
-  //replace(alpha_string.begin(),alpha_string.end(),'.',',');
+  G4String directorName = "../output/"+sourceString+"_"
+	  +datetime()
+	  +positionX 
+	  +s_LY
+	  +abs_string
+	  +s_SigAlpha
+	  +s_PMT_reflectivity
+	  +s_detector_type+
+	  +s_Target_Material+"/";
 
-  G4String directorName = "../output/"+sourceString+"_" + datetime()+"_x_"+positionX+"_mm_LY_" + std::to_string((int)fDetector->GetTargetMaterial()->GetMaterialPropertiesTable()->GetConstProperty("SCINTILLATIONYIELD"))+"ph_MeV_ABS_"+abs_string+"_SigAlpha_"+std::to_string(fDetector->GetSigAlpha())+"_Detector_"+std::to_string(fDetector->GetDetectorType())+"_"+fDetector->GetTargetMaterialName()+"/";
   mkdir(directorName, 0777);
   fFileName = directorName+fDetector->GetDetectorName()+".csv";
 
