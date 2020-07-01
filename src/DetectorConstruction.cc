@@ -372,7 +372,7 @@ void DetectorConstruction::DefineMaterials(){
         while(!ReadScintPEN.eof()){
                  ReadScintPEN>>pWavelength>>PEN_EMISSION[nEntriesPEN];
                  PEN_WL_ENERGY[nEntriesPEN] = (1240./pWavelength)*eV;//convert wavelength to eV
- 	         G4cout<<nEntriesPEN<<" wl "<<PEN_WL_ENERGY[nEntriesPEN]<<" "<<PEN_EMISSION[nEntriesPEN]<<G4endl;
+ 	         //G4cout<<nEntriesPEN<<" wl "<<PEN_WL_ENERGY[nEntriesPEN]<<" "<<PEN_EMISSION[nEntriesPEN]<<G4endl;
                  nEntriesPEN++;
 	         if(nEntriesPEN > (line_count-1)){ G4cout << " entries completed " << G4endl; break;}
         }
@@ -625,9 +625,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double photocathEnergy[37];
   G4double photoCathodeQuantumEfficiency[37];
   G4double perfectEfficiency[37];
-  G4double photoCathodeRelectivity[37];
-  G4double photocath_ReR[37];
-  G4double photocath_ImR[37];
   G4String pmtFile = "../input_files/QE_H11934_300.csv";
 
   ifstream ReadEff;
@@ -644,10 +641,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       }
       photocathEnergy[effCounter] = (1240./wavelength)*eV;
       photoCathodeQuantumEfficiency[effCounter] = cathodeEfficiency/100.;
-      perfectEfficiency[effCounter] = 1.;
-      photoCathodeRelectivity[effCounter] = pmtReflectivity;
-      photocath_ReR[effCounter] = 1.92;
-      photocath_ImR[effCounter] = 1.69;
+      //photoCathodeQuantumEfficiency[effCounter] = 1.;
+      perfectEfficiency[effCounter] = 0.0;
       effCounter++;
       if(effCounter > 36){break;}
     }
@@ -657,24 +652,57 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   ReadEff.close();
   effCounter--;
 
-  const G4int nPMT_EFF = sizeof(photocathEnergy)/sizeof(G4double);
+  G4int nEntriesReR = 23;
+  G4double RealRefl,ImRefl;
+  G4double photoCathodeRelectivity[23];
+  G4double photoCathodeSupportRelectivity[23];
+  G4double photocath_ReR[23];
+  G4double photocath_ImR[23];
+  G4double photocath_refl_Energy[23];
 
-  G4OpticalSurface* perfectOptSurf = new G4OpticalSurface("perfect",glisur,polished, dielectric_metal);
+  pmtFile = "../properties/PMT_Reflection.dat";
+
+  effCounter = 0;
+  ReadEff.open(pmtFile);
+
+  if(ReadEff.is_open())
+  {
+    while(!ReadEff.eof())
+    {
+      ReadEff>>wavelength>>RealRefl>>ImRefl;
+      photoCathodeRelectivity[effCounter] = pmtReflectivity;
+      photoCathodeSupportRelectivity[effCounter] = 0.1;
+      photocath_refl_Energy[effCounter] = (1240./wavelength)*eV;
+      photocath_ReR[effCounter] = RealRefl;
+      photocath_ImR[effCounter] = ImRefl;
+      G4cout<<" PMT reflectivity "<<wavelength<<" "<<photocath_ReR[effCounter]<<" im "<<photocath_ImR[effCounter]<<G4endl;
+      effCounter++;
+      if(effCounter > 22){break;}
+    }
+  }
+
+  else G4cout<<"Error opening file: " <<pmtFile<<G4endl;
+  ReadEff.close();
+  effCounter--;
+
+
+  const G4int nPMT_EFF = sizeof(photocathEnergy)/sizeof(G4double);
+  G4OpticalSurface* supportCathodeSurface = new G4OpticalSurface("perfect",glisur,polished, dielectric_metal);
   G4MaterialPropertiesTable* MPT_Detector = new G4MaterialPropertiesTable();
   MPT_Detector->AddProperty("EFFICIENCY", photocathEnergy, perfectEfficiency,nPMT_EFF);
-  MPT_Detector->AddProperty("REFLECTIVITY", photocathEnergy, photoCathodeRelectivity,nPMT_EFF);
-  perfectOptSurf->SetMaterialPropertiesTable(MPT_Detector);
+  MPT_Detector->AddProperty("REFLECTIVITY", photocath_refl_Energy, photoCathodeSupportRelectivity,nEntriesReR);
+  supportCathodeSurface->SetMaterialPropertiesTable(MPT_Detector);
 
   G4OpticalSurface* pmtOpticalSurface = new G4OpticalSurface("pmt", glisur, polished, dielectric_metal);
   G4MaterialPropertiesTable* MPT_PMT = new G4MaterialPropertiesTable();
   MPT_PMT->AddProperty("EFFICIENCY", photocathEnergy, photoCathodeQuantumEfficiency,nPMT_EFF);
-  MPT_PMT->AddProperty("REALRINDEX", photocathEnergy,photocath_ReR,nPMT_EFF);
-  MPT_PMT->AddProperty("IMAGINARYRINDEX", photocathEnergy,photocath_ImR,nPMT_EFF);
-  MPT_PMT->AddProperty("REFLECTIVITY", photocathEnergy, photoCathodeRelectivity,nPMT_EFF);
+  //MPT_PMT->AddProperty("REALRINDEX", photocath_refl_Energy,photocath_ReR,nEntriesReR);
+  //MPT_PMT->AddProperty("IMAGINARYRINDEX", photocath_refl_Energy,photocath_ImR,nEntriesReR);
+  MPT_PMT->AddProperty("REFLECTIVITY", photocath_refl_Energy, photoCathodeRelectivity,nEntriesReR);
   pmtOpticalSurface->SetMaterialPropertiesTable(MPT_PMT);
 
   //G4LogicalVolume* tileDetectorLog = new G4LogicalVolume(penSampleBox,materialSi, "tile_sensor");
-  //new G4LogicalSkinSurface("pen_det_surf",tileDetectorLog,perfectOptSurf);
+  //new G4LogicalSkinSurface("pen_det_surf",tileDetectorLog,supportCathodeSurface);
 
   LightGuideConstruction guide;
   G4VSolid* LightGuidePMMA = guide.ConstructPlate();
@@ -714,8 +742,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
   //Placement of trigger foil and others
-  G4double offSetCollimator = 2.*mm;
-  G4double offSetTriggerSetup = 2.*mm;
+  G4double offSetCollimator = 5.*mm;
+  G4double offSetTriggerSetup = 5.*mm;
   //-(halfLengthTriggerFoilEJ212+20*mm-0.4*mm)+fDetectorCollimatorX
   G4double xPositionLightGuide = fDetectorCollimatorX - halfLengthTriggerFoilEJ212 - halfLightGuideSizeX + slitToPlaceThinSintillatorDepth;
   G4double yPositionLightGuide = casingPMTHeight  + offSetTriggerSetup + halfLightGuideSizeY;
@@ -726,7 +754,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double xPositionPMT = fDetectorCollimatorX - halfLightGuideSizeX - activePhotoCathodePMTThickness;
   fDetectorCollimatorY = positionYTriggerFoil+halfCollimatorThickness+offSetCollimator;
 
-  G4double SpaceBetweenSamples = 0.0*um;
+  G4double SpaceBetweenSamples = 5.0*um;
 
   G4Box* boxCasingPMT = new G4Box("case",casingPMTLength,casingPMTWidth,casingPMTHeight);
   G4Box* boxEmptyInsidePMT = new G4Box("hole",casingPMTHoleLength,casingPMTHoleWidth,casingPMTHoleHeight);
@@ -753,7 +781,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		fGlass,
 		"logicBoxActivePhotoCathodePMT");
   new G4LogicalSkinSurface("pmt_surf", logicBoxActivePhotoCathodePMT,pmtOpticalSurface);
-  //new G4LogicalSkinSurface("spec_surf",logicBoxActivePhotoCathodePMT,perfectOptSurf);
+  new G4LogicalSkinSurface("spec_surf",logicBoxPhotoCathodeSupport,supportCathodeSurface);
 
   //Define orientation of PMTs
   G4RotationMatrix* rotationMatrix = new G4RotationMatrix(0,0,0);
@@ -1097,43 +1125,70 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   }
 
   //============================================================= Surfaces =============================================================
+  //Mian target, set the sigma alpha here, get the material table of the target and add teh sigma alpha
   AirPEN = new G4OpticalSurface("AirPEN",unified, ground, dielectric_dielectric);
   AirPEN -> SetPolish(fSigAlpha);
   MPT_Target = new G4MaterialPropertiesTable();
   MPT_Target = fTargetMaterial->GetMaterialPropertiesTable();
-  G4double ppt[] = {2.0*eV, 3.5*eV};
-  const G4int numt = sizeof(ppt)/sizeof(G4double);
-  G4double reflectivityt[] = {0.3, 0.3};
-  assert(sizeof(reflectivityt) == sizeof(ppt));
-  MPT_Target->AddProperty("REFLECTIVITY",ppt,reflectivityt,numt);
   //G4MaterialPropertyVector *check_values = MPT_Target->GetProperty("RINDEX");
   //check_values->DumpValues ();
+  //G4double TargetEnergy[] = {2.0*eV, 3.0*eV, 4.0*eV, 5.0*eV, 6.0*eV, 7.0*eV};
+  //const G4int numTarget = sizeof(TargetEnergy)/sizeof(G4double);
+  //G4double reflectivityTarget[] = {0.99, 0.99, 0.99, 0.99, 0.99, 0.99};
+  //assert(sizeof(reflectivityTarget) == sizeof(TargetEnergy));
+  //MPT_Target->AddProperty("REFLECTIVITY",TargetEnergy,reflectivityTarget,numTarget);
   AirPEN -> SetMaterialPropertiesTable(MPT_Target);
+  
 
+
+  //Photocathode Support in contact with the samples, I guess for now of reflectivity of 0.3 
+  G4double CathodeSupportEnergy[] = {2.0*eV, 3.0*eV, 4.0*eV, 5.0*eV, 6.0*eV, 7.0*eV};
+  const G4int numCathodeSupport = sizeof(CathodeSupportEnergy)/sizeof(G4double);
+  G4double reflectivityCathodeSupport[] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+  assert(sizeof(reflectivityCathodeSupport) == sizeof(CathodeSupportEnergy));
+  G4double efficiencyCathodeSupport[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  assert(sizeof(efficiencyCathodeSupport) == sizeof(CathodeSupportEnergy));
+  
+  G4OpticalSurface* surfaceCathodeSupport = new G4OpticalSurface("surfaceCathodeSupport");
+
+  new G4LogicalBorderSurface("surfaceCathodeSupport", 
+				physicPenStackedSamples,
+                                physicBoxPhotoCathodeSupport,
+                                surfaceCathodeSupport);
+
+  surfaceCathodeSupport->SetType(dielectric_metal);
+  surfaceCathodeSupport->SetFinish(ground);
+  surfaceCathodeSupport->SetModel(glisur);
+  
+  G4MaterialPropertiesTable* cathodeSupportProperty = new G4MaterialPropertiesTable();
+
+  cathodeSupportProperty->AddProperty("REFLECTIVITY",CathodeSupportEnergy,reflectivityCathodeSupport,numCathodeSupport);
+  cathodeSupportProperty->AddProperty("EFFICIENCY",CathodeSupportEnergy,efficiencyCathodeSupport,numCathodeSupport);
+  surfaceCathodeSupport->SetMaterialPropertiesTable(cathodeSupportProperty); 
+
+  //Reflector surface, air supposed to be between reflector and samples 
   G4OpticalSurface* scintWrap = new G4OpticalSurface("ScintWrap");
 
-  new G4LogicalBorderSurface("ScintWrap", physicReflectorFoilBoxOverPEN,
-                               physicPenStackedSamples,
-                               scintWrap);
-
   scintWrap->SetType(dielectric_metal);
-  scintWrap->SetFinish(polished);
+  scintWrap->SetFinish(ground);
   scintWrap->SetModel(glisur);
 
-  G4double pp[] = {2.0*eV, 3.5*eV};
-  const G4int num = sizeof(pp)/sizeof(G4double);
-  G4double reflectivity[] = {0.98, 0.98};
-  assert(sizeof(reflectivity) == sizeof(pp));
-  G4double efficiency[] = {0.0, 0.0};
-  assert(sizeof(efficiency) == sizeof(pp));
+  G4double energyReflector[] = {2.0*eV, 3.0*eV, 4.0*eV, 5.0*eV, 6.0*eV, 7.0*eV};
+  const G4int num = sizeof(energyReflector)/sizeof(G4double);
+  G4double reflectivity[] = {0.99, 0.99, 0.99, 0.99, 0.99, 0.99};
+  assert(sizeof(reflectivity) == sizeof(energyReflector));
+  G4double efficiency[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+  assert(sizeof(efficiency) == sizeof(energyReflector));
 
   G4MaterialPropertiesTable* scintWrapProperty = materialVikuiti->GetMaterialPropertiesTable();
 
-  scintWrapProperty->AddProperty("REFLECTIVITY",pp,reflectivity,num);
-  scintWrapProperty->AddProperty("EFFICIENCY",pp,efficiency,num);
+  scintWrapProperty->AddProperty("REFLECTIVITY",energyReflector,reflectivity,num);
+  scintWrapProperty->AddProperty("EFFICIENCY",energyReflector,efficiency,num);
   scintWrap->SetMaterialPropertiesTable(scintWrapProperty); 
 
 
+  
+  //Surface between air and thin scintillator
   G4OpticalSurface* AirEJ212 = new G4OpticalSurface("AirEJ212", 
 				glisur, 
 				polished, 
@@ -1162,6 +1217,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 				physicReflectorFoilAroundEJ212Foil, 
 				AirEJ212);
 
+  //This should have no effect, since aire between scinitllator and samples
   logicSurfacePenReflectorFoilBoxOverPEN = new G4LogicalBorderSurface("ScintWrap", 
 				physicPenSampleBox, 
 				physicReflectorFoilBoxOverPEN, 
@@ -1176,6 +1232,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 				physicReflectorFoilBoxOverPEN, 
 				physicPenStackedSamples, 
 				scintWrap);
+
+  //this surface is the one working, the other should work in case no air in between
+  new G4LogicalBorderSurface("ScintWrap",
+                                physicWorldBox,
+                                physicReflectorFoilBoxOverPEN,
+                                scintWrap);
  
   logicSurfacePENStackedAir = new G4LogicalBorderSurface("AirPEN", 
 				physicPenStackedSamples, 
@@ -1189,12 +1251,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   logicSurfacePENStackedPENStacked = new G4LogicalBorderSurface("AirPEN",
                                 physicPenStackedSamples, 
-                                physicPenStackedSamples,
-                                AirPEN);
-
-  
-  logicSurfacePENStackedPENStackedCathodeSupport = new G4LogicalBorderSurface("AirPEN",
-                                physicBoxPhotoCathodeSupport, 
                                 physicPenStackedSamples,
                                 AirPEN);
 

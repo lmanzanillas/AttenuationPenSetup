@@ -97,7 +97,7 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
   	if(particleType==G4OpticalPhoton::OpticalPhotonDefinition())
   	{
 	  	boundaryStatus=boundary->GetStatus();
-
+                
 	    	//Check to see if the partcile was actually at a boundary
 	    	//Otherwise the boundary status may not be valid
 	    	//Prior to Geant4.6.0-p1 this would not have been enough to check
@@ -121,6 +121,7 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 		  		break;
 		      		case Detection:
 		      		{
+                                        G4cout<<" lenght "<<theTrack->GetTrackLength ()<<" Energy "<<theTrack->GetKineticEnergy ()<<G4endl; 
 					G4String pvName = thePostPV->GetName();
 					if(pvName == "trigger_pmt"){
  						fEventAction->AddDetectedPhoton();

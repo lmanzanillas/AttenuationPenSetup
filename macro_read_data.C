@@ -52,17 +52,19 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
        TH1D* h_edep_all_materials = new TH1D("h_edep_all_materials","Edep all materials;Edep [keV]; entries / 1.0 keV ",n_E_bins,min_E_x,max_E_x);
 
        double min_Charge_x = 5.;
-       double max_Charge_x = 3005.;
-       double bin_Charge_width = 5.;
+       double max_Charge_x = 1505.;
+       double bin_Charge_width = 10.;
        int n_Charge_bins = (int)((max_Charge_x-min_Charge_x)/bin_Charge_width);
+       double max_Charge_x_all = 3005.;
+       int n_Charge_bins_all = (int)((max_Charge_x_all-min_Charge_x)/bin_Charge_width);
 
        TH1D* h_charge_pmt1 = new TH1D("h_total_pmt1","PMT 1; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
        TH1D* h_charge_pmt2 = new TH1D("h_total_pmt2","PMT 2; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
        TH1D* h_charge_pmt3 = new TH1D("h_total_pmt3","PMT 3; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
        TH1D* h_charge_pmt4 = new TH1D("h_total_pmt4","PMT 4; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
        TH1D* h_charge_pmt5 = new TH1D("h_total_pmt5","PMT 5; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
-       TH1D* h_total_charge = new TH1D("h_total_charge","All PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
-       TH1D* h_total_charge_sidePMTs = new TH1D("h_total_charge_sidePMTs","Lateral PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
+       TH1D* h_total_charge = new TH1D("h_total_charge","All PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins_all,min_Charge_x,max_Charge_x_all);
+       TH1D* h_total_charge_sidePMTs = new TH1D("h_total_charge_sidePMTs","Lateral PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins_all,min_Charge_x,max_Charge_x_all);
        TH1D* h_ratio = new TH1D("h_ratio","h_ratio; Q1/(Q1+Q2);entries / bin ",150,0.,1.);
        TH2D* h_Edep_TotalCharge = new TH2D("h_Edep_TotalCharge","h_Edep_TotalCharge;Edep PEN4[MeV]; # detected photons",n_E_bins,min_E_x,max_E_x,n_Charge_bins,min_Charge_x,max_Charge_x);
 
@@ -73,7 +75,7 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
        double E_res_five = 0.05;
        for(int i = 0; i < nEntries; ++i){
 	       t_geant4_data->GetEntry(i);
-	       if(EdepTrigger>15. && EdepTrigger<100.){
+	       if(EdepTrigger>20. && EdepTrigger<100.){
 		       h_edep_PEN1->Fill(EdepPEN1);
 		       h_edep_PEN2->Fill(EdepPEN2);
 		       h_edep_PEN3->Fill(EdepPEN3);

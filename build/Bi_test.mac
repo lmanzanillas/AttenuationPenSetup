@@ -11,7 +11,8 @@
 #set the absorption, this values is added to the curve of absorption as function of wl: i.e: f(wl) = a[x] + new value
 #/PEN/det/setABS 5.5
 #set roughness of samples, 1. perfect polished surface 0. not polishment 
-/PEN/det/setSigAlpha 0.50
+/PEN/det/setSigAlpha 0.5
+/PEN/det/setPMTReflectivity 0.5
 
 #set the position of the source, MUST be the same of the collimator if you want it to work
 /PEN/gun/sourcePositionX 0. mm

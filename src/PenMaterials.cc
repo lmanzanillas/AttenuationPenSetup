@@ -551,6 +551,7 @@ void PenMaterials::Construct()
     G4int abs_entries_pvt = 500;
     G4double absorbEnergy_pvt[500];
     G4double Absorb_pvt[500];
+    //G4double Rayleigh_pvt[500];
     Readabsorblength = "../properties/PVTAbsorption.dat";
     
     Readabsorb.open(Readabsorblength);
@@ -561,6 +562,7 @@ void PenMaterials::Construct()
             Readabsorb >> pWavelength >> filler >> varabsorblength;
             absorbEnergy_pvt[absorbEntries] = (1240./pWavelength)*eV;
             Absorb_pvt[absorbEntries] = varabsorblength * m;
+           // Rayleigh_pvt[absorbEntries] = 5 * mm;
             absorbEntries++;
 	    if(absorbEntries > (abs_entries_pvt-1)){G4cout << " ERROR < entries abs  out of range > " << G4endl; break;}
         }
@@ -583,7 +585,7 @@ void PenMaterials::Construct()
             G4String filler;
             Read_ref_index_pvt >> pWavelength >> filler >> ref_index_value_pvt[ref_index_Entries];
             ref_index_Energy_pvt[ref_index_Entries] = (1240./pWavelength)*eV;
-	    G4cout<<ref_index_Entries<<" rindex "<<ref_index_value_pvt[ref_index_Entries]<<" energy "<<ref_index_Energy_pvt[ref_index_Entries]<<G4endl;
+	    //G4cout<<ref_index_Entries<<" rindex "<<ref_index_value_pvt[ref_index_Entries]<<" energy "<<ref_index_Energy_pvt[ref_index_Entries]<<G4endl;
             ref_index_Entries++;
 	    if(ref_index_Entries > (entries_pvt_rindex-1)){G4cout << " ERROR < entries ref abs  out of range > " << G4endl;break;}
         }
@@ -596,6 +598,7 @@ void PenMaterials::Construct()
     G4MaterialPropertiesTable* scintMPT = new G4MaterialPropertiesTable();
     scintMPT->AddProperty("RINDEX", ref_index_Energy_pvt, ref_index_value_pvt, entries_pvt_rindex)->SetSpline(true);
     scintMPT->AddProperty("ABSLENGTH", absorbEnergy_pvt, Absorb_pvt, abs_entries_pvt)->SetSpline(true);
+    //scintMPT->AddProperty("RAYLEIGH", absorbEnergy_pvt, Rayleigh_pvt, abs_entries_pvt)->SetSpline(true);
     scintMPT->AddProperty("FASTCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt)->SetSpline(true);
     scintMPT->AddProperty("SLOWCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt)->SetSpline(true);
     //efficiency = 1.0;
