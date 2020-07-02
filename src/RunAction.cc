@@ -109,11 +109,12 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	  +s_Target_Material+"/";
 
   mkdir(directorName, 0777);
-  fFileName = directorName+fDetector->GetDetectorName()+".csv";
+  //fFileName = directorName+fDetector->GetDetectorName()+".csv";
 
   fMan->SetVerboseLevel(0);
-  fMan->OpenFile(fFileName);
+  //fMan->OpenFile(fFileName);
 
+  /*
   fMan->CreateNtuple("PEN","Detailed MC Info");
   fMan->CreateNtupleDColumn("Event_Number");
   fMan->CreateNtupleDColumn("EDep_Trigger_FoilEJ212");
@@ -129,7 +130,17 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   fMan->CreateNtupleDColumn("N_Front");
   fMan->CreateNtupleDColumn("N_Back");
   fMan->FinishNtuple();
+  */
+  //Spectrometer part
+  fFileName = directorName+fDetector->GetDetectorName()+"_Spectrometer.csv";
+  fMan->OpenFile(fFileName);
+  fMan->CreateNtuple("PEN","Detailed MC Info spectrometer");
+  fMan->CreateNtupleDColumn("PhotonWL");
+  fMan->CreateNtupleDColumn("PhotonDistance");
+  fMan->CreateNtupleDColumn("IsPhotonDetected");
+  fMan->FinishNtuple();
 
+  
 }
 
 void RunAction::SetFileName(G4String fileName)

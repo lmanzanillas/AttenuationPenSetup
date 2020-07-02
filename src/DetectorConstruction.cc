@@ -89,7 +89,7 @@ MPT_PEN(nullptr)
   fABSFile = "PEN_ABS";
   fVolName = "World";
   fSigAlpha = 1.00;
-  pmtReflectivity = 0.50;
+  pmtReflectivity = 0.00;
   materialConstruction = new PenMaterials;
   DefineMaterials();
   fTargetMaterial = G4Material::GetMaterial("PEN");
@@ -640,8 +640,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         break;
       }
       photocathEnergy[effCounter] = (1240./wavelength)*eV;
-      photoCathodeQuantumEfficiency[effCounter] = cathodeEfficiency/100.;
-      //photoCathodeQuantumEfficiency[effCounter] = 1.;
+      //photoCathodeQuantumEfficiency[effCounter] = cathodeEfficiency/100.;
+      photoCathodeQuantumEfficiency[effCounter] = 1.;
       perfectEfficiency[effCounter] = 0.0;
       effCounter++;
       if(effCounter > 36){break;}
@@ -831,19 +831,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // Active Detectors
   G4VisAttributes* visulaAttributesDetectors = new G4VisAttributes(G4Colour::Yellow());
-  visulaAttributesDetectors->SetVisibility(false);
+  visulaAttributesDetectors->SetVisibility(true);
   visulaAttributesDetectors->SetForceSolid(true);
   logicBoxActivePhotoCathodePMT->SetVisAttributes(visulaAttributesDetectors);
 
   // Inactive volumes
   G4VisAttributes* visualAttributesInactiveMaterials = new G4VisAttributes(G4Colour::Gray());
-  visualAttributesInactiveMaterials->SetVisibility(false);
+  visualAttributesInactiveMaterials->SetVisibility(true);
   visualAttributesInactiveMaterials->SetForceSolid(true);
   visualAttributesInactiveMaterials->SetForceAuxEdgeVisible(true);
   //logicBoxEmptyInsidePMT->SetVisAttributes(visualAttributesInactiveMaterials);
   logicBoxPhotoCathodeSupport->SetVisAttributes(visualAttributesInactiveMaterials);
   G4VisAttributes* visualAttributesInactive = new G4VisAttributes(G4Colour::Black());
-  visualAttributesInactive->SetVisibility(false);
+  visualAttributesInactive->SetVisibility(true);
   visualAttributesInactive->SetForceSolid(true);
   visualAttributesInactive->SetForceAuxEdgeVisible(true);
   logicBoxPMTShell->SetVisAttributes(visualAttributesInactive);

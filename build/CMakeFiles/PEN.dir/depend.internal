@@ -7,7 +7,7 @@ CMakeFiles/PEN.dir/PEN.cc.o
  ../include/DetectorMessenger.hh
  ../include/PenMaterials.hh
  ../include/PhysicsList.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/PEN.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/PEN.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
@@ -461,7 +461,7 @@ CMakeFiles/PEN.dir/src/ActionInitialization.cc.o
  ../include/RunAction.hh
  ../include/RunActionMessenger.hh
  ../include/SteppingAction.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/ActionInitialization.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/ActionInitialization.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
@@ -942,7 +942,7 @@ CMakeFiles/PEN.dir/src/DetectorConstruction.cc.o
  ../include/PrimaryGeneratorAction.hh
  ../include/PrimaryGeneratorMessenger.hh
  ../include/SiliconPlateConstruction.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorConstruction.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/DetectorConstruction.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
@@ -1366,7 +1366,7 @@ CMakeFiles/PEN.dir/src/DetectorMessenger.cc.o
  ../include/DetectorConstruction.hh
  ../include/DetectorMessenger.hh
  ../include/PenMaterials.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/DetectorMessenger.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/DetectorMessenger.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
@@ -1743,7 +1743,7 @@ CMakeFiles/PEN.dir/src/EventAction.cc.o
  ../include/PenMaterials.hh
  ../include/RunAction.hh
  ../include/RunActionMessenger.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/EventAction.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/EventAction.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
@@ -2241,7 +2241,7 @@ CMakeFiles/PEN.dir/src/EventAction.cc.o
 CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o
  ../include/DetectorMessenger.hh
  ../include/LightGuideConstruction.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/LightGuideConstruction.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/LightGuideConstruction.cc
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
  /opt/clhep/include/CLHEP/Geometry/Plane3D.h
@@ -2380,7 +2380,7 @@ CMakeFiles/PEN.dir/src/LightGuideConstruction.cc.o
  /opt/geant4/include/Geant4/tls.hh
 CMakeFiles/PEN.dir/src/PenMaterials.cc.o
  ../include/PenMaterials.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PenMaterials.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/PenMaterials.cc
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
  /opt/clhep/include/CLHEP/Geometry/Point3D.h
@@ -2660,7 +2660,7 @@ CMakeFiles/PEN.dir/src/PenMaterials.cc.o
  /opt/geant4/include/Geant4/trkdefs.hh
 CMakeFiles/PEN.dir/src/PhysicsList.cc.o
  ../include/PhysicsList.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PhysicsList.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/PhysicsList.cc
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
  /opt/clhep/include/CLHEP/Geometry/Point3D.h
@@ -3106,7 +3106,7 @@ CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o
  ../include/PenMaterials.hh
  ../include/PrimaryGeneratorAction.hh
  ../include/PrimaryGeneratorMessenger.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorAction.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/PrimaryGeneratorAction.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
@@ -3483,7 +3483,7 @@ CMakeFiles/PEN.dir/src/PrimaryGeneratorAction.cc.o
 CMakeFiles/PEN.dir/src/PrimaryGeneratorMessenger.cc.o
  ../include/PrimaryGeneratorAction.hh
  ../include/PrimaryGeneratorMessenger.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/PrimaryGeneratorMessenger.cc
  /opt/clhep/include/CLHEP/Units/SystemOfUnits.h
  /opt/clhep/include/CLHEP/Units/defs.h
  /opt/clhep/include/CLHEP/Vector/ThreeVector.h
@@ -3521,7 +3521,7 @@ CMakeFiles/PEN.dir/src/RunAction.cc.o
  ../include/PrimaryGeneratorMessenger.hh
  ../include/RunAction.hh
  ../include/RunActionMessenger.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/RunAction.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/RunAction.cc
  /opt/clhep/include/CLHEP/Evaluator/Evaluator.h
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
@@ -3890,7 +3890,7 @@ CMakeFiles/PEN.dir/src/RunAction.cc.o
 CMakeFiles/PEN.dir/src/SiliconPlateConstruction.cc.o
  ../include/DetectorMessenger.hh
  ../include/SiliconPlateConstruction.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SiliconPlateConstruction.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/SiliconPlateConstruction.cc
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
  /opt/clhep/include/CLHEP/Geometry/Plane3D.h
@@ -3979,7 +3979,7 @@ CMakeFiles/PEN.dir/src/SteppingAction.cc.o
  ../include/Analysis.hh
  ../include/EventAction.hh
  ../include/SteppingAction.hh
- /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/AttenuationPenSetup/src/SteppingAction.cc
+ /home/iwsatlas1/manzanil/Documents/LEGEND/PEN/dev_att/spectrometer/AttenuationPenSetup/src/SteppingAction.cc
  /opt/clhep/include/CLHEP/Geometry/BasicVector3D.h
  /opt/clhep/include/CLHEP/Geometry/Normal3D.h
  /opt/clhep/include/CLHEP/Geometry/Point3D.h

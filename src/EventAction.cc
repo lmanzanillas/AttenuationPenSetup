@@ -41,16 +41,34 @@ void EventAction::BeginOfEventAction(const G4Event* myEvent)
 	fBottomPhoton = 0.;
 	fLeftPhoton = 0.;
 	fRightPhoton = 0.;
+
+        //photonWL = 0.;
+        //PhotonTravelledDistance = 0.;
+        //isPhotonDetected = 0;
 	if (myEvent->GetEventID() % 5000 == 0)
 		G4cout << "event no.: " << myEvent->GetEventID() << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-void EventAction::AddWavelength(G4double wavelength){
+void EventAction::AddWaveLength(G4double waveLength){
 	auto analysisManager = G4AnalysisManager::Instance();
+	analysisManager->FillNtupleDColumn(0, waveLength);
+	//analysisManager->AddNtupleRow(0);
 
-	analysisManager->FillH1(6, wavelength);
 }
+
+void EventAction::AddPhotonTravelledDistance(G4double PhotonTravelledDistance){
+     auto analysisManager = G4AnalysisManager::Instance();
+     analysisManager->FillNtupleDColumn(1, PhotonTravelledDistance);
+}
+
+void EventAction::AddIsPhotonDetected(G4int isPhotonDetected){
+     auto analysisManager = G4AnalysisManager::Instance();
+     analysisManager->FillNtupleDColumn(2,isPhotonDetected);
+     analysisManager->AddNtupleRow(0);
+}
+
+
 
 void EventAction::EndOfEventAction(const G4Event* myEvent)
 {
@@ -58,6 +76,7 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 	auto analysisManager = G4AnalysisManager::Instance();
 
 	//if (fDetectedPhotons >= 0){
+	/*
 	//if (depositedEnergyTriggerFoilEJ212 > 0.){
 		//G4cout <<myEvent->GetEventID()<<": " << fDetectedPhotons << G4endl;
 		analysisManager->FillNtupleDColumn(0, myEvent->GetEventID());
@@ -76,5 +95,5 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 		analysisManager->AddNtupleRow(0);
 
 	// }
-
+	*/
 }
