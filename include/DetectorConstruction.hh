@@ -130,7 +130,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double halfPenSampleThickness;
     G4double halfPenSampleWidth;
     G4int nSamples;
-
+    
+    G4double userActivePhotoCathodeLength;
+    G4double userActivePhotoCathodeWidth;
+    G4double activePhotoCathodePMTLength;
+    G4double activePhotoCathodePMTWidth;
 
     G4double fSiliconPlate_h;
     G4double fHolderWidth;
