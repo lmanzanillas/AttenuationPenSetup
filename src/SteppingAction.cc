@@ -100,16 +100,28 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
         
   	if(particleType==G4OpticalPhoton::OpticalPhotonDefinition())
   	{
+               //G4cout<<" thePostPoint->GetProcessDefinedStep()->GetProcessName() "<<thePostPoint->GetProcessDefinedStep()->GetProcessName()<<G4endl;
+               //Find the photon WL 
+               photonWL =  1240./theTrack->GetKineticEnergy ();  
+	       photonTravelledDistance = theTrack->GetTrackLength ();
+               //Was the photon absorbed by the absorption process
+               
 	  	boundaryStatus=boundary->GetStatus();
-                //Find the photon WL 
-                photonWL =  1240./theTrack->GetKineticEnergy ();  
-		photonTravelledDistance = theTrack->GetTrackLength ();
                 if(theTrack->GetCurrentStepNumber() == 1){
 			fEventAction->AddWaveLength(photonWL);
                         fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
                         fEventAction->AddIsPhotonDetected(isOpticalPhotonDeathDetected);
                 }
-                
+               
+                if(thePostPoint->GetProcessDefinedStep()->GetProcessName() =="OpAbsorption"){
+                        G4int absorp = 2;
+			fEventAction->AddWaveLength(photonWL);
+                        fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
+                        fEventAction->AddIsPhotonDetected(absorp);
+			 //G4cout<<" abs "<<absorp<<G4endl;                
+      			//fEventAction->IncAbsorption();
+      			//trackInformation->AddTrackStatusFlag(absorbed);
+                } 
                 //G4cout<<" photonWL "<<photonWL<<" lenght "<<theTrack->GetTrackLength ()<<" TrackStatus "<<theTrack->GetTrackStatus ()<<" trackID "<<theTrack->GetTrackID()<<" photonTravelledDistance "<<photonTravelledDistance<<" step number "<<theTrack->GetCurrentStepNumber()<<G4endl;
 	    	//Check to see if the partcile was actually at a boundary
 	    	//Otherwise the boundary status may not be valid
@@ -129,7 +141,8 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 	  		fExpectedNextStatus=Undefined;
 	  		switch(boundaryStatus){
 		  		case Absorption:{
-                                        
+                        	       G4int absorp = 1;
+				       G4cout<<" abs "<<absorp<<G4endl;                
 					// fEventAction->AddAbsorbedPhoton();
 				}
 		  		break;
