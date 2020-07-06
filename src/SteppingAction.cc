@@ -123,6 +123,14 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
       			//trackInformation->AddTrackStatusFlag(absorbed);
                 } 
                 //G4cout<<" photonWL "<<photonWL<<" lenght "<<theTrack->GetTrackLength ()<<" TrackStatus "<<theTrack->GetTrackStatus ()<<" trackID "<<theTrack->GetTrackID()<<" photonTravelledDistance "<<photonTravelledDistance<<" step number "<<theTrack->GetCurrentStepNumber()<<G4endl;
+                
+                
+                if(thePostPoint->GetProcessDefinedStep()->GetProcessName() =="OpAbsorption"){
+                        G4int absorp = 2;
+                        fEventAction->AddWaveLength(photonWL);
+                        fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
+                        fEventAction->AddIsPhotonDetected(absorp);
+                }
 	    	//Check to see if the partcile was actually at a boundary
 	    	//Otherwise the boundary status may not be valid
 	    	//Prior to Geant4.6.0-p1 this would not have been enough to check
