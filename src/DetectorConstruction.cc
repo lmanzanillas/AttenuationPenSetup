@@ -91,6 +91,7 @@ MPT_PEN(nullptr)
   fABSFile = "PEN_ABS";
   fVolName = "World";
   fSigAlpha = 1.00;
+  pmtReflectivity = 0.50;
   materialConstruction = new PenMaterials;
   DefineMaterials();
   fTargetMaterial = G4Material::GetMaterial("PEN");
@@ -218,6 +219,11 @@ void DetectorConstruction::SetSigAlpha(G4double value){
   AirPEN -> SetPolish(fSigAlpha);
   //AirPEN -> SetMaterialPropertiesTable(MPT_PEN);
   AirPEN -> SetMaterialPropertiesTable(MPT_Target);
+}
+
+void DetectorConstruction::SetPMTReflectivity(G4double value){
+  pmtReflectivity=value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
 }
 
 void DetectorConstruction::SetDetectorName(G4String name){
@@ -627,14 +633,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   pointNavigator->LocateGlobalPointAndSetup(point);
 
   // ============================================================= Detectors =============================================================
-
   char filler;
   G4double wavelength;
   G4double cathodeEfficiency;
   G4double photocathEnergy[37];
   G4double photoCathodeQuantumEfficiency[37];
   G4double perfectEfficiency[37];
-  G4double photoCathodeReflectivity[37];
   G4String pmtFile = "../input_files/QE_H11934_300.csv";
 
   ifstream ReadEff;
@@ -650,10 +654,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
         break;
       }
       photocathEnergy[effCounter] = (1240./wavelength)*eV;
-      //photoCathodeQuantumEfficiency[effCounter] = cathodeEfficiency/100.;
-      photoCathodeQuantumEfficiency[effCounter] = 1.;
-      perfectEfficiency[effCounter] = 1.;
-      photoCathodeReflectivity[effCounter] = 0.;
+      photoCathodeQuantumEfficiency[effCounter] = cathodeEfficiency/100.;
+      if(fDetectorType==3)photoCathodeQuantumEfficiency[effCounter] = 1.0;
+      //photoCathodeQuantumEfficiency[effCounter] = 1.;
+      perfectEfficiency[effCounter] = 0.0;
       effCounter++;
       if(effCounter > 36){break;}
     }
@@ -663,20 +667,55 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   ReadEff.close();
   effCounter--;
 
-  const G4int nPMT_EFF = sizeof(photocathEnergy)/sizeof(G4double);
+  G4int nEntriesReR = 23;
+  G4double RealRefl,ImRefl;
+  G4double photoCathodeRelectivity[23];
+  G4double photoCathodeSupportRelectivity[23];
+  G4double photocath_ReR[23];
+  G4double photocath_ImR[23];
+  G4double photocath_refl_Energy[23];
 
-  G4OpticalSurface* perfectOptSurf = new G4OpticalSurface("perfect",glisur,polished, dielectric_metal);
+  pmtFile = "../properties/PMT_Reflection.dat";
+  effCounter = 0;
+  ReadEff.open(pmtFile);
+
+  if(ReadEff.is_open())
+  {
+    while(!ReadEff.eof())
+    {
+      ReadEff>>wavelength>>RealRefl>>ImRefl;
+      photoCathodeRelectivity[effCounter] = pmtReflectivity;
+      if(fDetectorType==3)photoCathodeRelectivity[effCounter] = 0;
+      photoCathodeSupportRelectivity[effCounter] = 0.1;
+      photocath_refl_Energy[effCounter] = (1240./wavelength)*eV;
+      photocath_ReR[effCounter] = RealRefl;
+      photocath_ImR[effCounter] = ImRefl;
+      G4cout<<" PMT reflectivity "<<wavelength<<" "<<photocath_ReR[effCounter]<<" im "<<photocath_ImR[effCounter]<<G4endl;
+      effCounter++;
+      if(effCounter > 22){break;}
+    }
+  }
+
+  else G4cout<<"Error opening file: " <<pmtFile<<G4endl;
+  ReadEff.close();
+  effCounter--;
+
+
+  const G4int nPMT_EFF = sizeof(photocathEnergy)/sizeof(G4double);
+  G4OpticalSurface* supportCathodeSurface = new G4OpticalSurface("perfect",glisur,polished, dielectric_metal);
   G4MaterialPropertiesTable* MPT_Detector = new G4MaterialPropertiesTable();
   MPT_Detector->AddProperty("EFFICIENCY", photocathEnergy, perfectEfficiency,nPMT_EFF);
-  MPT_Detector->AddProperty("REFLECTIVITY", photocathEnergy, photoCathodeReflectivity,nPMT_EFF);
-  perfectOptSurf->SetMaterialPropertiesTable(MPT_Detector);
+  MPT_Detector->AddProperty("REFLECTIVITY", photocath_refl_Energy, photoCathodeSupportRelectivity,nEntriesReR);
+  supportCathodeSurface->SetMaterialPropertiesTable(MPT_Detector);
 
   G4OpticalSurface* pmtOpticalSurface = new G4OpticalSurface("pmt", glisur, polished, dielectric_metal);
   G4MaterialPropertiesTable* MPT_PMT = new G4MaterialPropertiesTable();
   MPT_PMT->AddProperty("EFFICIENCY", photocathEnergy, photoCathodeQuantumEfficiency,nPMT_EFF);
-  MPT_PMT->AddProperty("REFLECTIVITY", photocathEnergy, photoCathodeReflectivity,nPMT_EFF);
+  //MPT_PMT->AddProperty("REALRINDEX", photocath_refl_Energy,photocath_ReR,nEntriesReR);
+  //MPT_PMT->AddProperty("IMAGINARYRINDEX", photocath_refl_Energy,photocath_ImR,nEntriesReR);
+  MPT_PMT->AddProperty("REFLECTIVITY", photocath_refl_Energy, photoCathodeRelectivity,nEntriesReR);
   pmtOpticalSurface->SetMaterialPropertiesTable(MPT_PMT);
-
+  
   //G4LogicalVolume* tileDetectorLog = new G4LogicalVolume(penSampleBox,materialSi, "tile_sensor");
   //new G4LogicalSkinSurface("pen_det_surf",tileDetectorLog,perfectOptSurf);
 

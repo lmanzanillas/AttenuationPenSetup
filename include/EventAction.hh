@@ -5,6 +5,7 @@
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 
+class DetectorConstruction;
 class RunAction;
 
 /// Event action class
@@ -13,7 +14,7 @@ class RunAction;
 class EventAction : public G4UserEventAction
 {
   public:
-    EventAction(RunAction* runAction);
+    EventAction(DetectorConstruction* det, RunAction* runAction);
     virtual ~EventAction();
 
     virtual void BeginOfEventAction(const G4Event* event);
@@ -38,6 +39,8 @@ class EventAction : public G4UserEventAction
     void AddRightPhoton(void){fRightPhoton++;};
 
   private:
+
+    DetectorConstruction*   fDetector;
     RunAction* 	fRunAction;
 
     G4double depositedEnergyPENStackedSample1;

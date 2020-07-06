@@ -137,8 +137,6 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 	  		fExpectedNextStatus=Undefined;
 	  		switch(boundaryStatus){
 		  		case Absorption:{
-                        	       G4int absorp = 1;
-				       G4cout<<" abs "<<absorp<<G4endl;                
 					// fEventAction->AddAbsorbedPhoton();
 				}
 		  		break;

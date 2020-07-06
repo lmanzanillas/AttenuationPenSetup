@@ -69,7 +69,7 @@ void ActionInitialization::Build() const
   RunAction* run = new RunAction(fDetector,prim);
   SetUserAction(run);
   //G4cout << "Run"<<G4endl;
-  EventAction* event = new EventAction(run);
+  EventAction* event = new EventAction(fDetector,run);
   SetUserAction(event);
   //G4cout<<"Event"<<G4endl;
   SetUserAction(new SteppingAction(event));
