@@ -115,18 +115,6 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
                
                 if(thePostPoint->GetProcessDefinedStep()->GetProcessName() =="OpAbsorption"){
                         G4int absorp = 2;
-			fEventAction->AddWaveLength(photonWL);
-                        fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
-                        fEventAction->AddIsPhotonDetected(absorp);
-			 //G4cout<<" abs "<<absorp<<G4endl;                
-      			//fEventAction->IncAbsorption();
-      			//trackInformation->AddTrackStatusFlag(absorbed);
-                } 
-                //G4cout<<" photonWL "<<photonWL<<" lenght "<<theTrack->GetTrackLength ()<<" TrackStatus "<<theTrack->GetTrackStatus ()<<" trackID "<<theTrack->GetTrackID()<<" photonTravelledDistance "<<photonTravelledDistance<<" step number "<<theTrack->GetCurrentStepNumber()<<G4endl;
-                
-                
-                if(thePostPoint->GetProcessDefinedStep()->GetProcessName() =="OpAbsorption"){
-                        G4int absorp = 2;
                         fEventAction->AddWaveLength(photonWL);
                         fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
                         fEventAction->AddIsPhotonDetected(absorp);
