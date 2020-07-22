@@ -19,7 +19,7 @@ using namespace std;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 PenMaterials::PenMaterials()
 {
-    lightyield=10000/MeV;
+    lightYieldAntracene=20000/MeV; //Anthracene
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -61,6 +61,9 @@ void PenMaterials::Construct()
     G4Element* Mg = new G4Element("Magnesium", "Mg", 12., 24.305*g/mole);
     G4Element* Mn = new G4Element("Manganese", "Mn", 25., 54.938*g/mole);
 
+    G4Element* Sb = new G4Element("Antimony", "Sb", 51., 121.760*g/mole);
+    G4Element* Cs = new G4Element("Cesium", "Cs", 55., 132.905*g/mole);
+    G4Element* K = new G4Element("Potassium", "K", 19., 39.098*g/mole);
 //    G4Element* B = new G4Element("Boron", "B", 5., 10.811*g/mole);
 
 
@@ -551,7 +554,7 @@ void PenMaterials::Construct()
     G4int abs_entries_pvt = 500;
     G4double absorbEnergy_pvt[500];
     G4double Absorb_pvt[500];
-    //G4double Rayleigh_pvt[500];
+    G4double Rayleigh_pvt[500];
     Readabsorblength = "../properties/PVTAbsorption.dat";
     
     Readabsorb.open(Readabsorblength);
@@ -562,7 +565,7 @@ void PenMaterials::Construct()
             Readabsorb >> pWavelength >> filler >> varabsorblength;
             absorbEnergy_pvt[absorbEntries] = (1240./pWavelength)*eV;
             Absorb_pvt[absorbEntries] = varabsorblength * m;
-           // Rayleigh_pvt[absorbEntries] = 5 * mm;
+            Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
             absorbEntries++;
 	    if(absorbEntries > (abs_entries_pvt-1)){G4cout << " ERROR < entries abs  out of range > " << G4endl; break;}
         }
@@ -596,14 +599,15 @@ void PenMaterials::Construct()
     
     // Now apply the properties table
     G4MaterialPropertiesTable* scintMPT = new G4MaterialPropertiesTable();
-    scintMPT->AddProperty("RINDEX", ref_index_Energy_pvt, ref_index_value_pvt, entries_pvt_rindex)->SetSpline(true);
-    scintMPT->AddProperty("ABSLENGTH", absorbEnergy_pvt, Absorb_pvt, abs_entries_pvt)->SetSpline(true);
-    //scintMPT->AddProperty("RAYLEIGH", absorbEnergy_pvt, Rayleigh_pvt, abs_entries_pvt)->SetSpline(true);
-    scintMPT->AddProperty("FASTCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt)->SetSpline(true);
-    scintMPT->AddProperty("SLOWCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt)->SetSpline(true);
+    scintMPT->AddProperty("RINDEX", ref_index_Energy_pvt, ref_index_value_pvt, entries_pvt_rindex);
+    scintMPT->AddProperty("ABSLENGTH", absorbEnergy_pvt, Absorb_pvt, abs_entries_pvt);
+    //scintMPT->AddProperty("RAYLEIGH", absorbEnergy_pvt, Rayleigh_pvt, abs_entries_pvt);
+    scintMPT->AddProperty("FASTCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt);
+    scintMPT->AddProperty("SLOWCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt);
     //efficiency = 1.0;
     //scintMPT->AddConstProperty("EFFICIENCY",efficiency);
-    scintMPT->AddConstProperty("SCINTILLATIONYIELD",lightyield);
+    G4double LY_PVT = lightYieldAntracene*0.64;
+    scintMPT->AddConstProperty("SCINTILLATIONYIELD",LY_PVT);
     scintRes=1.0;
     scintMPT->AddConstProperty("RESOLUTIONSCALE",scintRes);
     G4double scintFastconst=2.0*ns;  //fluorescence
@@ -1014,7 +1018,7 @@ void PenMaterials::Construct()
             G4double wavelength;
             G4double vikuiti_ref_coeff;
             Read_vikuiti >> wavelength >> filler >> vikuiti_ref_coeff;
-            vikuiti_energy[vikuiti_entries] = (1240/wavelength)*eV;
+            vikuiti_energy[vikuiti_entries] = (1240./wavelength)*eV;
             vikuiti_reflect[vikuiti_entries] = vikuiti_ref_coeff;
             zero_vikuiti[vikuiti_entries] = 1e-6;
             vikuiti_entries++;
@@ -1037,7 +1041,54 @@ void PenMaterials::Construct()
     
     materialVikuiti->SetMaterialPropertiesTable(mptVikuiti);
 
+    //Glass PMT
     nistManager->FindOrBuildMaterial("G4_Pyrex_Glass");
+    G4Material* silica_SiO2 = nistManager->FindOrBuildMaterial("G4_SILICON_DIOXIDE");
+    G4Material* boronOxide_B2O3 = nistManager->FindOrBuildMaterial("G4_BORON_OXIDE");
+    G4Material* sodiumOxide_Na2O = nistManager->FindOrBuildMaterial("G4_SODIUM_MONOXIDE");
+    G4Material* potasiumOxide_K2O = nistManager->FindOrBuildMaterial("G4_POTASSIUM_OXIDE");
+    G4Material* aluminumOxide_Al2O3 = nistManager->FindOrBuildMaterial("G4_ALUMINUM_OXIDE");
+
+    
+    density = 2.23*g/cm3;
+    G4Material* matererialGlassPMT = new G4Material("BorosilicateGlass", density, ncomponents=5,
+		    kStateSolid, expTemp, 1*atmosphere);
+    matererialGlassPMT->AddMaterial(silica_SiO2, 81.*perCent);
+    matererialGlassPMT->AddMaterial(boronOxide_B2O3, 13.*perCent);
+    matererialGlassPMT->AddMaterial(sodiumOxide_Na2O, 2.*perCent);
+    matererialGlassPMT->AddMaterial(potasiumOxide_K2O, 2.*perCent);
+    matererialGlassPMT->AddMaterial(aluminumOxide_Al2O3, 2.*perCent);
+
+
+    //Glass PMT
+    //G4Material* matererialGlassPMT =  nistManager->FindOrBuildMaterial("G4_Pyrex_Glass");
+    G4MaterialPropertiesTable *MPT_GlassPMT = new G4MaterialPropertiesTable();
+    G4int glassPMTEntries = 400;
+    G4double glassPMTRindex[400];
+    G4double glassPMTEnergy[400];
+    G4double glassPMTAbs[400];
+    std::ifstream Read_glassPMT;
+    G4String glassPMT_file = "../properties/Rindex_real_glass_pmt.txt";
+
+    G4int counter_glass = 0;
+    Read_glassPMT.open(glassPMT_file);
+    if(Read_glassPMT.is_open()){
+        while(!Read_glassPMT.eof()){
+                G4double wavelength, glass_rindex;
+                Read_glassPMT >> wavelength >> glass_rindex;
+                glassPMTEnergy[counter_glass] = (1240./wavelength)*eV;
+                glassPMTRindex[counter_glass] = glass_rindex;
+                glassPMTAbs[counter_glass] = 1*m;
+                //G4cout<<" "<<counter_glass<<" glassPMTRindex "<<glassPMTRindex[counter_glass]<<G4endl;
+                counter_glass++;
+                if(counter_glass > (glassPMTEntries - 1)){break;}
+        }
+    }else{G4cout << "Error opening file: " << glassPMT_file << G4endl;}
+    Read_glassPMT.close();
+    MPT_GlassPMT->AddProperty("RINDEX",glassPMTEnergy,glassPMTRindex,glassPMTEntries);
+    MPT_GlassPMT->AddProperty("ABSLENGTH",glassPMTEnergy,glassPMTAbs,glassPMTEntries);
+    matererialGlassPMT -> SetMaterialPropertiesTable(MPT_GlassPMT);
+
 
     nistManager->FindOrBuildMaterial("G4_Si");
   
@@ -1047,6 +1098,12 @@ void PenMaterials::Construct()
     G4Material* materialTriggerFoilEJ212 = new G4Material("EJ212", density= 1.023*g/cm3, 2);
     materialTriggerFoilEJ212->AddElement(C, 0.475);
     materialTriggerFoilEJ212->AddElement(H, 0.525);
+
+    //A complete guess of the photocathode material ... shouldn't impact the simulations
+    G4Material* materialBialkali = new G4Material("Bialkali", density = 1.4 *g/cm3, 3);
+    materialBialkali->AddElement(Sb, 0.32);
+    materialBialkali->AddElement(Cs, 0.32);
+    materialBialkali->AddElement(K, 0.36);
   
 
 }

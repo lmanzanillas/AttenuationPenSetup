@@ -13,17 +13,17 @@
 # viewing in a VRML viewer:
 #/vis/open VRML2FILE
 #
-/PEN/det/setDetectorType 1
+/PEN/det/setDetectorType 0
 /PEN/gun/sourceType 3
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
 /vis/viewer/set/autoRefresh false
-/vis/viewer/set/background white
 #/vis/verbose errors
 #
 # Draw geometry:
 /vis/drawVolume
 #
+/vis/viewer/set/background white
 # Specify view angle:
 #/vis/viewer/set/viewpointThetaPhi 45. 0.
 #

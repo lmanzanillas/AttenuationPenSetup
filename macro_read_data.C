@@ -52,11 +52,11 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
        TH1D* h_edep_all_materials = new TH1D("h_edep_all_materials","Edep all materials;Edep [keV]; entries / 1.0 keV ",n_E_bins,min_E_x,max_E_x);
 
        double min_Charge_x = 5.;
-       double max_Charge_x = 1505.;
-       double bin_Charge_width = 10.;
+       double max_Charge_x = 1105.;
+       double bin_Charge_width = 5.;
        int n_Charge_bins = (int)((max_Charge_x-min_Charge_x)/bin_Charge_width);
-       double max_Charge_x_all = 3005.;
-       int n_Charge_bins_all = (int)((max_Charge_x_all-min_Charge_x)/bin_Charge_width);
+       double max_Charge_x_all = 3000.;
+       int n_Charge_bins_all = (int)((3000.-min_Charge_x)/bin_Charge_width);
 
        TH1D* h_charge_pmt1 = new TH1D("h_total_pmt1","PMT 1; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
        TH1D* h_charge_pmt2 = new TH1D("h_total_pmt2","PMT 2; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
@@ -66,16 +66,17 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
        TH1D* h_total_charge = new TH1D("h_total_charge","All PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins_all,min_Charge_x,max_Charge_x_all);
        TH1D* h_total_charge_sidePMTs = new TH1D("h_total_charge_sidePMTs","Lateral PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins_all,min_Charge_x,max_Charge_x_all);
        TH1D* h_ratio = new TH1D("h_ratio","h_ratio; Q1/(Q1+Q2);entries / bin ",150,0.,1.);
-       TH2D* h_Edep_TotalCharge = new TH2D("h_Edep_TotalCharge","h_Edep_TotalCharge;Edep PEN4[MeV]; # detected photons",n_E_bins,min_E_x,max_E_x,n_Charge_bins,min_Charge_x,max_Charge_x);
+       TH2D* h_Edep_TotalCharge = new TH2D("h_Edep_TotalCharge","h_Edep_TotalCharge;Edep PEN4[MeV]; # detected photons",n_E_bins,min_E_x,max_E_x,n_Charge_bins,min_Charge_x,max_Charge_x_all);
 
        int nEntries = t_geant4_data->GetEntries();
        TRandom3 *myRandoms = new TRandom3 ();
-       double pmt_resolution = 0.75;
+       double pmt_resolution = 0.7;
+       double scale_factor = 2.0;
        double E_res_ten = 0.1;
        double E_res_five = 0.05;
        for(int i = 0; i < nEntries; ++i){
 	       t_geant4_data->GetEntry(i);
-	       if(EdepTrigger>20. && EdepTrigger<100.){
+	       if(EdepTrigger>15. && EdepTrigger<100.){
 		       h_edep_PEN1->Fill(EdepPEN1);
 		       h_edep_PEN2->Fill(EdepPEN2);
 		       h_edep_PEN3->Fill(EdepPEN3);
@@ -88,17 +89,16 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
 		       h_edep_all_PEN_res_ten->Fill(Edep_with_res);
 		       Edep_with_res = 1000.*(myRandoms -> Gaus(Edep_all_pen, E_res_five * sqrt (Edep_all_pen)));
 		       h_edep_all_PEN_res_five->Fill(Edep_with_res);
-		       //Apply spe resolution, then poison resolution
-		       //pmt_resolution = NPMT1*pmt_resolution;
-		       double n_ph_pmt1 = myRandoms -> Gaus(NPMT1, pmt_resolution * sqrt (NPMT1));
-                       //if(NPMT1>1.)cout<<" NPMT1 "<<NPMT1<<" n_ph_pmt1 "<<n_ph_pmt1<<" pmt_resolution "<<pmt_resolution<<endl;
-		       double n_ph_pmt2 = myRandoms -> Gaus(NPMT2, pmt_resolution * sqrt (NPMT2));
+		       //Apply spe resolution
+		       double n_ph_pmt1 = myRandoms -> Gaus(NPMT1, pmt_resolution * sqrt (NPMT1))/scale_factor;
+		       //double n_ph_pmt1 = myRandoms -> Poisson(NPMT1);
+		       double n_ph_pmt2 = myRandoms -> Gaus(NPMT2, pmt_resolution * sqrt (NPMT2))/scale_factor;
 		       //double n_ph_pmt2 = myRandoms -> Poisson(NPMT2);
-		       double n_ph_pmt3 = myRandoms -> Gaus(NPMT3, pmt_resolution * sqrt (NPMT3));
+		       double n_ph_pmt3 = myRandoms -> Gaus(NPMT3, pmt_resolution * sqrt (NPMT3))/scale_factor;
 		       //double n_ph_pmt3 = myRandoms -> Poisson(NPMT3);
-		       double n_ph_pmt4 = myRandoms -> Gaus(NPMT4, pmt_resolution * sqrt (NPMT4));
+		       double n_ph_pmt4 = myRandoms -> Gaus(NPMT4, pmt_resolution * sqrt (NPMT4))/scale_factor;
 		       //double n_ph_pmt4 = myRandoms -> Poisson(NPMT4);
-		       double n_ph_pmt5 = myRandoms -> Gaus(NPMT5, pmt_resolution * sqrt (NPMT5));
+		       double n_ph_pmt5 = myRandoms -> Gaus(NPMT5, pmt_resolution * sqrt (NPMT5))/scale_factor;
 		       //double n_ph_pmt5 = myRandoms -> Poisson(NPMT5);
 		       h_charge_pmt1->Fill(n_ph_pmt1);
 		       h_charge_pmt2->Fill(n_ph_pmt2);
@@ -132,11 +132,32 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
         t_geant4_data->Draw("EdepTrigger>>h_edep_trigger");
        
         TCanvas* c_charges = new TCanvas();
-        h_charge_pmt2->Draw("HIST PLC"); 	
-        h_charge_pmt3->Draw("SAME HIST PLC"); 	
-        h_charge_pmt1->Draw("SAME HIST PLC"); 	
-        h_charge_pmt4->Draw("SAME HIST PLC"); 	
-        h_charge_pmt5->Draw("SAME HIST PLC"); 	
+	// Number of PADS
+        const Int_t Nx = 3;
+        const Int_t Ny = 2;
+	// Margins
+        Float_t lMargin = 0.02;
+        Float_t rMargin = 0.02;
+        // Canvas setup
+        c_charges->Divide(Nx,Ny,lMargin,rMargin);
+        c_charges->cd(1);
+        h_charge_pmt1->Draw(""); 	
+	h_charge_pmt1->GetXaxis()->SetRangeUser(5.,800.);
+        c_charges->cd(2);
+        h_charge_pmt2->Draw(""); 	
+	h_charge_pmt2->GetXaxis()->SetRangeUser(5.,800.);
+        c_charges->cd(3);
+        h_charge_pmt3->Draw(""); 	
+	h_charge_pmt3->GetXaxis()->SetRangeUser(5.,800.);
+        c_charges->cd(4);
+        h_charge_pmt4->Draw(""); 	
+	h_charge_pmt4->GetXaxis()->SetRangeUser(5.,800.);
+        c_charges->cd(5);
+        h_charge_pmt5->Draw(""); 	
+	h_charge_pmt5->GetXaxis()->SetRangeUser(5.,800.);
+        c_charges->cd(6);
+	h_total_charge_sidePMTs->Draw("HIST PLC");
+        h_total_charge->Draw("HIST SAME PLC");
 
 	TCanvas* c_lateral = new TCanvas();
         //h_total_charge->Draw("HIST PLC");

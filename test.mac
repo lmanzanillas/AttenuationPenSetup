@@ -1,4 +1,7 @@
-/PEN/det/setDetName perPENdicularr_test
-       /PEN/det/setABS 5
-       /PEN/det/setSigAlpha 0.0
-       /run/beamOn 100000
+/PEN/det/setDetectorType 1
+/PEN/det/setCollimatorPositionX 0. mm
+/PEN/det/setTargetMat PEN
+/PEN/gun/sourceType 3
+/PEN/gun/sourcePositionX 0. mm
+
+/run/beamOn 2000

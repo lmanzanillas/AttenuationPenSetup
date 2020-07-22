@@ -19,7 +19,7 @@ public:
   void Construct();
   
 private:
-  G4double lightyield;
+  G4double lightYieldAntracene;
     
 };
 

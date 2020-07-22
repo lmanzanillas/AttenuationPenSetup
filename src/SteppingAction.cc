@@ -94,10 +94,31 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
   	}
 
   	//G4ParticleDefinition* particleType = theTrack->GetDefinition();
+  	G4double photonWL = 0.;
+        G4int isOpticalPhotonDeathDetected = 0.;
+        G4double photonTravelledDistance = 0.;
+        
   	if(particleType==G4OpticalPhoton::OpticalPhotonDefinition())
   	{
+               //G4cout<<" thePostPoint->GetProcessDefinedStep()->GetProcessName() "<<thePostPoint->GetProcessDefinedStep()->GetProcessName()<<G4endl;
+               //Find the photon WL 
+               photonWL =  1240./theTrack->GetKineticEnergy ();  
+	       photonTravelledDistance = theTrack->GetTrackLength ();
+               //Was the photon absorbed by the absorption process
+               
 	  	boundaryStatus=boundary->GetStatus();
-                
+                if(theTrack->GetCurrentStepNumber() == 1){
+			fEventAction->AddWaveLength(photonWL);
+                        fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
+                        fEventAction->AddIsPhotonDetected(isOpticalPhotonDeathDetected);
+                }
+               
+                if(thePostPoint->GetProcessDefinedStep()->GetProcessName() =="OpAbsorption"){
+                        G4int absorp = 2;
+                        fEventAction->AddWaveLength(photonWL);
+                        fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
+                        fEventAction->AddIsPhotonDetected(absorp);
+                }
 	    	//Check to see if the partcile was actually at a boundary
 	    	//Otherwise the boundary status may not be valid
 	    	//Prior to Geant4.6.0-p1 this would not have been enough to check
@@ -121,7 +142,13 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 		  		break;
 		      		case Detection:
 		      		{
-                                        G4cout<<" lenght "<<theTrack->GetTrackLength ()<<" Energy "<<theTrack->GetKineticEnergy ()<<G4endl; 
+					//Get the distance travelled by this photons until being detected
+					photonTravelledDistance = theTrack->GetTrackLength ();
+                                        isOpticalPhotonDeathDetected = 1;
+                     			fEventAction->AddWaveLength(photonWL);
+                     			fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
+                     			fEventAction->AddIsPhotonDetected(isOpticalPhotonDeathDetected);
+                                        //G4cout<<" lenght "<<theTrack->GetTrackLength ()<<" photonWL "<<photonWL<<G4endl; 
 					G4String pvName = thePostPV->GetName();
 					if(pvName == "trigger_pmt"){
  						fEventAction->AddDetectedPhoton();
@@ -156,5 +183,6 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 	  		}
 		}
 	}
+                
 
 }

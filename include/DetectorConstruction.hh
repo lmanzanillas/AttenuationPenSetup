@@ -131,12 +131,18 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double halfPenSampleWidth;
     G4int nSamples;
 
+    G4double userActivePhotoCathodeLength;
+    G4double userActivePhotoCathodeWidth;
+    G4double activePhotoCathodePMTLength;
+    G4double activePhotoCathodePMTWidth;
 
     G4double fSiliconPlate_h;
     G4double fHolderWidth;
 
     G4Material* fWorldMaterial;
     G4Material* fTargetMaterial;
+    G4Material* fGlassMaterialPMT;
+    G4Material* fPhotoCathodeMaterial;
     G4String fTargetName;
     G4double halfCollimatorThickness;
     G4Box* fWorldBox;
@@ -159,6 +165,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* physicActivePhotoCathodePMT3;
     G4VPhysicalVolume* physicActivePhotoCathodePMT4;
     G4VPhysicalVolume* physicActivePhotoCathodePMT5;
+    G4VPhysicalVolume* physicPhotoCathodeSupportPMT1;
+    G4VPhysicalVolume* physicPhotoCathodeSupportPMT2;
+    G4VPhysicalVolume* physicPhotoCathodeSupportPMT3;
+    G4VPhysicalVolume* physicPhotoCathodeSupportPMT4;
+    G4VPhysicalVolume* physicPhotoCathodeSupportPMT5;
 
     G4VPhysicalVolume* physicReflectorFoilBoxOverPEN;
     G4VPhysicalVolume* vacPlacement;
@@ -173,15 +184,16 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4bool reflectorOn;
 
 
-    G4OpticalSurface* AirPEN;
+    G4OpticalSurface* AirTarget;
 
     G4MaterialPropertiesTable* MPT_PEN;
+    G4MaterialPropertiesTable* MPT_GlassPMT;
     G4MaterialPropertiesTable* MPT_Target;
     G4MaterialPropertiesTable* MPT_World;
 
-    G4LogicalBorderSurface* logicSurfaceAirPEN;
-    G4LogicalBorderSurface* logicSurfacePENAir;
-    G4LogicalBorderSurface* logicSurfaceAirPENStacked;
+    G4LogicalBorderSurface* logicSurfaceAirTarget;
+    G4LogicalBorderSurface* logicSurfaceTargetAir;
+    G4LogicalBorderSurface* logicSurfaceAirTargetStacked;
     G4LogicalBorderSurface* logicSurfacePENStackedAir;
     G4LogicalBorderSurface* logicSurfacePENStackedPENStacked;
     G4LogicalBorderSurface* logicSurfacePENStackedPENStackedCathodeSupport;
@@ -196,6 +208,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalBorderSurface* logicSurfacePenReflectorFoilBoxOverPEN;
 
     G4Material* PenMaterial;
+    G4Material* materialBialkali;
     G4Material* materialSi;
     G4Material* fGe;
     G4Material* materialAir;

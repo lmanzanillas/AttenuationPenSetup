@@ -5,6 +5,7 @@
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 
+class DetectorConstruction;
 class RunAction;
 
 /// Event action class
@@ -13,7 +14,7 @@ class RunAction;
 class EventAction : public G4UserEventAction
 {
   public:
-    EventAction(RunAction* runAction);
+    EventAction(DetectorConstruction* det, RunAction* runAction);
     virtual ~EventAction();
 
     virtual void BeginOfEventAction(const G4Event* event);
@@ -26,8 +27,10 @@ class EventAction : public G4UserEventAction
     void    AddDepositedEnergyPENStackedSample4(G4double newEnergy){depositedEnergyPENStackedSample4 += newEnergy;};
     void    AddDepositedEnergyEJ212TriggerFoil(G4double newEnergy){depositedEnergyTriggerFoilEJ212 += newEnergy;};
     void    AddDepositedEnergyInactiveMaterial(G4double newEnergy){depositedEnergyInactiveMaterial += newEnergy;};
-    void    AddWavelength(G4double newWavelength);
-    void    AddIWavelength(G4double startWavelength);
+
+    void    AddWaveLength(G4double PhotonWL);
+    void    AddPhotonTravelledDistance(G4double PhotonTravelledDistance);
+    void    AddIsPhotonDetected(G4int IsPhotonDetected);
 
     void AddFrontPhoton(void){fFrontPhoton++;};
     void AddBackPhoton(void){fBackPhoton++;};
@@ -36,6 +39,8 @@ class EventAction : public G4UserEventAction
     void AddRightPhoton(void){fRightPhoton++;};
 
   private:
+
+    DetectorConstruction*   fDetector;
     RunAction* 	fRunAction;
 
     G4double depositedEnergyPENStackedSample1;
@@ -51,6 +56,11 @@ class EventAction : public G4UserEventAction
     G4double fBottomPhoton;
     G4double fLeftPhoton;
     G4double fRightPhoton;
+   
+    //Spectrometer information
+    G4double PhotonWL;
+    G4double PhotonTravelledDistance;
+    G4int IsPhotonDetected;
 
 };
 
