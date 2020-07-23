@@ -176,7 +176,7 @@ void DetectorConstruction::SetDetectorType(G4int value){
 
 void DetectorConstruction::SetNumberOfTargetSamples(G4int value){
   nSamples = value;
-  UpdateGeometry();
+  //UpdateGeometry();
   G4RunManager::GetRunManager()->ReinitializeGeometry();
   //G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
@@ -184,19 +184,19 @@ void DetectorConstruction::SetNumberOfTargetSamples(G4int value){
 //Sets dimmensions of target, thickness corresponds to the Y coordinate, Length to x.
 void DetectorConstruction::SetTargetSampleLength(G4double value){
   halfPenSampleLength = (value/2.)*mm;
-  UpdateGeometry();
+  //UpdateGeometry();
   G4RunManager::GetRunManager()->ReinitializeGeometry();
 }
 
 void DetectorConstruction::SetTargetSampleThickness(G4double value){
   halfPenSampleThickness = (value/2.)*mm;
-  UpdateGeometry();
+  //UpdateGeometry();
   G4RunManager::GetRunManager()->ReinitializeGeometry();
 }
 
 void DetectorConstruction::SetTargetSampleWidth(G4double value){
   halfPenSampleWidth = (value/2.)*mm;
-  UpdateGeometry();
+  //UpdateGeometry();
   G4RunManager::GetRunManager()->ReinitializeGeometry();
 }
 void DetectorConstruction::SetABS(G4double value){
@@ -242,13 +242,13 @@ void DetectorConstruction::SetABS(G4double value){
 
 void DetectorConstruction::SetSigAlpha(G4double value){
   fSigAlpha=value;
-  AirTarget -> SetPolish(fSigAlpha);
+  AirTarget -> SetSigmaAlpha(fSigAlpha);
   AirTarget -> SetMaterialPropertiesTable(MPT_Target);
-  surfaceCathodeSupport->SetPolish(fSigAlpha);
+  surfaceCathodeSupport->SetSigmaAlpha(fSigAlpha);
   surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT);
    
   G4RunManager::GetRunManager()->ReinitializeGeometry();
-  //G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+  G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
 
 void DetectorConstruction::SetPMTReflectivity(G4double value){
@@ -787,19 +787,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // Active Detectors
   G4VisAttributes* visulaAttributesDetectors = new G4VisAttributes(G4Colour::Yellow());
-  visulaAttributesDetectors->SetVisibility(true);
+  visulaAttributesDetectors->SetVisibility(false);
   visulaAttributesDetectors->SetForceSolid(true);
   logicBoxActivePhotoCathodePMT->SetVisAttributes(visulaAttributesDetectors);
 
   // Inactive volumes
   G4VisAttributes* visualAttributesInactiveMaterials = new G4VisAttributes(G4Colour::Gray());
-  visualAttributesInactiveMaterials->SetVisibility(true);
+  visualAttributesInactiveMaterials->SetVisibility(false);
   visualAttributesInactiveMaterials->SetForceSolid(false);
   visualAttributesInactiveMaterials->SetForceAuxEdgeVisible(true);
   //logicBoxEmptyInsidePMT->SetVisAttributes(visualAttributesInactiveMaterials);
   logicBoxPhotoCathodeSupport->SetVisAttributes(visualAttributesInactiveMaterials);
   G4VisAttributes* visualAttributesInactive = new G4VisAttributes(G4Colour::Black());
-  visualAttributesInactive->SetVisibility(true);
+  visualAttributesInactive->SetVisibility(false);
   visualAttributesInactive->SetForceSolid(true);
   visualAttributesInactive->SetForceAuxEdgeVisible(true);
   logicBoxPMTShell->SetVisAttributes(visualAttributesInactive);
@@ -1323,7 +1323,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // ==== AirTarget surfaces ====================
 
   AirTarget = new G4OpticalSurface("AirTarget",unified, ground, dielectric_dielectric);
-  AirTarget -> SetPolish(fSigAlpha);
+  AirTarget -> SetSigmaAlpha(fSigAlpha);
   MPT_Target = new G4MaterialPropertiesTable();
   MPT_Target = fTargetMaterial->GetMaterialPropertiesTable();
   //G4MaterialPropertyVector *check_values = MPT_Target->GetProperty("RAYLEIGH");
@@ -1508,7 +1508,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   MPT_GlassPMT->AddProperty("EFFICIENCY",pp,efficiency,NUM);
   //G4MaterialPropertiesTable* cathodeSupportProperty = new G4MaterialPropertiesTable();
   //G4MaterialPropertiesTable* cathodeSupportProperty = fGlass -> GetMaterialPropertiesTable();
-  surfaceCathodeSupport -> SetPolish(fSigAlpha);
+  surfaceCathodeSupport -> SetSigmaAlpha(fSigAlpha);
   surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT); 
 
   new G4LogicalBorderSurface("surfaceCathodeSupport", 
