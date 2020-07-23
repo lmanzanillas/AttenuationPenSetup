@@ -5,7 +5,7 @@
 /PEN/det/setTargetMat PVT_structure
 /PEN/det/setCollimatorPositionX 0. mm
 /PEN/det/setSigAlpha 0.91
-/PEN/det/setPMTReflectivity 0.20
+/PEN/det/setPMTReflectivity 0.15
 /PEN/gun/sourcePositionX 0. mm
 /PEN/gun/sourceType 1
 

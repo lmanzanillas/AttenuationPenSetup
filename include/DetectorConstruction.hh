@@ -185,6 +185,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
 
     G4OpticalSurface* AirTarget;
+    G4OpticalSurface* surfaceCathodeSupport;
 
     G4MaterialPropertiesTable* MPT_PEN;
     G4MaterialPropertiesTable* MPT_GlassPMT;

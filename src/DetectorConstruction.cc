@@ -68,6 +68,7 @@ DetectorConstruction::DetectorConstruction()
 : G4VUserDetectorConstruction(),  penSampleBox(nullptr), penLogicBox(nullptr), 
 physicPenSampleBox(nullptr),physicCollimator(nullptr),
 AirTarget(nullptr),	
+surfaceCathodeSupport(nullptr),	
 MPT_PEN(nullptr)
 {
   fDetectorMessenger = new DetectorMessenger(this);
@@ -243,6 +244,9 @@ void DetectorConstruction::SetSigAlpha(G4double value){
   fSigAlpha=value;
   AirTarget -> SetPolish(fSigAlpha);
   AirTarget -> SetMaterialPropertiesTable(MPT_Target);
+  surfaceCathodeSupport->SetPolish(fSigAlpha);
+  surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT);
+   
   G4RunManager::GetRunManager()->ReinitializeGeometry();
   //G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
@@ -879,32 +883,65 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                         logicBoxPMTShell, false, 0, false);
 
      // Main PMT placements
+     // PMT1
      physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix, 
-			G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness),0,0), 
+			G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0), 
 			logicBoxActivePhotoCathodePMT, 
 			"main_pmt_1", 
 			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT1 = new G4PVPlacement(rotationMatrix,
+			G4ThreeVector(-(halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support1", 
+			logicWorldBox, false, 0, false);
+     //PMT2
      physicActivePhotoCathodePMT2 = new G4PVPlacement(rotationMatrix1, 
-			G4ThreeVector((halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness),0,0), 
+			G4ThreeVector((halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0), 
 			logicBoxActivePhotoCathodePMT, 
 			"main_pmt_2", 
 			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT2 = new G4PVPlacement(rotationMatrix1,
+			G4ThreeVector((halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support2", 
+			logicWorldBox, false, 0, false);
+     //PMT3
      physicActivePhotoCathodePMT3 = new G4PVPlacement(0, 
      			G4ThreeVector(0,-(halfPenSampleThickness + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness),0), 
-			logicBoxActivePhotoCathodePMT, 
+     			logicBoxActivePhotoCathodePMT, 
      			"main_pmt_3", 
      			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT3 = new G4PVPlacement(0,
+			G4ThreeVector(0,-(halfPenSampleThickness + inactivePhotoCathodePMTThickness), 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support3", 
+			logicWorldBox, false, 0, false);
+     //PMT4
      physicActivePhotoCathodePMT4 = new G4PVPlacement(rotationMatrix2, 
      			G4ThreeVector(0,0,(halfPenSampleWidth + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness)),
-			logicBoxActivePhotoCathodePMT, 
+     			logicBoxActivePhotoCathodePMT, 
      			"main_pmt_4", 
      			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT4 = new G4PVPlacement(rotationMatrix2,
+			G4ThreeVector(0,0,(halfPenSampleWidth + inactivePhotoCathodePMTThickness)), 
+			logicBoxPhotoCathodeSupport, 
+			"support4", 
+			logicWorldBox, false, 0, false);
+     //PMT5
      physicActivePhotoCathodePMT5 = new G4PVPlacement(rotationMatrix3, 
      			G4ThreeVector(0,0,-(halfPenSampleWidth + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness)),
-			logicBoxActivePhotoCathodePMT, 
+     			logicBoxActivePhotoCathodePMT, 
      			"main_pmt_5", 
      			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT5 = new G4PVPlacement(rotationMatrix3,
+			G4ThreeVector(0,0,-(halfPenSampleWidth + inactivePhotoCathodePMTThickness)), 
+			logicBoxPhotoCathodeSupport, 
+			"support5", 
+			logicWorldBox, false, 0, false);
      break;
+
+    
+
   case 1:
      //Attenuation setup consisting on pen samples coupled to two PMTs and the trigger setup that can be moved
      for(int iSample = 0; iSample < nSamples; iSample++){
@@ -968,16 +1005,29 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
      // Main PMT placements
-     physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix, 
-			G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0), 
-			logicBoxActivePhotoCathodePMT, 
-			"main_pmt_1", 
-			logicWorldBox, false, 0, false);
-     physicActivePhotoCathodePMT2 = new G4PVPlacement(rotationMatrix1, 
-			G4ThreeVector((halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0), 
-			logicBoxActivePhotoCathodePMT, 
-			"main_pmt_2", 
-			logicWorldBox, false, 0, false);
+     // PMT1
+     physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix,
+                        G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0),
+                        logicBoxActivePhotoCathodePMT,
+                        "main_pmt_1",
+                        logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT1 = new G4PVPlacement(rotationMatrix,
+                        G4ThreeVector(-(halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0),
+                        logicBoxPhotoCathodeSupport,
+                        "support1",
+                        logicWorldBox, false, 0, false);
+     //PMT2
+     physicActivePhotoCathodePMT2 = new G4PVPlacement(rotationMatrix1,
+                        G4ThreeVector((halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0),
+                        logicBoxActivePhotoCathodePMT,
+                        "main_pmt_2",
+                        logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT2 = new G4PVPlacement(rotationMatrix1,
+                        G4ThreeVector((halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0),
+                        logicBoxPhotoCathodeSupport,
+                        "support2",
+                        logicWorldBox, false, 0, false);
+
      break;
 
      case 2:
@@ -1049,31 +1099,61 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                         logicBoxPMTShell, false, 0, false);
 
      // Main PMT placements
+     // PMT1
      physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix, 
-			G4ThreeVector(-(halfPenSampleLength+activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0), 
+			G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0), 
 			logicBoxActivePhotoCathodePMT, 
 			"main_pmt_1", 
 			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT1 = new G4PVPlacement(rotationMatrix,
+			G4ThreeVector(-(halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support1", 
+			logicWorldBox, false, 0, false);
+     //PMT2
      physicActivePhotoCathodePMT2 = new G4PVPlacement(rotationMatrix1, 
 			G4ThreeVector((halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0), 
 			logicBoxActivePhotoCathodePMT, 
 			"main_pmt_2", 
 			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT2 = new G4PVPlacement(rotationMatrix1,
+			G4ThreeVector((halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support2", 
+			logicWorldBox, false, 0, false);
+     //PMT3
      physicActivePhotoCathodePMT3 = new G4PVPlacement(0, 
      			G4ThreeVector(0,-(halfPenSampleThickness + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness),0), 
      			logicBoxActivePhotoCathodePMT, 
      			"main_pmt_3", 
      			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT3 = new G4PVPlacement(0,
+			G4ThreeVector(0,-(halfPenSampleThickness + inactivePhotoCathodePMTThickness), 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support3", 
+			logicWorldBox, false, 0, false);
+     //PMT4
      physicActivePhotoCathodePMT4 = new G4PVPlacement(rotationMatrix2, 
      			G4ThreeVector(0,0,(halfPenSampleWidth + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness)),
      			logicBoxActivePhotoCathodePMT, 
      			"main_pmt_4", 
      			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT4 = new G4PVPlacement(rotationMatrix2,
+			G4ThreeVector(0,0,(halfPenSampleWidth + inactivePhotoCathodePMTThickness)), 
+			logicBoxPhotoCathodeSupport, 
+			"support4", 
+			logicWorldBox, false, 0, false);
+     //PMT5
      physicActivePhotoCathodePMT5 = new G4PVPlacement(rotationMatrix3, 
      			G4ThreeVector(0,0,-(halfPenSampleWidth + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness)),
      			logicBoxActivePhotoCathodePMT, 
      			"main_pmt_5", 
      			logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT5 = new G4PVPlacement(rotationMatrix3,
+			G4ThreeVector(0,0,-(halfPenSampleWidth + inactivePhotoCathodePMTThickness)), 
+			logicBoxPhotoCathodeSupport, 
+			"support5", 
+			logicWorldBox, false, 0, false);
      break;
 
     case 3:
@@ -1419,7 +1499,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   
 
   //Photocathode Support in contact with the samples  
-  G4OpticalSurface* surfaceCathodeSupport = new G4OpticalSurface("surfaceCathodeSupport", unified, ground, dielectric_dielectric);
+  surfaceCathodeSupport = new G4OpticalSurface("surfaceCathodeSupport", unified, ground, dielectric_dielectric);
   const G4int NUM = 2;
   G4double pp[NUM] = {2.038*eV, 4.144*eV};
   G4double reflectivityGlass[NUM] = {pmtReflectivity, pmtReflectivity};
@@ -1571,8 +1651,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   else G4cout<<"Error opening file: " <<pmtFile<<G4endl;
   ReadEff.close();
 
-  G4OpticalSurface*  phcath_opsurf = new G4OpticalSurface("phcath_opsurf",
-     unified, polished, dielectric_dielectric);
+  //G4OpticalSurface*  phcath_opsurf = new G4OpticalSurface("phcath_opsurf",
+    // unified, polished, dielectric_dielectric);
   //new G4LogicalBorderSurface("phcath_surf",physicActivePhotoCathodePMT1,physicPhotoCathodeSupportPMT1,  phcath_opsurf);
   //new G4LogicalBorderSurface("phcath_surf",physicActivePhotoCathodePMT2,physicPhotoCathodeSupportPMT2,  phcath_opsurf);
   //new G4LogicalBorderSurface("phcath_surf",physicActivePhotoCathodePMT3,physicPhotoCathodeSupportPMT3,  phcath_opsurf);
