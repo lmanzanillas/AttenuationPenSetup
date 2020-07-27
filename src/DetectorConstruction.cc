@@ -787,19 +787,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // Active Detectors
   G4VisAttributes* visulaAttributesDetectors = new G4VisAttributes(G4Colour::Yellow());
-  visulaAttributesDetectors->SetVisibility(false);
+  visulaAttributesDetectors->SetVisibility(true);
   visulaAttributesDetectors->SetForceSolid(true);
   logicBoxActivePhotoCathodePMT->SetVisAttributes(visulaAttributesDetectors);
 
   // Inactive volumes
   G4VisAttributes* visualAttributesInactiveMaterials = new G4VisAttributes(G4Colour::Gray());
-  visualAttributesInactiveMaterials->SetVisibility(false);
+  visualAttributesInactiveMaterials->SetVisibility(true);
   visualAttributesInactiveMaterials->SetForceSolid(false);
   visualAttributesInactiveMaterials->SetForceAuxEdgeVisible(true);
   //logicBoxEmptyInsidePMT->SetVisAttributes(visualAttributesInactiveMaterials);
   logicBoxPhotoCathodeSupport->SetVisAttributes(visualAttributesInactiveMaterials);
   G4VisAttributes* visualAttributesInactive = new G4VisAttributes(G4Colour::Black());
-  visualAttributesInactive->SetVisibility(false);
+  visualAttributesInactive->SetVisibility(true);
   visualAttributesInactive->SetForceSolid(true);
   visualAttributesInactive->SetForceAuxEdgeVisible(true);
   logicBoxPMTShell->SetVisAttributes(visualAttributesInactive);

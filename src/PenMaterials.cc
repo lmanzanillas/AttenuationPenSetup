@@ -170,19 +170,11 @@ void PenMaterials::Construct()
     Air-> AddElement(N,  0.8);
     Air-> AddElement(O,  0.2);
     
-    G4int airEntries=0;
-    // G4double airEnergy[500];
-    // G4double airbulkAbsorb[500];
+    G4int airEntries = 18;
     G4int air_ref_index_Entries = 0;
-    G4double air_ref_index_Energy[500];
-    G4double air_ref_index_value[500];
-    
-    for (int i = 0; i < airEntries; i++){
-        // airEnergy[i] = 0;
-        // airbulkAbsorb[i] = 0;
-        air_ref_index_Energy[i] = 0;
-        air_ref_index_value[i] = 0;
-    }
+    G4double air_ref_index_Energy[18];
+    G4double air_ref_index_value[18];
+    G4double airbulkAbsorb[18];
     
     
     std::ifstream Read_air_ref_index;
@@ -193,7 +185,9 @@ void PenMaterials::Construct()
             G4String filler;
             Read_air_ref_index >> pWavelength >> filler >> air_ref_index_value[air_ref_index_Entries];
             air_ref_index_Energy[air_ref_index_Entries] = (1240/pWavelength)*eV;
+	    airbulkAbsorb[air_ref_index_Entries] = 1.0e6*mm;
             air_ref_index_Entries++;
+	    if(air_ref_index_Entries > (airEntries-1)){break;}
         }
     }
     else
@@ -203,7 +197,8 @@ void PenMaterials::Construct()
 
     
     G4MaterialPropertiesTable* airMPT = new G4MaterialPropertiesTable();
-    airMPT->AddProperty("RINDEX",air_ref_index_Energy,air_ref_index_value,air_ref_index_Entries);
+    airMPT->AddProperty("RINDEX", air_ref_index_Energy, air_ref_index_value, airEntries);
+    airMPT->AddProperty("ABSLENGTH", air_ref_index_Energy, airbulkAbsorb, airEntries);
     Air->SetMaterialPropertiesTable(airMPT);
 
 //
@@ -554,7 +549,7 @@ void PenMaterials::Construct()
     G4int abs_entries_pvt = 500;
     G4double absorbEnergy_pvt[500];
     G4double Absorb_pvt[500];
-    G4double Rayleigh_pvt[500];
+    //G4double Rayleigh_pvt[500];
     Readabsorblength = "../properties/PVTAbsorption.dat";
     
     Readabsorb.open(Readabsorblength);
@@ -565,7 +560,7 @@ void PenMaterials::Construct()
             Readabsorb >> pWavelength >> filler >> varabsorblength;
             absorbEnergy_pvt[absorbEntries] = (1240./pWavelength)*eV;
             Absorb_pvt[absorbEntries] = varabsorblength * m;
-            Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
+            //Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
             absorbEntries++;
 	    if(absorbEntries > (abs_entries_pvt-1)){G4cout << " ERROR < entries abs  out of range > " << G4endl; break;}
         }
