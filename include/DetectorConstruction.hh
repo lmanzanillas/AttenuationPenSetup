@@ -74,6 +74,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetRes(G4double);
     void SetABS(G4double);
     void SetSigAlpha(G4double);
+    void SetSigAlphaSides(G4double);
     void SetPMTReflectivity(G4double);
     void MaterialPropertiesScintillator();
     void SetVolName(G4ThreeVector);
@@ -95,6 +96,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double GetRes(){return fRES;};
     G4double GetABS(){return AbsorptionLength;};
     G4double GetSigAlpha(){return fSigAlpha;};
+    G4double GetSigAlphaSides(){return fSigAlphaSides;};
     G4double GetPMTReflectivity(){return pmtReflectivity;};
     G4String GetDetectorName(){return fDetectorName;};
     G4String GetVolName(){return fVolName;};
@@ -123,6 +125,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double fRES;
     G4double AbsorptionLength;
     G4double fSigAlpha;
+    G4double fSigAlphaSides;
     G4double pmtReflectivity;
     G4double fRI;
     //add position

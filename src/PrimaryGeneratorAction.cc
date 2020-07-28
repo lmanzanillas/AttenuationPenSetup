@@ -83,7 +83,17 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	G4double excitEnergy = 0.*eV;
 	G4int Z=0, A=0;
 	G4ParticleDefinition* ion;
-	G4ThreeVector position = G4ThreeVector(fPositionX, fPositionY, fPositionZ);
+        //Define a more realistic source geometry
+        //Assume 1.5 mm radius disk
+        G4double r = sqrt(1.5*1.5 * G4UniformRand());
+        G4double theta = 2. * M_PI * G4UniformRand();
+
+        // pour une source dans le plan 1
+        G4double x_sourceframe = r*cos(theta)*CLHEP::mm;
+        G4double z_sourceframe = r*sin(theta)*CLHEP::mm;
+        G4ThreeVector position = G4ThreeVector(fPositionX+x_sourceframe, fPositionY, fPositionZ+z_sourceframe);
+        //G4cout<<" x "<<fPositionX+x_sourceframe<<" z "<<fPositionZ+z_sourceframe<<" z_sourceframe "<<z_sourceframe<<G4endl;
+	//G4ThreeVector position = G4ThreeVector(fPositionX, fPositionY, fPositionZ);
         //G4cout<<" source energy "<<fSourceEnergy<<G4endl;
 	//G4ThreeVector position = G4ThreeVector(fPositionX, 30*mm, 0*mm);
         //G4cout<<" position x "<<GetSourcePositionX()<<G4endl;

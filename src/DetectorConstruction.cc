@@ -95,6 +95,7 @@ MPT_PEN(nullptr)
   fABSFile = "PEN_ABS";
   fVolName = "World";
   fSigAlpha = 1.00;
+  fSigAlphaSides = 0.90;
   pmtReflectivity = 0.50;
   materialConstruction = new PenMaterials;
   DefineMaterials();
@@ -244,13 +245,19 @@ void DetectorConstruction::SetSigAlpha(G4double value){
   fSigAlpha=value;
   AirTarget -> SetSigmaAlpha(fSigAlpha);
   AirTarget -> SetMaterialPropertiesTable(MPT_Target);
-  surfaceCathodeSupport->SetSigmaAlpha(fSigAlpha);
-  surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT);
    
   G4RunManager::GetRunManager()->ReinitializeGeometry();
   G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
 
+void DetectorConstruction::SetSigAlphaSides(G4double value){
+  fSigAlphaSides=value;
+  surfaceCathodeSupport->SetSigmaAlpha(fSigAlphaSides);
+  surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT);
+   
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+  G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+}
 void DetectorConstruction::SetPMTReflectivity(G4double value){
   pmtReflectivity=value;
   G4RunManager::GetRunManager()->ReinitializeGeometry();
@@ -1508,8 +1515,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   MPT_GlassPMT->AddProperty("EFFICIENCY",pp,efficiency,NUM);
   //G4MaterialPropertiesTable* cathodeSupportProperty = new G4MaterialPropertiesTable();
   //G4MaterialPropertiesTable* cathodeSupportProperty = fGlass -> GetMaterialPropertiesTable();
-  surfaceCathodeSupport -> SetSigmaAlpha(fSigAlpha);
-  surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT); 
+  surfaceCathodeSupport -> SetSigmaAlpha(fSigAlphaSides);
+  surfaceCathodeSupport -> SetMaterialPropertiesTable(MPT_GlassPMT); 
 
   new G4LogicalBorderSurface("surfaceCathodeSupport", 
 				physicPenStackedSamples,
