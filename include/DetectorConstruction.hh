@@ -92,6 +92,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4int GetDetectorType(){return fDetectorType;};
     G4double GetDetectorCollimatorX(){return fDetectorCollimatorX;};
     G4double GetDetectorCollimatorY(){return fDetectorCollimatorY;};
+    G4double GetSourceContainerY(){return fSourceContainerY;};
     G4double GetLY(){return fLY;};
     G4double GetRes(){return fRES;};
     G4double GetABS(){return AbsorptionLength;};
@@ -102,6 +103,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4String GetVolName(){return fVolName;};
     G4double GetRI(){return fRI;};
 
+    G4double GetSourceContainerThickness()  {return halfSourceContainerThickness;};
     G4double GetCollimatorThickness()  {return halfCollimatorThickness;};
     G4double GetTargetSampleLength()  {return halfPenSampleLength;};
     G4double GetTargetSampleThickness()  {return halfPenSampleThickness;};
@@ -147,6 +149,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material* fGlassMaterialPMT;
     G4Material* fPhotoCathodeMaterial;
     G4String fTargetName;
+    G4double halfSourceContainerThickness;
     G4double halfCollimatorThickness;
     G4Box* fWorldBox;
     G4Box* penSampleBox;
@@ -157,6 +160,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     G4VPhysicalVolume* physicWorldBox;
     G4VPhysicalVolume* physicPenSampleBox;
+    G4VPhysicalVolume* physicSourceContainer;
     G4VPhysicalVolume* physicCollimator;
     G4VPhysicalVolume* physicBoxPMTShell;
     G4VPhysicalVolume* physicBoxPhotoCathodeSupport;
@@ -227,10 +231,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material* materialTeflon;
     G4Material* materialVikuiti;
     G4Material* materialPolyethylene;
+    G4Material* materialTitanium;
 
     G4int fDetectorType;
     G4double fDetectorCollimatorX;
     G4double fDetectorCollimatorY;
+    G4double fSourceContainerY;
     G4String fDetectorName;
     G4String fVolName;
     G4String fABSFile;

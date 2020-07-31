@@ -504,6 +504,7 @@ void PenMaterials::Construct()
     // PVT Scintillator
     // ------------------------------------------------------------------------
     
+
     // NIST PVT
     G4Material* pvt_nist = nistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
     
@@ -1100,5 +1101,9 @@ void PenMaterials::Construct()
     materialBialkali->AddElement(Cs, 0.32);
     materialBialkali->AddElement(K, 0.36);
   
+    //Titanium foil for Bi source
+    G4Material* materialTitanium = new G4Material("titanium", 4.54*g/cm3, 2);
+    materialTitanium->AddElement(Ti,0.99);
+    materialTitanium->AddElement(O,0.01);
 
 }

@@ -345,6 +345,7 @@ void DetectorConstruction::DefineMaterials(){
   materialGreaseEJ550 = G4Material::GetMaterial("Grease");
   materialTeflon = G4Material::GetMaterial("G4_TEFLON");
   materialVikuiti = G4Material::GetMaterial("Vikuiti");
+  materialTitanium = G4Material::GetMaterial("titanium");
   materialPolyethylene = G4Material::GetMaterial("G4_POLYETHYLENE");
 
   G4cout<<" materials ok "<<G4endl;
@@ -645,10 +646,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4SubtractionSolid* reflectorFoilAroundEJ212Foil = new G4SubtractionSolid("reflectorFoilAroundEJ212Foil", boxReflectorFoil, boxTriggerFoilEJ212, 0, G4ThreeVector(0, 0, 0));
   G4LogicalVolume* logicReflectorFoilAroundEJ212Foil = new G4LogicalVolume(reflectorFoilAroundEJ212Foil, materialVikuiti, "foil", 0, 0, 0);
 
-    //Passive collimator
+  //source holder for Bi source
+  G4double innerRadiusSourceContainer = 0.*mm;
+  G4double externalRadiusSourceContainer = 5.*mm;
+  halfSourceContainerThickness = 53*um;
+  G4Tubs* SourceContainerDisk = new G4Tubs("sourceContainer",innerRadiusSourceContainer,externalRadiusSourceContainer,halfSourceContainerThickness,0.,360.*deg);
+  G4LogicalVolume* logicSourceContainer = new G4LogicalVolume(SourceContainerDisk,materialTitanium,"sourceContainer",0,0,0); 
+ 
+  //Passive collimator
   double innerRadiusCollimator = 1.*mm; 
   double externalRadiusCollimator = 12.*mm; 
-  halfCollimatorThickness= 5.*mm; 
+  halfCollimatorThickness= 10.*mm; 
   
   G4Tubs* collimatorTube = new G4Tubs("collimator",innerRadiusCollimator,externalRadiusCollimator,halfCollimatorThickness,0.,360.*deg);
   G4LogicalVolume* logicCollimator = new G4LogicalVolume(collimatorTube,materialPolyethylene,"collimator",0,0,0); 
@@ -760,10 +768,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double xPositionPMTPhotoCathode = xPositionLightGuide-halfLightGuideSizeX -2*inactivePhotoCathodePMTThickness - activePhotoCathodePMTThickness;
   //position of PMT with respect to Light Guide
   G4double xPositionInactivePMTPhotoCathode = -halfLightGuideSizeX -inactivePhotoCathodePMTThickness;
-  fDetectorCollimatorY = positionYTriggerFoil+halfCollimatorThickness+offSetCollimator;
+  fDetectorCollimatorY = positionYTriggerFoil + halfCollimatorThickness + offSetCollimator;
+  
 
   G4double SpaceBetweenSamples = 5.0*um;
 
+  if(fDetectorType == 0){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;}
+  else if (fDetectorType == 1){fSourceContainerY = positionYTriggerFoil + 2*halfCollimatorThickness + offSetCollimator + halfSourceContainerThickness;} 
+  else if (fDetectorType == 2){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;} 
+  else if (fDetectorType == 3){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;} 
+  else if (fDetectorType == 4){fSourceContainerY = positionYTriggerFoil + 2*halfCollimatorThickness + offSetCollimator + halfSourceContainerThickness;} 
 
   
   // Set Draw G4VisAttributes
@@ -797,7 +811,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   visulaAttributesDetectors->SetVisibility(true);
   visulaAttributesDetectors->SetForceSolid(true);
   logicBoxActivePhotoCathodePMT->SetVisAttributes(visulaAttributesDetectors);
-
+  //Source container
+  G4VisAttributes* visualAttributesSource = new G4VisAttributes(G4Colour::Gray());
+  visualAttributesSource->SetVisibility(true);
+  visualAttributesSource->SetForceSolid(true);
+  visualAttributesSource->SetForceAuxEdgeVisible(true);
+  logicSourceContainer->SetVisAttributes(visualAttributesSource);
+  
+   
   // Inactive volumes
   G4VisAttributes* visualAttributesInactiveMaterials = new G4VisAttributes(G4Colour::Gray());
   visualAttributesInactiveMaterials->SetVisibility(true);
@@ -849,6 +870,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			logicWorldBox, false, 0, false);
      }
      //Trigger foil
+     physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
+                        G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
+                        logicSourceContainer,
+                        "collimator",
+                        logicWorldBox, false, 0, false);
      physicTriggerFoilEJ212 = new G4PVPlacement(0, 
 			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
 			logicBoxTriggerFoilEJ212, 
@@ -976,6 +1002,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			logicCollimator, 
 			"collimator", 
 			logicWorldBox, false, 0, false);
+     physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
+                        G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
+                        logicSourceContainer,
+                        "collimator",
+                        logicWorldBox, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
 			logicLightGuidePMMA,
@@ -1071,6 +1102,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      //			logicCollimator, 
      //			"collimator", 
      //			logicWorldBox, false, 0, false);
+     physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
+                        G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
+                        logicSourceContainer,
+                        "collimator",
+                        logicWorldBox, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
 			logicLightGuidePMMA,
@@ -1232,6 +1268,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      			logicCollimator, 
      			"collimator", 
      			logicWorldBox, false, 0, false);
+    
+     physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator, 
+     			G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0), 
+     			logicSourceContainer, 
+     			"collimator", 
+     			logicWorldBox, false, 0, false);
+
+
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
 			logicLightGuidePMMA,
@@ -1367,7 +1411,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4OpticalSurface* scintWrap = new G4OpticalSurface("ScintWrap");
 
   scintWrap->SetModel(unified);
-  scintWrap->SetType(dielectric_dielectric);
+  scintWrap->SetType(dielectric_metal);
   scintWrap->SetFinish(polished);
 
   G4double energyReflector[] = {2.0*eV, 3.0*eV, 4.0*eV, 5.0*eV, 6.0*eV, 7.0*eV};

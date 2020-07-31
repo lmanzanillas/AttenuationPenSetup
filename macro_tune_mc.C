@@ -42,7 +42,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
 
        double min_Charge_x = 75.;
        double max_Charge_x = 1105.;
-       double bin_Charge_width = 2.;
+       double bin_Charge_width = 3.;
        int n_Charge_bins = (int)((max_Charge_x-min_Charge_x)/bin_Charge_width);
        double min_Charge_x_all = 100.;
        double max_Charge_x_all = 4000.;
@@ -219,7 +219,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        double pmt_resolution4 = 0.7;
        double pmt_resolution5 = 0.7;
        double pmt_resolution6 = 0.7;
-       double pmt_resolution_bottom = 0.9;
+       double pmt_resolution_bottom = 0.7;
        double E_res_ten = 0.1;
        double E_res_five = 0.05;
        
@@ -236,7 +236,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        double x_bin_max_mc_total = h_total_charge_mc_bruto->GetXaxis()->GetBinCenter(bin_max_mc_total);
        TF1* f_gaus_total_mc = new TF1("f_gaus_total_mc","gaus",x_bin_max_mc_total-200.,x_bin_max_mc_total+200.);
        h_total_charge_mc_bruto->Fit(f_gaus_total_mc,"R","",x_bin_max_mc_total-200.,x_bin_max_mc_total+200.);
-       //h_total_charge_mc_bruto->Fit(f_gaus_total_mc,"R","",3100,3400.);
+       //h_total_charge_mc_bruto->Fit(f_gaus_total_mc,"R","",2500,3000.);
        double peak_1MeV_total_mc = f_gaus_total_mc->GetParameter(1);
 
        TCanvas* c_mc_side = new TCanvas();
@@ -245,7 +245,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        //TF1* f_gaus_lateral_mc = new TF1("f_gaus_lateral_mc","gaus",x_bin_max_mc_lateral-200.,x_bin_max_mc_lateral+200.);
        TF1* f_gaus_lateral_mc = new TF1("f_gaus_lateral_mc","gaus",1500.,2000.);
        h_total_charge_mc_sidePMTs_bruto->Fit(f_gaus_lateral_mc,"R","",x_bin_max_mc_lateral-200.,x_bin_max_mc_lateral+200.);
-       //h_total_charge_mc_sidePMTs_bruto->Fit(f_gaus_lateral_mc,"R","",1800,2000.);
+       //h_total_charge_mc_sidePMTs_bruto->Fit(f_gaus_lateral_mc,"R","",1500,2000.);
        double peak_1MeV_lateral_mc = f_gaus_lateral_mc->GetParameter(1);
 
        cout<<" data peak lateral "<<peak_1MeV_lateral_data<<" data peak all "<<peak_1MeV_all_data<<" data all/lateral "<<peak_1MeV_all_data/peak_1MeV_lateral_data<<endl;
