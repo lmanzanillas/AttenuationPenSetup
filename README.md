@@ -1,72 +1,84 @@
-# MaterialOpt
-GEANT4 Simulation for optimizing thickness of shielding.
+# PEN Geant4 software
+GEANT4 Simulation to study the PEN optical properties.
 
-Simulates various sources of radiation incident on a target. Target thickness and material can be controlled via macro, as can the source type and energy. Includes geometry for detection of scintillation photons in a PMT coupled to the base of the tile, or two SiPMs coupled to the side of the tile.
+It simulates setups that have been mounted at the Max Planck Institute for Physics in Munich in order to study and extract optical paramters of PEN. 
 
-The following histograms are produced:
+# Compilation
+In order to compile the software you need to run within the legend container which contains all the required libraries, e.g Geant4
+Then once the software is in your local repository follow these intructions
+1) ```venv legeng```
+2) create build folder: ```mkdir build``` (if the folder exist you should clean it, ```cd build```, ```rm -rf *```)
+3) ```cmake ../```
+In case you get errors in this step, you can try: ```cmake -DGeant4_DIR=/opt/geant4/lib64/Geant4-10.3.0 ..```
+4) ```make```
+This should reate the PEN executable. Then to run in interactive the simulations, just do inside build: ```./PEN```
 
-Light Output - number of photons detected at the chosen detector type.
-Energy deposited in target, in MeV.
-Light Yield - number of photons produced in an event.
-Ratio of Light Output to Light Yield.
-Number of photons leaving the target. Geometry independent version of light output.
+Select the setup that you want to simulate with:
 
-To use: Navigate to build folder and enter:
+``` /PEN/det/setDetectorType 1```
+Options are:
 
-cmake -DGeant4_DIR=/opt/geant4/lib64/Geant4-10.3.0 ..
+0 setup with 5 PMTs1 1 PEN sample and no collimator
 
-This creates the makefile as needed. Then, run make to create the simulation. ./PEN runs the program.
+1 setup for attenuation measurement purposes, consisting in PEN samples with 2 PMTs
 
-Additional macro commands and cases:
+2 Same as 1 but with more PEN samples that the user can choose
 
-/PEN/det/setTargetMat [material]
+3 Spectrometer setup. Modified geant4 to use one PMT as spectrometer. It stores the detected photons with its wl information and the traveled distance by the photons before being detected
+4 Same as 2 but with collimator
 
-Set the target material to supplied material. Material must be loaded in Geant4 prior to calling. Default to air.
+Once you have selected the type of setup that you want to simulate you can chosse the position in which you want to put the collimator together with the trigger setup
 
-Materials provided:
+```/PEN/det/setCollimatorPositionX 0. mm```
 
-G4_TEFLON
-G4_Al
-G4_Si
-G4_Cu
-Water
-G4_Pyrex_Glass
-PEN
-Galactic - vacuum
+Then you can select the type of material for the target. At the moment it has been implemented: PEN, PVT_structure
 
-/PEN/det/setWorldMat [material]
+```/PEN/det/setTargetMat [material]```
 
-Set the material for the world volume. Default to air.
+If you select PEN as target material you can also select the light yield with
 
-Tested cases:
+```/PEN/det/setLY 5000.```
 
-air
-Galactic - vacuum
+You can also select the roughness of the surfaces with
 
-/PEN/det/setSize [number with unit]
+```/PEN/det/setABS 5.``` 
 
-Set target thickness to supplied value.
+where the 5. is used as factor to normilize the attenuation curve, which depends of the wl, so you are multiplying by 5. this curve in this case 
+Then you can select the number of sampels that you are using in the setup
 
-NB: The simulation generates the name of the file automatically using the BestUnit function. Using a thickness that is converted to a decimal value (15 mm becomes 1.5 cm) causes issues with file naming.
+```/PEN/det/setNTargetSamples 2```
 
-/PEN/det/setDetectorType [int 0-1]
+The next step is choose the size fo the target, which depends on the type of detector, in case of setups with 5 PMTs only the thickness has some effect since the the length and width are set by default to 30 mm
 
-Set detector type. Default 0.
+```/PEN/det/setTargetThickness 1.7 mm```
 
-  0 - PMT coupled to base of target.
-  1 - 2 SiPMs, coupled to the side of the target.
+In case you are simulating the attenuation setup, you can choose all the dimenssions:
 
-/PEN/gun/sourceType [int 0-6]
+```/PEN/det/setTargetLength 74 mm```
 
-Choose the type of source used in the simulation. Allowed cases:
+```/PEN/det/setTargetWidth 9 mm```
 
-  0 - perpendicular mono-energetic gamma with fixed position - use with /PEN/gun/sourceEnergy
-  1 - 60Co source
-  2 - 137Cs source
-  3 - 90Sr source
-	4 - 241Am source
-	5 - 106Ru source
+If you select PEN as material
 
-/PEN/gun/sourceEnergy [number with unit]
+Then you can select the type of source tou want to simulate with
 
-Set energy for the mono-energetic gamma. Automatically sets source type to 0.
+```/PEN/gun/sourceType 1```
+
+Allowed cases:
+
+  0 - 137Cs source
+  
+  1 - 207Bi source
+  
+  2 - 90Sr source
+  
+  3 - Perpendicular mono-energetic electrons with fixed position - you can change the energy of electrons with 
+  
+```/PEN/gun/sourceEnergy [number with unit]```
+
+Then you can also select the position of the source with
+
+```/PEN/gun/sourcePositionX 0. mm```
+
+The same applies for z. If you are using the collimator, both position in x,z should be the same, otherwise it won't work properly.
+
