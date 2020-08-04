@@ -95,7 +95,7 @@ MPT_PEN(nullptr)
   fABSFile = "PEN_ABS";
   fVolName = "World";
   fSigAlpha = 1.00;
-  fSigAlphaSides = 0.90;
+  fSigAlphaSides = 1.00;
   pmtReflectivity = 0.50;
   materialConstruction = new PenMaterials;
   DefineMaterials();
@@ -254,10 +254,12 @@ void DetectorConstruction::SetSigAlphaSides(G4double value){
   fSigAlphaSides=value;
   surfaceCathodeSupport->SetSigmaAlpha(fSigAlphaSides);
   surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT);
-   
+
   G4RunManager::GetRunManager()->ReinitializeGeometry();
   G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
+
+
 void DetectorConstruction::SetPMTReflectivity(G4double value){
   pmtReflectivity=value;
   G4RunManager::GetRunManager()->ReinitializeGeometry();
@@ -646,17 +648,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4SubtractionSolid* reflectorFoilAroundEJ212Foil = new G4SubtractionSolid("reflectorFoilAroundEJ212Foil", boxReflectorFoil, boxTriggerFoilEJ212, 0, G4ThreeVector(0, 0, 0));
   G4LogicalVolume* logicReflectorFoilAroundEJ212Foil = new G4LogicalVolume(reflectorFoilAroundEJ212Foil, materialVikuiti, "foil", 0, 0, 0);
 
-  //source holder for Bi source
+//source holder for Bi source
   G4double innerRadiusSourceContainer = 0.*mm;
   G4double externalRadiusSourceContainer = 5.*mm;
-  halfSourceContainerThickness = 53*um;
+  halfSourceContainerThickness = 53/2.*um;
   G4Tubs* SourceContainerDisk = new G4Tubs("sourceContainer",innerRadiusSourceContainer,externalRadiusSourceContainer,halfSourceContainerThickness,0.,360.*deg);
-  G4LogicalVolume* logicSourceContainer = new G4LogicalVolume(SourceContainerDisk,materialTitanium,"sourceContainer",0,0,0); 
- 
-  //Passive collimator
+  G4LogicalVolume* logicSourceContainer = new G4LogicalVolume(SourceContainerDisk,materialTitanium,"sourceContainer",0,0,0);
+
+
+    //Passive collimator
   double innerRadiusCollimator = 1.*mm; 
   double externalRadiusCollimator = 12.*mm; 
-  halfCollimatorThickness= 10.*mm; 
+  halfCollimatorThickness= 5.*mm; 
   
   G4Tubs* collimatorTube = new G4Tubs("collimator",innerRadiusCollimator,externalRadiusCollimator,halfCollimatorThickness,0.,360.*deg);
   G4LogicalVolume* logicCollimator = new G4LogicalVolume(collimatorTube,materialPolyethylene,"collimator",0,0,0); 
@@ -750,7 +753,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //Placement of trigger foil and others
   G4double offSetCollimator = 5.*mm;
   G4double offSetTriggerSetup = 5.*mm;
-  double totalReflectorFoilThickness = 150.*um;
+  double totalReflectorFoilThickness = 145.*um;
   double halfReflectorBoxOverPEN = (casingPMTHeight - 2*halfPenSampleThickness*nSamples + halfPenSampleThickness)/2.;
   //if( halfReflectorBoxOverPEN < 0.1){halfReflectorBoxOverPEN = casingPMTHeight - halfPenSampleThickness;}
   G4VSolid* boxReflectorPEN = new G4Box("foilPEN",halfPenSampleLength, halfReflectorBoxOverPEN, halfPenSampleWidth);
@@ -769,16 +772,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //position of PMT with respect to Light Guide
   G4double xPositionInactivePMTPhotoCathode = -halfLightGuideSizeX -inactivePhotoCathodePMTThickness;
   fDetectorCollimatorY = positionYTriggerFoil + halfCollimatorThickness + offSetCollimator;
-  
 
   G4double SpaceBetweenSamples = 5.0*um;
 
   if(fDetectorType == 0){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;}
-  else if (fDetectorType == 1){fSourceContainerY = positionYTriggerFoil + 2*halfCollimatorThickness + offSetCollimator + halfSourceContainerThickness;} 
-  else if (fDetectorType == 2){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;} 
-  else if (fDetectorType == 3){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;} 
-  else if (fDetectorType == 4){fSourceContainerY = positionYTriggerFoil + 2*halfCollimatorThickness + offSetCollimator + halfSourceContainerThickness;} 
-
+  else if (fDetectorType == 1){fSourceContainerY = positionYTriggerFoil + 2*halfCollimatorThickness + offSetCollimator + halfSourceContainerThickness;}
+  else if (fDetectorType == 2){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;}
+  else if (fDetectorType == 3){fSourceContainerY = positionYTriggerFoil + offSetCollimator + halfSourceContainerThickness;}
+  else if (fDetectorType == 4){fSourceContainerY = positionYTriggerFoil + 2*halfCollimatorThickness + offSetCollimator + halfSourceContainerThickness;}
   
   // Set Draw G4VisAttributes
   G4VisAttributes* visAttr = new G4VisAttributes();
@@ -817,12 +818,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   visualAttributesSource->SetForceSolid(true);
   visualAttributesSource->SetForceAuxEdgeVisible(true);
   logicSourceContainer->SetVisAttributes(visualAttributesSource);
-  
-   
+
+
   // Inactive volumes
   G4VisAttributes* visualAttributesInactiveMaterials = new G4VisAttributes(G4Colour::Gray());
   visualAttributesInactiveMaterials->SetVisibility(true);
-  visualAttributesInactiveMaterials->SetForceSolid(false);
+  visualAttributesInactiveMaterials->SetForceSolid(true);
   visualAttributesInactiveMaterials->SetForceAuxEdgeVisible(true);
   //logicBoxEmptyInsidePMT->SetVisAttributes(visualAttributesInactiveMaterials);
   logicBoxPhotoCathodeSupport->SetVisAttributes(visualAttributesInactiveMaterials);
@@ -873,7 +874,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
                         G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
                         logicSourceContainer,
-                        "collimator",
+                        "sourceContainer",
                         logicWorldBox, false, 0, false);
      physicTriggerFoilEJ212 = new G4PVPlacement(0, 
 			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
@@ -1005,7 +1006,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
                         G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
                         logicSourceContainer,
-                        "collimator",
+                        "sourceContainer",
                         logicWorldBox, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
@@ -1105,7 +1106,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
                         G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
                         logicSourceContainer,
-                        "collimator",
+                        "sourceContainer",
                         logicWorldBox, false, 0, false);
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
@@ -1268,13 +1269,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      			logicCollimator, 
      			"collimator", 
      			logicWorldBox, false, 0, false);
-    
-     physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator, 
-     			G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0), 
-     			logicSourceContainer, 
-     			"collimator", 
-     			logicWorldBox, false, 0, false);
-
+     physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
+                        G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
+                        logicSourceContainer,
+                        "sourceContainer",
+                        logicWorldBox, false, 0, false);
 
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
@@ -1411,7 +1410,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4OpticalSurface* scintWrap = new G4OpticalSurface("ScintWrap");
 
   scintWrap->SetModel(unified);
-  scintWrap->SetType(dielectric_metal);
+  scintWrap->SetType(dielectric_dielectric);
   scintWrap->SetFinish(polished);
 
   G4double energyReflector[] = {2.0*eV, 3.0*eV, 4.0*eV, 5.0*eV, 6.0*eV, 7.0*eV};
@@ -1560,7 +1559,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //G4MaterialPropertiesTable* cathodeSupportProperty = new G4MaterialPropertiesTable();
   //G4MaterialPropertiesTable* cathodeSupportProperty = fGlass -> GetMaterialPropertiesTable();
   surfaceCathodeSupport -> SetSigmaAlpha(fSigAlphaSides);
-  surfaceCathodeSupport -> SetMaterialPropertiesTable(MPT_GlassPMT); 
+  surfaceCathodeSupport->SetMaterialPropertiesTable(MPT_GlassPMT); 
 
   new G4LogicalBorderSurface("surfaceCathodeSupport", 
 				physicPenStackedSamples,

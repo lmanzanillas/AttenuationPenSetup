@@ -103,7 +103,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4String GetVolName(){return fVolName;};
     G4double GetRI(){return fRI;};
 
-    G4double GetSourceContainerThickness()  {return halfSourceContainerThickness;};
     G4double GetCollimatorThickness()  {return halfCollimatorThickness;};
     G4double GetTargetSampleLength()  {return halfPenSampleLength;};
     G4double GetTargetSampleThickness()  {return halfPenSampleThickness;};

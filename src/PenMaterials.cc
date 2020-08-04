@@ -175,8 +175,8 @@ void PenMaterials::Construct()
     G4double air_ref_index_Energy[18];
     G4double air_ref_index_value[18];
     G4double airbulkAbsorb[18];
-    
-    
+
+
     std::ifstream Read_air_ref_index;
     G4String air_ref_index = "../properties/air_ref_index.dat";
     Read_air_ref_index.open(air_ref_index);
@@ -185,19 +185,18 @@ void PenMaterials::Construct()
             G4String filler;
             Read_air_ref_index >> pWavelength >> filler >> air_ref_index_value[air_ref_index_Entries];
             air_ref_index_Energy[air_ref_index_Entries] = (1240/pWavelength)*eV;
-	    airbulkAbsorb[air_ref_index_Entries] = 1.0e6*mm;
+            airbulkAbsorb[air_ref_index_Entries] = 1.0e6*mm;
             air_ref_index_Entries++;
-	    if(air_ref_index_Entries > (airEntries-1)){break;}
+            if(air_ref_index_Entries > (airEntries-1)){break;}
         }
     }
     else
         G4cout << "Error opening file: " << air_ref_index << G4endl;
-    Read_air_ref_index.close();
-    
+    Read_air_ref_index.close(); 
 
     
     G4MaterialPropertiesTable* airMPT = new G4MaterialPropertiesTable();
-    airMPT->AddProperty("RINDEX", air_ref_index_Energy, air_ref_index_value, airEntries);
+    airMPT->AddProperty("RINDEX",air_ref_index_Energy,air_ref_index_value,air_ref_index_Entries);
     airMPT->AddProperty("ABSLENGTH", air_ref_index_Energy, airbulkAbsorb, airEntries);
     Air->SetMaterialPropertiesTable(airMPT);
 
@@ -504,7 +503,6 @@ void PenMaterials::Construct()
     // PVT Scintillator
     // ------------------------------------------------------------------------
     
-
     // NIST PVT
     G4Material* pvt_nist = nistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
     
@@ -550,7 +548,7 @@ void PenMaterials::Construct()
     G4int abs_entries_pvt = 500;
     G4double absorbEnergy_pvt[500];
     G4double Absorb_pvt[500];
-    //G4double Rayleigh_pvt[500];
+    G4double Rayleigh_pvt[500];
     Readabsorblength = "../properties/PVTAbsorption.dat";
     
     Readabsorb.open(Readabsorblength);
@@ -561,7 +559,7 @@ void PenMaterials::Construct()
             Readabsorb >> pWavelength >> filler >> varabsorblength;
             absorbEnergy_pvt[absorbEntries] = (1240./pWavelength)*eV;
             Absorb_pvt[absorbEntries] = varabsorblength * m;
-            //Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
+            Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
             absorbEntries++;
 	    if(absorbEntries > (abs_entries_pvt-1)){G4cout << " ERROR < entries abs  out of range > " << G4endl; break;}
         }
@@ -1100,10 +1098,10 @@ void PenMaterials::Construct()
     materialBialkali->AddElement(Sb, 0.32);
     materialBialkali->AddElement(Cs, 0.32);
     materialBialkali->AddElement(K, 0.36);
-  
+   
     //Titanium foil for Bi source
     G4Material* materialTitanium = new G4Material("titanium", 4.54*g/cm3, 2);
     materialTitanium->AddElement(Ti,0.99);
-    materialTitanium->AddElement(O,0.01);
+    materialTitanium->AddElement(O,0.01);  
 
 }

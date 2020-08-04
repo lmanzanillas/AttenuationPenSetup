@@ -32,7 +32,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* det)
 	//fPositionX = fDetector -> GetDetectorCollimatorX();
 	fPositionX = 0. *mm;
 	//fPositionY = 30. *mm;
-	fPositionY = fDetector -> GetSourceContainerY();
+        fPositionY = fDetector -> GetSourceContainerY();
 	fPositionZ = 0.*mm;
 	fSourceType = 1;
  	//default kinematic
@@ -83,14 +83,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         //Assume 1.1 mm radius disk
         G4double r = sqrt(1.1*1.1 * G4UniformRand());
         G4double theta = 2. * M_PI * G4UniformRand();
-
         // pour une source dans le plan 1
-	fPositionY = fDetector -> GetSourceContainerY();
+        fPositionY = fDetector -> GetSourceContainerY();
         G4double x_sourceframe = r*cos(theta)*CLHEP::mm;
         G4double z_sourceframe = r*sin(theta)*CLHEP::mm;
         G4ThreeVector position = G4ThreeVector(fPositionX+x_sourceframe, fPositionY, fPositionZ+z_sourceframe);
-        //G4cout<<" fPositionY"<<fPositionY<<G4endl;
-        //G4cout<<" x "<<fPositionX+x_sourceframe<<" z "<<fPositionZ+z_sourceframe<<" z_sourceframe "<<z_sourceframe<<G4endl;
 	//G4ThreeVector position = G4ThreeVector(fPositionX, fPositionY, fPositionZ);
         //G4cout<<" source energy "<<fSourceEnergy<<G4endl;
 	//G4ThreeVector position = G4ThreeVector(fPositionX, 30*mm, 0*mm);
