@@ -1,12 +1,16 @@
 #Scan with Bi
 /PEN/det/setDetectorType 4
 /PEN/det/setNTargetSamples 1
-/PEN/det/setTargetThickness 10. mm
+/PEN/det/setTargetThickness 10.0 mm
 /PEN/det/setTargetMat PVT_structure
+#/PEN/det/setABS 6.0
+#/PEN/det/setLY 4500.0
 /PEN/det/setCollimatorPositionX 0. mm
-/PEN/det/setSigAlpha 0.91
-/PEN/det/setPMTReflectivity 0.20
+/PEN/det/setSigAlpha 0.11
+/PEN/det/setSigAlphaSides 0.11
+/PEN/det/setSigAlphaBottom 0.11
+/PEN/det/setPMTReflectivity 0.17
 /PEN/gun/sourcePositionX 0. mm
 /PEN/gun/sourceType 1
 
-/run/beamOn 20000000
+/run/beamOn 5000000

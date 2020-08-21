@@ -26,6 +26,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
  commandSetTargetMaterial(0),
  commandSetAlphaSigma(0),
  commandSetAlphaSigmaSides(0),
+ commandSetAlphaSigmaBottom(0),
  commandSetPMTReflectivity(0),
  commandSetCollimatorPositionX(0),
  commandSetLY(0),
@@ -118,6 +119,11 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   commandSetAlphaSigmaSides->AvailableForStates(G4State_Init,G4State_Idle);
   commandSetAlphaSigmaSides->SetToBeBroadcasted(false);
 
+  commandSetAlphaSigmaBottom = new G4UIcmdWithADouble("/PEN/det/setSigAlphaBottom",this);
+  commandSetAlphaSigmaBottom->SetGuidance("Set surf SigAlpha in contact with bottom PMT");
+  commandSetAlphaSigmaBottom->AvailableForStates(G4State_Init,G4State_Idle);
+  commandSetAlphaSigmaBottom->SetToBeBroadcasted(false);
+
   commandSetPMTReflectivity = new G4UIcmdWithADouble("/PEN/det/setPMTReflectivity",this);
   commandSetPMTReflectivity->SetGuidance("Set PMT reflectivity");
   commandSetPMTReflectivity->AvailableForStates(G4State_Init,G4State_Idle);
@@ -158,6 +164,7 @@ DetectorMessenger::~DetectorMessenger()
   delete commandSetTargetMaterial;
   delete commandSetAlphaSigma;
   delete commandSetAlphaSigmaSides;
+  delete commandSetAlphaSigmaBottom;
   delete commandSetPMTReflectivity;
   delete commandSetCollimatorPositionX;
   delete commandSetLY;
@@ -225,7 +232,11 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
    }
 
    if(command == commandSetAlphaSigmaSides){
-	fDetector->SetSigAlpha(commandSetAlphaSigmaSides->GetNewDoubleValue(newValue));
+	fDetector->SetSigAlphaSides(commandSetAlphaSigmaSides->GetNewDoubleValue(newValue));
+   }
+
+   if(command == commandSetAlphaSigmaBottom){
+	fDetector->SetSigAlphaBottom(commandSetAlphaSigmaBottom->GetNewDoubleValue(newValue));
    }
 
    if(command == commandSetPMTReflectivity){

@@ -51,11 +51,11 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
        TH1D* h_edep_all_PEN_res_five = new TH1D("h_edep_all_PEN_res_five","Edep all samples 5% Eres;Edep [keV]; entries / 1.0 keV ",n_E_bins,min_E_x,max_E_x);
        TH1D* h_edep_all_materials = new TH1D("h_edep_all_materials","Edep all materials;Edep [keV]; entries / 1.0 keV ",n_E_bins,min_E_x,max_E_x);
 
-       double min_Charge_x = 5.;
+       double min_Charge_x = 55.;
        double max_Charge_x = 1105.;
        double bin_Charge_width = 5.;
        int n_Charge_bins = (int)((max_Charge_x-min_Charge_x)/bin_Charge_width);
-       double max_Charge_x_all = 3000.;
+       double max_Charge_x_all = 4000.;
        int n_Charge_bins_all = (int)((3000.-min_Charge_x)/bin_Charge_width);
 
        TH1D* h_charge_pmt1 = new TH1D("h_total_pmt1","PMT 1; charge [# photons];entries / 5 ph ",n_Charge_bins,min_Charge_x,max_Charge_x);
@@ -66,17 +66,17 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
        TH1D* h_total_charge = new TH1D("h_total_charge","All PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins_all,min_Charge_x,max_Charge_x_all);
        TH1D* h_total_charge_sidePMTs = new TH1D("h_total_charge_sidePMTs","Lateral PMTs; charge [# photons];entries / 5 ph ",n_Charge_bins_all,min_Charge_x,max_Charge_x_all);
        TH1D* h_ratio = new TH1D("h_ratio","h_ratio; Q1/(Q1+Q2);entries / bin ",150,0.,1.);
-       TH2D* h_Edep_TotalCharge = new TH2D("h_Edep_TotalCharge","h_Edep_TotalCharge;Edep PEN4[MeV]; # detected photons",n_E_bins,min_E_x,max_E_x,n_Charge_bins,min_Charge_x,max_Charge_x_all);
+       TH2D* h_Edep_TotalCharge = new TH2D("h_Edep_TotalCharge","h_Edep_TotalCharge;Edep PEN2[MeV]; # detected photons",n_E_bins,min_E_x,max_E_x,n_Charge_bins,min_Charge_x,max_Charge_x_all);
 
        int nEntries = t_geant4_data->GetEntries();
        TRandom3 *myRandoms = new TRandom3 ();
        double pmt_resolution = 0.7;
-       double scale_factor = 2.0;
+       double scale_factor = 1.0;
        double E_res_ten = 0.1;
        double E_res_five = 0.05;
        for(int i = 0; i < nEntries; ++i){
 	       t_geant4_data->GetEntry(i);
-	       if(EdepTrigger>15. && EdepTrigger<100.){
+	       if(EdepTrigger>15. ){
 		       h_edep_PEN1->Fill(EdepPEN1);
 		       h_edep_PEN2->Fill(EdepPEN2);
 		       h_edep_PEN3->Fill(EdepPEN3);
@@ -100,17 +100,19 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
 		       //double n_ph_pmt4 = myRandoms -> Poisson(NPMT4);
 		       double n_ph_pmt5 = myRandoms -> Gaus(NPMT5, pmt_resolution * sqrt (NPMT5))/scale_factor;
 		       //double n_ph_pmt5 = myRandoms -> Poisson(NPMT5);
-		       h_charge_pmt1->Fill(n_ph_pmt1);
-		       h_charge_pmt2->Fill(n_ph_pmt2);
-		       h_charge_pmt3->Fill(n_ph_pmt3);
-		       h_charge_pmt4->Fill(n_ph_pmt4);
-		       h_charge_pmt5->Fill(n_ph_pmt5);
-		       h_total_charge->Fill(n_ph_pmt1+n_ph_pmt2+n_ph_pmt3+n_ph_pmt4+n_ph_pmt5);
-		       h_total_charge_sidePMTs->Fill(n_ph_pmt1+n_ph_pmt2+n_ph_pmt5+n_ph_pmt4);
+		       double lateral_pe = n_ph_pmt1+n_ph_pmt2+n_ph_pmt5+n_ph_pmt4;
+ 		       double total_pe = n_ph_pmt1+n_ph_pmt2+n_ph_pmt3+n_ph_pmt4+n_ph_pmt5;
+		       if(n_ph_pmt1>min_Charge_x)h_charge_pmt1->Fill(n_ph_pmt1);
+		       if(n_ph_pmt2>min_Charge_x)h_charge_pmt2->Fill(n_ph_pmt2);
+		       if(n_ph_pmt3>min_Charge_x)h_charge_pmt3->Fill(n_ph_pmt3);
+		       if(n_ph_pmt4>min_Charge_x)h_charge_pmt4->Fill(n_ph_pmt4);
+		       if(n_ph_pmt5>min_Charge_x)h_charge_pmt5->Fill(n_ph_pmt5);
+		       if(total_pe>min_Charge_x)h_total_charge->Fill(total_pe);
+		       if(lateral_pe>min_Charge_x)h_total_charge_sidePMTs->Fill(lateral_pe);
 
 	       }
        }
-	t_geant4_data->Draw("NPMT1+NPMT2:EdepPEN4>>h_Edep_TotalCharge","","colz");
+	t_geant4_data->Draw("NPMT1+NPMT2+NPMT3+NPMT4+NPMT5:EdepPEN1>>h_Edep_TotalCharge","","colz");
 	TCanvas* c_edeps = new TCanvas();
 	gStyle->SetOptStat(0);
 	h_edep_PEN2->Draw("HIST PLC");
@@ -148,7 +150,7 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
 	h_charge_pmt2->GetXaxis()->SetRangeUser(5.,800.);
         c_charges->cd(3);
         h_charge_pmt3->Draw(""); 	
-	h_charge_pmt3->GetXaxis()->SetRangeUser(5.,800.);
+	h_charge_pmt3->GetXaxis()->SetRangeUser(5.,1000.);
         c_charges->cd(4);
         h_charge_pmt4->Draw(""); 	
 	h_charge_pmt4->GetXaxis()->SetRangeUser(5.,800.);

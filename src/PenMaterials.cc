@@ -847,17 +847,12 @@ void PenMaterials::Construct()
     Grease->AddElement( C, 0.502 );
     
     G4int GreaseEntries=0;
-    G4double GreaseEnergy[500];
+    G4int nGreaseEntries=51;
+    G4double GreaseEnergy[51];
     G4double Greaseabsorblength;
-    G4double GreasebulkAbsorb[500];
-    G4double GreaseIndex[500];
-    G4double GreaseIndexconst=1.59;
-    
-    for (int i = 0; i < 500; i++){
-        GreaseEnergy[i]=0;
-        GreasebulkAbsorb[i]=0;
-        GreaseIndex[i]=0;
-    }
+    G4double GreasebulkAbsorb[51];
+    G4double GreaseIndex[51];
+    G4double GreaseIndexconst=1.47;
     
     GreaseEntries=0;
     std::ifstream ReadGreaseBulk;
@@ -866,12 +861,13 @@ void PenMaterials::Construct()
     if(ReadGreaseBulk.is_open()){
         while(!ReadGreaseBulk.eof()){
             G4String filler;
-            ;
             ReadGreaseBulk>>pWavelength>>filler>>Greaseabsorblength;
             GreaseEnergy[GreaseEntries]=(1240/pWavelength)*eV;
             GreasebulkAbsorb[GreaseEntries]=Greaseabsorblength*m;
             GreaseIndex[GreaseEntries]=GreaseIndexconst;
+            //G4cout<<" GreaseEntries "<<GreaseEntries<<" GreaseEnergy[GreaseEntries] "<<GreaseEnergy[GreaseEntries]<<" GreasebulkAbsorb[GreaseEntries] "<<GreasebulkAbsorb[GreaseEntries]<<G4endl;
             GreaseEntries++;
+            if(GreaseEntries > (nGreaseEntries-1) ){break;}
         }
     }
     else
@@ -1081,6 +1077,8 @@ void PenMaterials::Construct()
     Read_glassPMT.close();
     MPT_GlassPMT->AddProperty("RINDEX",glassPMTEnergy,glassPMTRindex,glassPMTEntries);
     MPT_GlassPMT->AddProperty("ABSLENGTH",glassPMTEnergy,glassPMTAbs,glassPMTEntries);
+    G4double LY_Glass = 1.0/MeV;
+    MPT_GlassPMT->AddConstProperty("SCINTILLATIONYIELD",LY_Glass);
     matererialGlassPMT -> SetMaterialPropertiesTable(MPT_GlassPMT);
 
 

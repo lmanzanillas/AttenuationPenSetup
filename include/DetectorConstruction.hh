@@ -54,14 +54,17 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   public:
     DetectorConstruction();
     virtual ~DetectorConstruction();
+    static G4VPhysicalVolume *
+    GetPhysicalVolumeByName(const G4String &name);
 
   public:
     virtual G4VPhysicalVolume* Construct();
+    //static G4VPhysicalVolume* GetPhysicalVolumeByName(const G4String &name);
     void SetSize  (G4double);
     void SetTargetMaterial(G4String);
     void SetWorldMaterial(G4String);
     void SetPMTPlacement(G4ThreeVector);
-    void UpdateGeometry(void);
+    virtual G4VPhysicalVolume* UpdateGeometry();
     void SetPropertyTable(G4Material* mat, G4MaterialPropertiesTable* tab);
     void SetDetectorType(G4int);
     void SetTargetSampleLength(G4double);
@@ -75,6 +78,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void SetABS(G4double);
     void SetSigAlpha(G4double);
     void SetSigAlphaSides(G4double);
+    void SetSigAlphaBottom(G4double);
     void SetPMTReflectivity(G4double);
     void MaterialPropertiesScintillator();
     void SetVolName(G4ThreeVector);
@@ -98,6 +102,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double GetABS(){return AbsorptionLength;};
     G4double GetSigAlpha(){return fSigAlpha;};
     G4double GetSigAlphaSides(){return fSigAlphaSides;};
+    G4double GetSigAlphaBottom(){return fSigAlphaBottom;};
     G4double GetPMTReflectivity(){return pmtReflectivity;};
     G4String GetDetectorName(){return fDetectorName;};
     G4String GetVolName(){return fVolName;};
@@ -127,6 +132,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double AbsorptionLength;
     G4double fSigAlpha;
     G4double fSigAlphaSides;
+    G4double fSigAlphaBottom;
     G4double pmtReflectivity;
     G4double fRI;
     //add position
@@ -159,6 +165,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     G4VPhysicalVolume* physicWorldBox;
     G4VPhysicalVolume* physicPenSampleBox;
+    G4VPhysicalVolume* physicPenGrease;
     G4VPhysicalVolume* physicSourceContainer;
     G4VPhysicalVolume* physicCollimator;
     G4VPhysicalVolume* physicBoxPMTShell;
@@ -192,10 +199,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
     G4OpticalSurface* AirTarget;
     G4OpticalSurface* surfaceCathodeSupport;
+    G4OpticalSurface* surfaceCathodeSupportBottom;
 
     G4MaterialPropertiesTable* MPT_PEN;
     G4MaterialPropertiesTable* MPT_GlassPMT;
     G4MaterialPropertiesTable* MPT_Target;
+    G4MaterialPropertiesTable* SMPT_AirTarget;
     G4MaterialPropertiesTable* MPT_World;
 
     G4LogicalBorderSurface* logicSurfaceAirTarget;

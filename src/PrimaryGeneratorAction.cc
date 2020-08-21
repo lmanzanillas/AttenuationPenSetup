@@ -128,7 +128,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		case 3:
 			fParticleGun->SetParticleDefinition(particleTable->FindParticle("e-"));
 			fParticleGun->SetParticleEnergy(fSourceEnergy);
-			fParticleGun->SetParticlePosition(position);
+			fParticleGun->SetParticlePosition(G4ThreeVector(fPositionX,fPositionY,fPositionZ));
 			//rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			//ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			//rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
