@@ -91,15 +91,10 @@ void macro_read_data(string stringDataName = "output/Bi207-17_04_2020-14-10-21",
 		       h_edep_all_PEN_res_five->Fill(Edep_with_res);
 		       //Apply spe resolution
 		       double n_ph_pmt1 = myRandoms -> Gaus(NPMT1, pmt_resolution * sqrt (NPMT1))/scale_factor;
-		       //double n_ph_pmt1 = myRandoms -> Poisson(NPMT1);
 		       double n_ph_pmt2 = myRandoms -> Gaus(NPMT2, pmt_resolution * sqrt (NPMT2))/scale_factor;
-		       //double n_ph_pmt2 = myRandoms -> Poisson(NPMT2);
 		       double n_ph_pmt3 = myRandoms -> Gaus(NPMT3, pmt_resolution * sqrt (NPMT3))/scale_factor;
-		       //double n_ph_pmt3 = myRandoms -> Poisson(NPMT3);
 		       double n_ph_pmt4 = myRandoms -> Gaus(NPMT4, pmt_resolution * sqrt (NPMT4))/scale_factor;
-		       //double n_ph_pmt4 = myRandoms -> Poisson(NPMT4);
 		       double n_ph_pmt5 = myRandoms -> Gaus(NPMT5, pmt_resolution * sqrt (NPMT5))/scale_factor;
-		       //double n_ph_pmt5 = myRandoms -> Poisson(NPMT5);
 		       double lateral_pe = n_ph_pmt1+n_ph_pmt2+n_ph_pmt5+n_ph_pmt4;
  		       double total_pe = n_ph_pmt1+n_ph_pmt2+n_ph_pmt3+n_ph_pmt4+n_ph_pmt5;
 		       if(n_ph_pmt1>min_Charge_x)h_charge_pmt1->Fill(n_ph_pmt1);

@@ -915,14 +915,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   case 0:
     for(int iSample = 0; iSample < nSamples; iSample++){
-  	physicPenStackedSamples = new G4PVPlacement(0, 
+  	//physicPenStackedSamples = new G4PVPlacement(0, 
+  	                        new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
 				penLogicBox,
 				"target_"+std::to_string(iSample+1),
 				logicWorldBox,false,iSample,false);
         //optical grease between PEN samples
         if(iSample > 0 && iSample < nSamples){
-         	physicPenGrease = new G4PVPlacement(0, 
+         	//physicPenGrease = new G4PVPlacement(0, 
+         	                new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples - halfPenSampleThickness - SpaceBetweenSamples/2.,0),
 				//G4ThreeVector(0,iSample*2*halfPenSampleThickness,0),
 				logicGreasePEN,
@@ -1050,14 +1052,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   case 1:
      //Attenuation setup consisting on pen samples coupled to two PMTs and the trigger setup that can be moved
      for(int iSample = 0; iSample < nSamples; iSample++){
-  	physicPenStackedSamples = new G4PVPlacement(0, 
+  	//physicPenStackedSamples = new G4PVPlacement(0, 
+  	                        new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness+iSample*SpaceBetweenSamples,0),
 				penLogicBox,
 				"target_"+std::to_string(iSample+1),
 				logicWorldBox,false,iSample,false);
         //optical grease between PEN samples
         if(iSample > 0 && iSample < nSamples){
-         	physicPenGrease = new G4PVPlacement(0, 
+         	//physicPenGrease = new G4PVPlacement(0, 
+         	                new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples - halfPenSampleThickness - SpaceBetweenSamples/2.,0),
 				//G4ThreeVector(0,iSample*2*halfPenSampleThickness,0),
 				logicGreasePEN,
@@ -1153,14 +1157,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
      case 2:
      for(int iSample = 0; iSample < nSamples; iSample++){
-  	physicPenStackedSamples = new G4PVPlacement(0, 
+  	//physicPenStackedSamples = new G4PVPlacement(0, 
+  	                        new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
 				penLogicBox,
 				"target_"+std::to_string(iSample+1),
 				logicWorldBox,false,iSample,false);
         //optical grease between PEN samples
         if(iSample > 0 && iSample < nSamples){
-         	physicPenGrease = new G4PVPlacement(0, 
+         	//physicPenGrease = new G4PVPlacement(0, 
+         	                new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples - halfPenSampleThickness - SpaceBetweenSamples/2.,0),
 				//G4ThreeVector(0,iSample*2*halfPenSampleThickness,0),
 				logicGreasePEN,
@@ -1295,7 +1301,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     case 3:
     for(int iSample = 0; iSample < nSamples; iSample++){
-  	physicPenStackedSamples = new G4PVPlacement(0, 
+  	//physicPenStackedSamples = new G4PVPlacement(0, 
+  	                        new G4PVPlacement(0, 
 				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*5.*um,0),
 				penLogicBox,
 				"target_"+std::to_string(iSample+1),
@@ -1353,11 +1360,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      }
      //Reflector foil over PEN samples, uncomment if needed
      
-     physicReflectorFoilBoxOverPEN = new G4PVPlacement(0, 
-     				G4ThreeVector(0,halfReflectorBoxOverPEN + 2*halfPenSampleThickness*(nSamples)-halfPenSampleThickness + (nSamples)*SpaceBetweenSamples,0),
-     				logicReflectorFoilBox,
-     				"reflector",
-     				logicWorldBox,false,0,false);
+     //physicReflectorFoilBoxOverPEN = new G4PVPlacement(0, 
+     //				G4ThreeVector(0,halfReflectorBoxOverPEN + 2*halfPenSampleThickness*(nSamples)-halfPenSampleThickness + (nSamples)*SpaceBetweenSamples,0),
+     //				logicReflectorFoilBox,
+     //				"reflector",
+     //				logicWorldBox,false,0,false);
      
      //Collimator, Trigger and light guide placement, with triggerFoilEJ212 PMT
      physicTriggerFoilEJ212 = new G4PVPlacement(0,
@@ -1498,28 +1505,34 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //check_values->DumpValues ();
   //AirTarget -> SetMaterialPropertiesTable(SMPT_AirTarget);
 
-  logicSurfacePENStackedAir = new G4LogicalBorderSurface("AirTargetOut", 
-				GetPhysicalVolumeByName("target_1"),
-				physicWorldBox, 
-				AirTarget);
+  new G4LogicalBorderSurface("AirTargetOut1", GetPhysicalVolumeByName("target_1"), physicWorldBox, AirTarget);
+  new G4LogicalBorderSurface("AirTargetOut2", GetPhysicalVolumeByName("target_2"), physicWorldBox, AirTarget);
+  new G4LogicalBorderSurface("AirTargetOut3", GetPhysicalVolumeByName("target_3"), physicWorldBox, AirTarget);
+  new G4LogicalBorderSurface("AirTargetOut4", GetPhysicalVolumeByName("target_4"), physicWorldBox, AirTarget);
 
-  logicSurfaceAirTargetStacked = new G4LogicalBorderSurface("AirTargetIn", 
-				physicWorldBox, 
-				GetPhysicalVolumeByName("target_1"),
-				AirTarget);
+  new G4LogicalBorderSurface("AirTargetIn1", physicWorldBox, GetPhysicalVolumeByName("target_1"), AirTarget);
+  new G4LogicalBorderSurface("AirTargetIn2", physicWorldBox, GetPhysicalVolumeByName("target_2"), AirTarget);
+  new G4LogicalBorderSurface("AirTargetIn3", physicWorldBox, GetPhysicalVolumeByName("target_3"), AirTarget);
+  new G4LogicalBorderSurface("AirTargetIn4", physicWorldBox, GetPhysicalVolumeByName("target_4"), AirTarget);
 
 
   G4OpticalSurface* GreaseTarget = new G4OpticalSurface("GreaseTarget",unified, ground, dielectric_dielectric);
   GreaseTarget -> SetSigmaAlpha(0.05);
   //G4MaterialPropertiesTable* SMPT_Grease = new G4MaterialPropertiesTable();
-  //G4double reflectivitySurf[NUM] = {0.97, 0.97};
+  //G4double reflectivitySurf[NUM] = {0.17, 0.17};
   //G4double efficiencySurf[NUM] = {0.0, 0.0};
-  //SMPT_Grease->AddProperty("REFLECTIVITY",pp,reflectivitySurf,NUM);
+  //SMPT_Grease->AddProperty("TRANSMITTANCE",pp,reflectivitySurf,NUM);
   //SMPT_Grease->AddProperty("EFFICIENCY",pp,efficiencySurf,NUM);
   //GreaseTarget->SetMaterialPropertiesTable(SMPT_Grease);
   //
   //Different types of surfaces that need to be defined
-  //
+  //     
+  //      --                --
+  //      --    Reflector   --
+  //      --                --
+  //      --------------------
+  //      -------------------------------------------------------------------
+  //      -     Air         ---   
   //      -------------------------------------------------------------------
   //      -     PEN  5      ---  	 -	   -      		-
   //      ---------------------		 -	   -      		-
@@ -1543,7 +1556,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //      ---------------------		 -	   -      		-
   //      -  Photo Cathode  ---		 -	   -      		-
   //      -------------------------------------------------------------------
- 
+
+
+
+  //Surface in contact GREASE  -  SAMPLES 
   new G4LogicalBorderSurface("GreaseTargetIn11", GetPhysicalVolumeByName("target_1"), GetPhysicalVolumeByName("Grease_1"), GreaseTarget);
   new G4LogicalBorderSurface("GreaseTargetIn21", GetPhysicalVolumeByName("target_2"), GetPhysicalVolumeByName("Grease_1"), GreaseTarget);
   new G4LogicalBorderSurface("GreaseTargetIn22", GetPhysicalVolumeByName("target_2"), GetPhysicalVolumeByName("Grease_2"), GreaseTarget);
@@ -1576,81 +1592,41 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   scintWrapProperty->AddProperty("REFLECTIVITY",energyReflector,reflectivity,num);
   scintWrap->SetMaterialPropertiesTable(scintWrapProperty); 
 
-  //This should have no effect, since aire between scinitllator and samples
-  
-  logicSurfacePENStackedReflectorFoilBoxOverPEN = new G4LogicalBorderSurface("ScintWrap", 
-				physicPenStackedSamples , 
-				physicReflectorFoilBoxOverPEN, 
-				scintWrap);
+  //This should have no effect, since air between scinitllator and samples
+  logicSurfacePENStackedReflectorFoilBoxOverPEN = new G4LogicalBorderSurface("ScintWrapPA", physicPenStackedSamples, physicReflectorFoilBoxOverPEN, scintWrap);
 
 
   //this surface is the one working, the other should work in case no air in between
-  new G4LogicalBorderSurface("ScintWrap",
-                                physicWorldBox,
-                                physicReflectorFoilBoxOverPEN,
-                                scintWrap);
+  new G4LogicalBorderSurface("ScintWrap", physicWorldBox, physicReflectorFoilBoxOverPEN, scintWrap);
  
   //Define surface in case a reflector is used with trigger foil
-  logicSurfaceEJ212Reflector = new G4LogicalBorderSurface("ScintWrap", 
-				physicTriggerFoilEJ212, 
-				physicReflectorFoilAroundEJ212Foil, 
-				scintWrap);
+  logicSurfaceEJ212Reflector = new G4LogicalBorderSurface("ScintWrap", physicTriggerFoilEJ212, physicReflectorFoilAroundEJ212Foil, scintWrap);
 
-  logicSurfaceReflectorEJ212 = new G4LogicalBorderSurface("ScintWrap", 
-				physicWorldBox, 
-				physicReflectorFoilAroundEJ212Foil, 
-				scintWrap);
+  logicSurfaceReflectorEJ212 = new G4LogicalBorderSurface("ScintWrap", physicWorldBox, physicReflectorFoilAroundEJ212Foil, scintWrap);
 
   //Surface between air and thin scintillator
-  G4OpticalSurface* AirEJ212 = new G4OpticalSurface("AirEJ212", 
-				unified, 
-				polished, 
-				dielectric_dielectric);
-  AirEJ212->SetPolish(1.0);
+  G4OpticalSurface* AirEJ212 = new G4OpticalSurface("AirEJ212",	unified, polished, dielectric_dielectric);
 
-  new G4LogicalBorderSurface("AirEJ212",
-                             physicTriggerFoilEJ212,
-                             physicWorldBox,
-                             AirEJ212);
+  new G4LogicalBorderSurface("AirEJ212", physicTriggerFoilEJ212, physicWorldBox, AirEJ212);
 
-  new G4LogicalBorderSurface("AirEJ212",
-                             physicWorldBox,
-                             physicTriggerFoilEJ212,
-                             AirEJ212);
+  new G4LogicalBorderSurface("AirEJ212", physicWorldBox,  physicTriggerFoilEJ212,  AirEJ212);
 
   //Surface between Air and PMMA light guide
   G4OpticalSurface* AirPMMA = new G4OpticalSurface("AirPMMA", 
 				unified, 
 				polished, 
 				dielectric_dielectric);
-  AirPMMA->SetPolish(1.0);
 
-  logicSurfaceAirPMMA = new G4LogicalBorderSurface("AirPMMA", 
-				physicLightGuide, 
-				physicWorldBox, 
-				AirPMMA);
+  logicSurfaceAirPMMA = new G4LogicalBorderSurface("AirPMMA", physicLightGuide,	physicWorldBox, AirPMMA);
 
-  logicSurfacePMMAAir = new G4LogicalBorderSurface("PMMAAir", 
-  				physicWorldBox, 
-  				physicLightGuide, 
-  				AirPMMA);
+  logicSurfacePMMAAir = new G4LogicalBorderSurface("PMMAAir", physicWorldBox, physicLightGuide, AirPMMA);
 
   //Surface between Light guide and trigger foil
-  G4OpticalSurface* PMMATrigger = new G4OpticalSurface("PMMATrigger", 
-				unified, 
-				ground, 
-				dielectric_dielectric);
-  PMMATrigger->SetPolish(0.1);
+  G4OpticalSurface* PMMATrigger = new G4OpticalSurface("PMMATrigger", unified, ground, dielectric_dielectric);
 
-  logicSurfaceEJ212PMMA = new G4LogicalBorderSurface("PMMATrigger", 
-				physicLightGuide, 
-				physicTriggerFoilEJ212, 
-				PMMATrigger);
+  logicSurfaceEJ212PMMA = new G4LogicalBorderSurface("PMMATrigger", physicLightGuide, physicTriggerFoilEJ212, PMMATrigger);
    
-  logicSurfacePMMAEJ212 = new G4LogicalBorderSurface("PMMATrigger", 
-				physicTriggerFoilEJ212, 
-				physicLightGuide, 
-				PMMATrigger);
+  logicSurfacePMMAEJ212 = new G4LogicalBorderSurface("PMMATrigger", physicTriggerFoilEJ212, physicLightGuide, PMMATrigger);
 
 
   //surface between light guide and physicOpticalGrease
@@ -1660,41 +1636,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 				dielectric_dielectric);
   PMMAGrease->SetPolish(0.1);
   
-  new G4LogicalBorderSurface("PMMAGrease",
-                            physicLightGuide,
-                            physicOpticalGrease,
-                            PMMAGrease);
+  new G4LogicalBorderSurface("PMMAGrease", physicLightGuide, physicOpticalGrease, PMMAGrease);
 
-  new G4LogicalBorderSurface("PMMAGrease",
-                            physicOpticalGrease,
-                            physicLightGuide,
-                            PMMAGrease);
+  new G4LogicalBorderSurface("PMMAGrease", physicOpticalGrease, physicLightGuide, PMMAGrease);
 
-  G4OpticalSurface* PMMAPhotoCathodeSupport = new G4OpticalSurface("PMMACathodeSupport", 
-				unified, 
-				ground, 
-				dielectric_dielectric);
+  G4OpticalSurface* PMMAPhotoCathodeSupport = new G4OpticalSurface("PMMACathodeSupport", unified, ground, dielectric_dielectric);
   PMMAGrease->SetPolish(0.1);
   
-  new G4LogicalBorderSurface("PMMACathodeSupport",
-                           physicOpticalGrease,
-                           physicBoxPhotoCathodeSupport,
-                           PMMAPhotoCathodeSupport);
+  new G4LogicalBorderSurface("PMMACathodeSupport", physicOpticalGrease, physicBoxPhotoCathodeSupport, PMMAPhotoCathodeSupport);
                            
-  new G4LogicalBorderSurface("PMMACathodeSupport",
-                           physicBoxPhotoCathodeSupport,
-                           physicOpticalGrease,
-                           PMMAPhotoCathodeSupport);
+  new G4LogicalBorderSurface("PMMACathodeSupport", physicBoxPhotoCathodeSupport, physicOpticalGrease, PMMAPhotoCathodeSupport);
   
-  new G4LogicalBorderSurface("PMMACathodeSupport",
-                           physicBoxPhotoCathodeSupport,
-                           physicLightGuide,
-                           PMMAPhotoCathodeSupport);
+  new G4LogicalBorderSurface("PMMACathodeSupport", physicBoxPhotoCathodeSupport, physicLightGuide, PMMAPhotoCathodeSupport);
 
-  new G4LogicalBorderSurface("PMMACathodeSupport",
-                           physicLightGuide,
-                           physicBoxPhotoCathodeSupport,
-                           PMMAPhotoCathodeSupport);
+  new G4LogicalBorderSurface("PMMACathodeSupport", physicLightGuide, physicBoxPhotoCathodeSupport, PMMAPhotoCathodeSupport);
   
 
   //Photocathode Support in contact with the samples  
@@ -1757,57 +1712,57 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   
   //World PMT
   //PMT1
-  new G4LogicalBorderSurface("surfaceCathodeSupport1WIn", physicWorldBox, physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport1WOut", physicPhotoCathodeSupportPMT1, physicWorldBox, surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1WIn", physicWorldBox, GetPhysicalVolumeByName("support1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1WOut", GetPhysicalVolumeByName("support1"), physicWorldBox, surfaceCathodeSupport);
   //PMT2
-  new G4LogicalBorderSurface("surfaceCathodeSupport2WIn", physicWorldBox, physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport2WOut", physicPhotoCathodeSupportPMT1, physicWorldBox, surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2WIn", physicWorldBox, GetPhysicalVolumeByName("support2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2WOut", GetPhysicalVolumeByName("support2"), physicWorldBox, surfaceCathodeSupport);
   //PMT3
-  new G4LogicalBorderSurface("surfaceCathodeSupport3WIn", physicWorldBox, physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport3WOut", physicPhotoCathodeSupportPMT1, physicWorldBox, surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport3WIn", physicWorldBox, GetPhysicalVolumeByName("support3"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport3WOut", GetPhysicalVolumeByName("support3"), physicWorldBox, surfaceCathodeSupport);
   //PMT4
-  new G4LogicalBorderSurface("surfaceCathodeSupport4WIn", physicWorldBox, physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport4WOut", physicPhotoCathodeSupportPMT1, physicWorldBox, surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4WIn", physicWorldBox, GetPhysicalVolumeByName("support4"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4WOut", GetPhysicalVolumeByName("support4"), physicWorldBox, surfaceCathodeSupport);
   //PMT5
-  new G4LogicalBorderSurface("surfaceCathodeSupport5WIn", physicWorldBox, physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport5WOut", physicPhotoCathodeSupportPMT1, physicWorldBox, surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5WIn", physicWorldBox, GetPhysicalVolumeByName("support5"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5WOut", GetPhysicalVolumeByName("support5"), physicWorldBox, surfaceCathodeSupport);
 
   
   //Grease PMT
   //PMT1
-  new G4LogicalBorderSurface("surfaceCathodeSupport1GIn11", GetPhysicalVolumeByName("Grease_1"), physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport1GIn21", GetPhysicalVolumeByName("Grease_2"), physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport1GIn31", GetPhysicalVolumeByName("Grease_3"), physicPhotoCathodeSupportPMT1, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport1GOut11", physicPhotoCathodeSupportPMT1, GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport1GOut12", physicPhotoCathodeSupportPMT1, GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport1GOut13", physicPhotoCathodeSupportPMT1, GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1GIn11", GetPhysicalVolumeByName("Grease_1"), GetPhysicalVolumeByName("support1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1GIn21", GetPhysicalVolumeByName("Grease_2"), GetPhysicalVolumeByName("support1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1GIn31", GetPhysicalVolumeByName("Grease_3"), GetPhysicalVolumeByName("support1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1GOut11", GetPhysicalVolumeByName("support1"), GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1GOut12", GetPhysicalVolumeByName("support1"), GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport1GOut13", GetPhysicalVolumeByName("support1"), GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
 
   //PMT2
-  new G4LogicalBorderSurface("surfaceCathodeSupport2GIn11", GetPhysicalVolumeByName("Grease_1"), physicPhotoCathodeSupportPMT2, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport2GIn21", GetPhysicalVolumeByName("Grease_2"), physicPhotoCathodeSupportPMT2, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport2GIn31", GetPhysicalVolumeByName("Grease_3"), physicPhotoCathodeSupportPMT2, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport2GOut11", physicPhotoCathodeSupportPMT2, GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport2GOut12", physicPhotoCathodeSupportPMT2, GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport2GOut13", physicPhotoCathodeSupportPMT2, GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2GIn11", GetPhysicalVolumeByName("Grease_1"), GetPhysicalVolumeByName("support2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2GIn21", GetPhysicalVolumeByName("Grease_2"), GetPhysicalVolumeByName("support2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2GIn31", GetPhysicalVolumeByName("Grease_3"), GetPhysicalVolumeByName("support2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2GOut11", GetPhysicalVolumeByName("support2"), GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2GOut12", GetPhysicalVolumeByName("support2"), GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport2GOut13", GetPhysicalVolumeByName("support2"), GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
   
   //PMT3
   //Bottom PMT not in contact
 
   //PMT4
-  new G4LogicalBorderSurface("surfaceCathodeSupport4GIn11", GetPhysicalVolumeByName("Grease_1"), physicPhotoCathodeSupportPMT4, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport4GIn21", GetPhysicalVolumeByName("Grease_2"), physicPhotoCathodeSupportPMT4, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport4GIn31", GetPhysicalVolumeByName("Grease_3"), physicPhotoCathodeSupportPMT4, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport4GOut11", physicPhotoCathodeSupportPMT4, GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport4GOut12", physicPhotoCathodeSupportPMT4, GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport4GOut13", physicPhotoCathodeSupportPMT4, GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4GIn11", GetPhysicalVolumeByName("Grease_1"), GetPhysicalVolumeByName("support4"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4GIn21", GetPhysicalVolumeByName("Grease_2"), GetPhysicalVolumeByName("support4"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4GIn31", GetPhysicalVolumeByName("Grease_3"), GetPhysicalVolumeByName("support4"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4GOut11", GetPhysicalVolumeByName("support4"), GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4GOut12", GetPhysicalVolumeByName("support4"), GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport4GOut13", GetPhysicalVolumeByName("support4"), GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
 
   //PMT5
-  new G4LogicalBorderSurface("surfaceCathodeSupport5GIn11", GetPhysicalVolumeByName("Grease_1"), physicPhotoCathodeSupportPMT5, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport5GIn21", GetPhysicalVolumeByName("Grease_2"), physicPhotoCathodeSupportPMT5, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport5GIn31", GetPhysicalVolumeByName("Grease_3"), physicPhotoCathodeSupportPMT5, surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport5GOut11", physicPhotoCathodeSupportPMT5, GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport5GOut12", physicPhotoCathodeSupportPMT5, GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
-  new G4LogicalBorderSurface("surfaceCathodeSupport5GOut13", physicPhotoCathodeSupportPMT5, GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5GIn11", GetPhysicalVolumeByName("Grease_1"), GetPhysicalVolumeByName("support5"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5GIn21", GetPhysicalVolumeByName("Grease_2"), GetPhysicalVolumeByName("support5"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5GIn31", GetPhysicalVolumeByName("Grease_3"), GetPhysicalVolumeByName("support5"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5GOut11", GetPhysicalVolumeByName("support5"), GetPhysicalVolumeByName("Grease_1"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5GOut12", GetPhysicalVolumeByName("support5"), GetPhysicalVolumeByName("Grease_2"), surfaceCathodeSupport);
+  new G4LogicalBorderSurface("surfaceCathodeSupport5GOut13", GetPhysicalVolumeByName("support5"), GetPhysicalVolumeByName("Grease_3"), surfaceCathodeSupport);
 
   //*//Bottom PMT
   surfaceCathodeSupportBottom = new G4OpticalSurface("surfaceCathodeSupportBottom", unified, ground, dielectric_dielectric);

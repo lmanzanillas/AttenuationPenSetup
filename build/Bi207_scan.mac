@@ -1,7 +1,7 @@
 #Scan with Bi
 /PEN/det/setDetectorType 4
-/PEN/det/setNTargetSamples 1
-/PEN/det/setTargetThickness 10.0 mm
+/PEN/det/setNTargetSamples 2
+/PEN/det/setTargetThickness 1.7 mm
 /PEN/det/setTargetMat PVT_structure
 #/PEN/det/setABS 6.0
 #/PEN/det/setLY 4500.0

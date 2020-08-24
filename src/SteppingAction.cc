@@ -153,11 +153,11 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 					if(pvName == "trigger_pmt"){
  						fEventAction->AddDetectedPhoton();
 					}
-					else if(pvName == "main_pmt_1"){
-						fEventAction->AddLeftPhoton();
-					}
 					else if(pvName == "main_pmt_2"){
 						fEventAction->AddRightPhoton();
+					}
+					else if(pvName == "main_pmt_1"){
+						fEventAction->AddLeftPhoton();
 					}
 					else if(pvName == "main_pmt_3"){
 						fEventAction->AddBottomPhoton();
