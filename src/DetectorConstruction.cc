@@ -551,7 +551,7 @@ void DetectorConstruction::DefineMaterials(){
           Absorb[absorbEntries]=(varAbsorbLength)*m;
           absorbEntries++;
       }
-  }else G4cout<<"Error opening file: "<<ReadAbsorb<<G4endl;
+  }else G4cout<<"Error opening file: "<<ReadAbsorbLength<<G4endl;
   ReadAbsorb.close();
   absorbEntries--;
 
@@ -594,7 +594,7 @@ void DetectorConstruction::DefineMaterials(){
           wlsAbsorb[wlsAbsorbEntries]=varAbsorbLength*mm;
           wlsAbsorbEntries++;
       }
-  }else G4cout<<"Error opening file: "<<ReadWLSAbsorb<<G4endl;
+  }else G4cout<<"Error opening file: "<<ReadWLSAbsorbLength<<G4endl;
   ReadWLSAbsorb.close();
   wlsAbsorbEntries--;
 

@@ -65,7 +65,9 @@ void PenMaterials::Construct()
     G4Element* Cs = new G4Element("Cesium", "Cs", 55., 132.905*g/mole);
     G4Element* K = new G4Element("Potassium", "K", 19., 39.098*g/mole);
 //    G4Element* B = new G4Element("Boron", "B", 5., 10.811*g/mole);
-
+	G4Element* Ce = new G4Element("Cerium", "Ce", 58., 140.116 * g / mole);
+	G4Element* Gd = new G4Element("Gadolinium", "Gd", 64., 157.25 * g / mole);
+	G4Element* Ga = new G4Element("Gallium", "Ga", 31., 69.723 * g / mole);
 
     // ------------------------------------------------------------------------
     // Isotopes
@@ -113,7 +115,8 @@ void PenMaterials::Construct()
     
     // temperature of experimental hall is controlled at 20 degree.
     const G4double expTemp = STP_Temperature+20.*kelvin;
-    
+	const double hc = 6.62606876 * 2.99792458 * 100. / 1.602176462;
+
     density = universe_mean_density;
     
     // ------------------------------------------------------------------------
@@ -128,10 +131,10 @@ void PenMaterials::Construct()
                                          3.e-18*pascal,
                                          2.73*kelvin);
     G4int vacEntries=0;
-    G4double vacEmit[500];
-    G4double vacIndex[500];
-    G4double vacAbsorb[500];
-    G4double vacEnergy[500];
+    G4double vacEmit[500] = { 0 };
+    G4double vacIndex[500] = { 0 };
+    G4double vacAbsorb[500] = { 0 };
+    G4double vacEnergy[500] = { 0 };
     G4double vacAbsorbconst=100*m;
     G4double pWavelength;
     
@@ -143,6 +146,9 @@ void PenMaterials::Construct()
         while(!ReadVac.eof()){
             G4String filler;
             ReadVac>>pWavelength>>filler>>vacEmit[vacEntries];
+			if (ReadVac.eof()) {
+				break;
+			}
             vacEnergy[vacEntries]=(1240/pWavelength)*eV; //convert wavelength to eV
             vacIndex[vacEntries]=1.0;
             vacAbsorb[vacEntries]=vacAbsorbconst;
@@ -172,9 +178,9 @@ void PenMaterials::Construct()
     
     G4int airEntries = 18;
     G4int air_ref_index_Entries = 0;
-    G4double air_ref_index_Energy[18];
-    G4double air_ref_index_value[18];
-    G4double airbulkAbsorb[18];
+    G4double air_ref_index_Energy[18] = { 0 };
+    G4double air_ref_index_value[18] = { 0 };
+    G4double airbulkAbsorb[18] = { 0 };
 
 
     std::ifstream Read_air_ref_index;
@@ -184,6 +190,9 @@ void PenMaterials::Construct()
         while(!Read_air_ref_index.eof()){
             G4String filler;
             Read_air_ref_index >> pWavelength >> filler >> air_ref_index_value[air_ref_index_Entries];
+			if (Read_air_ref_index.eof()) {
+				break;
+			}
             air_ref_index_Energy[air_ref_index_Entries] = (1240/pWavelength)*eV;
             airbulkAbsorb[air_ref_index_Entries] = 1.0e6*mm;
             air_ref_index_Entries++;
@@ -199,6 +208,32 @@ void PenMaterials::Construct()
     airMPT->AddProperty("RINDEX",air_ref_index_Energy,air_ref_index_value,air_ref_index_Entries);
     airMPT->AddProperty("ABSLENGTH", air_ref_index_Energy, airbulkAbsorb, airEntries);
     Air->SetMaterialPropertiesTable(airMPT);
+
+	// ------------------------------------------------------------------------
+	// Germanium
+	// ------------------------------------------------------------------------
+
+	G4double moleMass;
+	G4double A;  // atomic mass
+	G4double Z;  // atomic number
+	G4String name, symbol;
+
+
+	auto Ge70 = new G4Isotope("Ge70", Z = 32, A = 70, moleMass = 69.9 * g / mole);
+	auto Ge72 = new G4Isotope("Ge72", Z = 32, A = 72, moleMass = 71.92 * g / mole);
+	auto Ge73 = new G4Isotope("Ge73", Z = 32, A = 73, moleMass = 72.92 * g / mole);
+	auto Ge74 = new G4Isotope("Ge74", Z = 32, A = 74, moleMass = 73.92 * g / mole);
+	auto Ge76 = new G4Isotope("Ge76", Z = 32, A = 76, moleMass = 75.92 * g / mole);
+	auto GeEn = new G4Element("enrichedGermanium", "GeEn", 5);
+	GeEn->AddIsotope(Ge70, 0.001);
+	GeEn->AddIsotope(Ge72, 0.001);
+	GeEn->AddIsotope(Ge73, 0.001);
+	GeEn->AddIsotope(Ge74, 0.130);
+	GeEn->AddIsotope(Ge76, 0.867);
+	auto matGeEn = new G4Material("EnGe", 5.539 * g / cm3, 1, kStateSolid);
+	matGeEn->AddElement(GeEn, 1.0);
+
+	auto matGeNa = new G4Material("NaGe", 32, 72.61 * g / mole, 5.23 * g / cm3);
 
 //
 // DEFINE WATER IN MULTIPLE WAYS
@@ -269,7 +304,98 @@ void PenMaterials::Construct()
     graphite_structure->AddElement(C_graphite, natoms=1);
     graphite_structure->GetIonisation()->SetMeanExcitationEnergy(78.0*eV); // NIST material database
 
-    
+		// ------------------------------------------------------------------------
+	// GAGG
+	// ------------------------------------------------------------------------
+	G4Material* matGAGG = new G4Material(name = "GAGG", density = 6.63 * g / cm3, ncomponents = 5);
+	matGAGG->AddElement(Ce, natoms = 1);
+	matGAGG->AddElement(Gd, natoms = 3);
+	matGAGG->AddElement(Al, natoms = 2);
+	matGAGG->AddElement(Ga, natoms = 3);
+	matGAGG->AddElement(O, natoms = 12);
+
+	const G4int NUMENTRIES_GAGG = 11;
+	G4double Scnt_PP_GAGG[NUMENTRIES_GAGG] = { hc / 600. * eV, hc / 590. * eV, hc / 580. * eV, hc / 570. * eV, hc / 560. * eV, hc / 550. * eV, hc / 540. * eV, hc / 530. * eV, hc / 520. * eV,hc / 510. * eV,hc / 500. * eV };
+	G4double Scnt_FAST_GAGG[NUMENTRIES_GAGG] = { 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, 1.0, 0.8, 0.5, 0.2 };
+	G4double Scnt_SLOW_GAGG[NUMENTRIES_GAGG] = { 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, 1.0, 0.8, 0.5, 0.2 };
+	G4double Scnt_RefractiveIndex_GAGG[NUMENTRIES_GAGG] = { 1.87, 1.87, 1.87, 1.87, 1.87, 1.87, 1.87, 1.87, 1.87, 1.87, 1.87 };
+	G4double Scnt_AbsorptionLength_GAGG[NUMENTRIES_GAGG] = { 760.6 * mm, 760.6 * mm, 760.6 * mm, 760.6 * mm, 760.6 * mm, 760.6 * mm ,760.6 * mm, 760.6 * mm, 363.8 * mm, 106.7 * mm, 22.18 * mm };
+
+	const G4int NUMENTRIES_GAGG_ELECTRON_ENERGY = 11;
+	const G4int NUMENTRIES_GAGG_PROTON_ENERGY = 11;
+	G4double Scnt_Electron_Energy_GAGG[NUMENTRIES_GAGG_ELECTRON_ENERGY] = { 0.0001 * keV, 0.3 * keV, 15. * keV, 22. * keV, 40. * keV, 60. * keV, 100. * keV,300. * keV, 662. * keV, 1. * MeV, 10. * GeV };
+	G4double Scnt_Proton_Energy_GAGG[NUMENTRIES_GAGG_PROTON_ENERGY] = { 0.0001 * keV, 10. * keV, 100. * keV, 1. * MeV, 2. * MeV,3.3 * MeV, 5.5 * MeV,8.8 * MeV, 10. * MeV, 2700. * MeV, 10. * GeV };
+	G4double Scnt_Electron_Yield_GAGG[NUMENTRIES_GAGG_ELECTRON_ENERGY] = { 0,6.254,927.64,1391.,2640.,3919.,6671.,20637.5,46000.,69486.,6.9486E+08 };
+	G4double Scnt_Proton_Yield_GAGG[NUMENTRIES_GAGG_PROTON_ENERGY] = { 0,137.58,1500.,15634.,31964,55033,95544,183444,222356,1.8761E+08,6.9486E+08 };
+	G4double Scnt_Alpha_Yield_GAGG[NUMENTRIES_GAGG_PROTON_ENERGY] = { 0,137.58,1500.,15634.,31964,55033,95544,183444,222356,1.8761E+08,6.9486E+08 };
+	G4double Scnt_Ion_Yield_GAGG[NUMENTRIES_GAGG_PROTON_ENERGY] = { 0,137.58,1500.,15634.,31964,55033,95544,183444,222356,1.8761E+08,6.9486E+08 };
+
+	G4MaterialPropertiesTable* Scnt_MPT_GAGG = new G4MaterialPropertiesTable();
+	Scnt_MPT_GAGG->AddProperty("FASTCOMPONENT", Scnt_PP_GAGG, Scnt_FAST_GAGG, NUMENTRIES_GAGG);
+	Scnt_MPT_GAGG->AddProperty("SLOWCOMPONENT", Scnt_PP_GAGG, Scnt_SLOW_GAGG, NUMENTRIES_GAGG);
+	Scnt_MPT_GAGG->AddProperty("RINDEX", Scnt_PP_GAGG, Scnt_RefractiveIndex_GAGG, NUMENTRIES_GAGG);
+	Scnt_MPT_GAGG->AddProperty("ABSLENGTH", Scnt_PP_GAGG, Scnt_AbsorptionLength_GAGG, NUMENTRIES_GAGG);
+	Scnt_MPT_GAGG->AddProperty("ELECTRONSCINTILLATIONYIELD", Scnt_Electron_Energy_GAGG, Scnt_Electron_Yield_GAGG, NUMENTRIES_GAGG_ELECTRON_ENERGY);
+	Scnt_MPT_GAGG->AddProperty("PROTONSCINTILLATIONYIELD", Scnt_Proton_Energy_GAGG, Scnt_Proton_Yield_GAGG, NUMENTRIES_GAGG_PROTON_ENERGY);
+	Scnt_MPT_GAGG->AddProperty("ALPHASCINTILLATIONYIELD", Scnt_Proton_Energy_GAGG, Scnt_Alpha_Yield_GAGG, NUMENTRIES_GAGG_PROTON_ENERGY);
+	Scnt_MPT_GAGG->AddProperty("IONSCINTILLATIONYIELD", Scnt_Proton_Energy_GAGG, Scnt_Ion_Yield_GAGG, NUMENTRIES_GAGG_PROTON_ENERGY);
+	Scnt_MPT_GAGG->AddConstProperty("RESOLUTIONSCALE", 1.0);
+	Scnt_MPT_GAGG->AddConstProperty("FASTTIMECONSTANT", 88. * ns);
+	Scnt_MPT_GAGG->AddConstProperty("SLOWTIMECONSTANT", 258. * ns);
+	Scnt_MPT_GAGG->AddConstProperty("YIELDRATIO", 0.91);
+	matGAGG->SetMaterialPropertiesTable(Scnt_MPT_GAGG);
+
+	// ------------------------------------------------------------------------
+	// PTFE
+	// ------------------------------------------------------------------------
+
+	auto matPTFE = new G4Material("PTFE", density = 2.2 * g / cm3, 2);
+	matPTFE->AddElement(C, natoms = 1);
+	matPTFE->AddElement(F, natoms = 2);
+	const G4int NUMENTRIES_PTFE = 11;
+	G4double ptfe_PP[NUMENTRIES_PTFE] = { hc / 600. * eV, hc / 590. * eV, hc / 580. * eV, hc / 570. * eV, hc / 560. * eV, hc / 550. * eV, hc / 540. * eV, hc / 530. * eV, hc / 520. * eV,hc / 510. * eV,hc / 500. * eV };
+	G4double ptfe_RefractiveIndex[NUMENTRIES_PTFE] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	G4double ptfe_AbsorptionLength[NUMENTRIES_PTFE] = { 2 * um, 2 * um, 2 * um, 2 * um, 2 * um, 2 * um, 2 * um, 2 * um, 2 * um, 2 * um, 2 * um };
+	G4MaterialPropertiesTable* PTFE_MPT = new G4MaterialPropertiesTable();
+	PTFE_MPT->AddProperty("RINDEX", ptfe_PP, ptfe_RefractiveIndex, NUMENTRIES_PTFE);
+	PTFE_MPT->AddProperty("ABSLENGTH", ptfe_PP, ptfe_AbsorptionLength, NUMENTRIES_PTFE);
+	matPTFE->SetMaterialPropertiesTable(PTFE_MPT);
+
+	// ------------------------------------------------------------------------
+	// LN2
+	// ------------------------------------------------------------------------
+
+	G4Material* matLN2 = nistManager->FindOrBuildMaterial("G4_lN2");
+	const G4int NUMENTRIES_LN2 = 11;
+	G4double LN2_PP[NUMENTRIES_LN2] = { hc / 545. * eV, hc / 520. * eV, hc / 495. * eV, hc / 480. * eV, hc / 467. * eV, hc / 450. * eV, hc / 431. * eV, hc / 425. * eV, hc / 419. * eV,hc / 412. * eV,hc / 407. * eV };
+	G4double LN2_RefractiveIndex[NUMENTRIES_LN2] = { 1.2053, 1.2053, 1.2053, 1.2053, 1.2053, 1.2053, 1.2053, 1.2053, 1.2053, 1.2053, 1.2053 };
+	G4double LN2_AbsorptionLength[NUMENTRIES_LN2] = { 50 * cm, 50 * cm,50 * cm ,50 * cm ,50 * cm ,50 * cm ,50 * cm ,50 * cm ,50 * cm ,50 * cm ,50 * cm };
+	G4MaterialPropertiesTable* LN2_MPT = new G4MaterialPropertiesTable();
+	LN2_MPT->AddProperty("RINDEX", LN2_PP, LN2_RefractiveIndex, NUMENTRIES_LN2);
+	LN2_MPT->AddProperty("ABSLENGTH", LN2_PP, LN2_AbsorptionLength, NUMENTRIES_LN2);
+	matLN2->SetMaterialPropertiesTable(LN2_MPT);
+
+	// ------------------------------------------------------------------------
+	// LAr
+	// ------------------------------------------------------------------------
+
+	G4Material* matLAr = nistManager->FindOrBuildMaterial("G4_lAr");
+
+	// ------------------------------------------------------------------------
+	// Silicon Oil
+	// ------------------------------------------------------------------------
+
+	G4Material* silicone_oil = new G4Material(name = "silicone oil", density = 0.963 * g / cm3, ncomponents = 4);
+	silicone_oil->AddElement(C, natoms = 2);
+	silicone_oil->AddElement(H, natoms = 6);
+	silicone_oil->AddElement(Si, natoms = 1);
+	silicone_oil->AddElement(O, natoms = 1);
+	const G4int NUMENTRIES_SilOil = 11;
+	G4double Scnt_RefractiveIndex_silicone_oil[NUMENTRIES_SilOil] = { 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406 }; //{ 1.58, 1.58, 1.58 };//
+	G4MaterialPropertiesTable* Scnt_MPT_silicone_oil = new G4MaterialPropertiesTable();
+	Scnt_MPT_silicone_oil->AddProperty("RINDEX", Scnt_PP_GAGG, Scnt_RefractiveIndex_silicone_oil, NUMENTRIES_SilOil);
+	silicone_oil->SetMaterialPropertiesTable(Scnt_MPT_silicone_oil);
+
     // ------------------------------------------------------------------------
     // Epoxy (binders)
     // ------------------------------------------------------------------------
@@ -281,8 +407,8 @@ void PenMaterials::Construct()
     Epoxy->AddElement(O,1);
     Epoxy->AddElement(Si,1);
     
-    G4double ref_index_Energy[500];
-    G4double ref_index_value[500];
+    G4double ref_index_Energy[500] = { 0 };
+    G4double ref_index_value[500] = { 0 };
     ;
     
     for (int i = 0; i < 500; i++){
@@ -301,6 +427,9 @@ void PenMaterials::Construct()
         while(!Read_ref_index.eof()){
             G4String filler;
             Read_ref_index >> pWavelength >> filler >> ref_index_value[ref_index_Entries];
+			if (Read_ref_index.eof()) {
+				break;
+			}
             ref_index_Energy[ref_index_Entries] = (1240/pWavelength)*eV;
             ref_index_Entries++;
         }
@@ -381,11 +510,11 @@ void PenMaterials::Construct()
     
     G4int absorbEntries = 0;
     G4double varabsorblength;
-    G4double absorbEnergy[500];
-    G4double Absorb[500];
-    G4double scintEnergyZnS[500];
-    G4double scintEmitZnS[500];
-    G4double scintReflect[500];
+    G4double absorbEnergy[500] = { 0 };
+    G4double Absorb[500] = { 0 };
+    G4double scintEnergyZnS[500] = { 0 };
+    G4double scintEmitZnS[500] = { 0 };
+    G4double scintReflect[500] = { 0 };
     
     // G4double wlsabsorblength;
     for (int i = 0; i < 500; i++){
@@ -404,6 +533,9 @@ void PenMaterials::Construct()
         while(!ReadScint.eof()){
             G4String filler;
             ReadScint>>pWavelength>>filler>>scintEmitZnS[scintEntries];
+			if (ReadScint.eof()) {
+				break;
+			}
             scintEnergyZnS[scintEntries] = (1240/pWavelength)*eV;         //convert wavelength to eV
             // scintSlow[scintEntries] = 0.0;  //arbitrary test value
             scintEntries++;
@@ -424,6 +556,9 @@ void PenMaterials::Construct()
         while(!Readabsorb.eof()){
             G4String filler;
             Readabsorb >> pWavelength >> filler >> varabsorblength;
+			if (Readabsorb.eof()) {
+				break;
+			}
             absorbEnergy[absorbEntries] = (1240/pWavelength)*eV;
             Absorb[absorbEntries] = varabsorblength * m;
             absorbEntries++;
@@ -450,6 +585,9 @@ void PenMaterials::Construct()
      while(!Read_ref_index2.eof()){
        G4String filler;
        Read_ref_index2 >> pWavelength  >> filler >> ref_index_value[ref_index_Entries];
+	   if (Read_ref_index2.eof()) {
+		   break;
+	   }
 	 ref_index_Energy[ref_index_Entries] = (1240/pWavelength)*eV;
 	 scintReflect[ref_index_Entries] = 1.0;
 
@@ -522,8 +660,8 @@ void PenMaterials::Construct()
     pvt_structure->GetIonisation()->SetMeanExcitationEnergy(64.7*eV); // NIST G4_PLASTIC_SC_VINYLTOLUENE
 
 
-    G4double scintEnergyPVT[115];
-    G4double scintEmitPVT[115];
+    G4double scintEnergyPVT[115] = { 0 };
+    G4double scintEmitPVT[115] = { 0 };
     G4int scintEntries_pvt = 115;
     // Read primary emission spectrum
     Scint_file ="../properties/PVTEmission.dat";
@@ -535,6 +673,9 @@ void PenMaterials::Construct()
 	 
             G4String filler;
             ReadPVTScint>>pWavelength>>filler>>scintEmitPVT[scintEntries];
+			if (ReadPVTScint.eof()) {
+				break;
+			}
             scintEnergyPVT[scintEntries] = (1240./pWavelength)*eV;         //convert wavelength to eV
             scintEntries++;
 	    if (scintEntries > (scintEntries_pvt-1)){ G4cout << " ERROR < scint entries  out of range > " << G4endl; break;}
@@ -546,9 +687,9 @@ void PenMaterials::Construct()
      
     // Read primary bulk absorption
     G4int abs_entries_pvt = 500;
-    G4double absorbEnergy_pvt[500];
-    G4double Absorb_pvt[500];
-    G4double Rayleigh_pvt[500];
+    G4double absorbEnergy_pvt[500] = { 0 };
+    G4double Absorb_pvt[500] = { 0 };
+    G4double Rayleigh_pvt[500] = { 0 };
     Readabsorblength = "../properties/PVTAbsorption.dat";
     
     Readabsorb.open(Readabsorblength);
@@ -557,6 +698,9 @@ void PenMaterials::Construct()
         while(!Readabsorb.eof()){
             G4String filler;
             Readabsorb >> pWavelength >> filler >> varabsorblength;
+			if (Readabsorb.eof()) {
+				break;
+			}
             absorbEnergy_pvt[absorbEntries] = (1240./pWavelength)*eV;
             Absorb_pvt[absorbEntries] = varabsorblength * m;
             Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
@@ -570,8 +714,8 @@ void PenMaterials::Construct()
 
     // Read scintillator refractive index
     G4int entries_pvt_rindex = 11;
-    G4double ref_index_Energy_pvt[11];
-    G4double ref_index_value_pvt[11];
+    G4double ref_index_Energy_pvt[11] = { 0 };
+    G4double ref_index_value_pvt[11] = { 0 };
 
     std::ifstream  Read_ref_index_pvt;
     ref_index_emit = "../properties/PVTRefIndex.dat";
@@ -581,6 +725,9 @@ void PenMaterials::Construct()
         while(!Read_ref_index_pvt.eof()){
             G4String filler;
             Read_ref_index_pvt >> pWavelength >> filler >> ref_index_value_pvt[ref_index_Entries];
+			if (Read_ref_index_pvt.eof()) {
+				break;
+			}
             ref_index_Energy_pvt[ref_index_Entries] = (1240./pWavelength)*eV;
 	    //G4cout<<ref_index_Entries<<" rindex "<<ref_index_value_pvt[ref_index_Entries]<<" energy "<<ref_index_Energy_pvt[ref_index_Entries]<<G4endl;
             ref_index_Entries++;
@@ -631,8 +778,8 @@ void PenMaterials::Construct()
     Tyvek->AddElement(H,4);
     
     G4int teflon_entries = 0;
-    G4double teflon_energy[500];
-    G4double teflon_reflect[500];
+    G4double teflon_energy[500] = { 0 };
+    G4double teflon_reflect[500] = { 0 };
     G4double zero[500];
     
     std::ifstream Read_teflon;
@@ -645,6 +792,9 @@ void PenMaterials::Construct()
             G4double wavelength;
             G4double teflon_ref_coeff;
             Read_teflon >> wavelength >> filler >> teflon_ref_coeff;
+			if (Read_teflon.eof()) {
+				break;
+			}
             teflon_energy[teflon_entries] = (1240/wavelength)*eV;
             teflon_reflect[teflon_entries] = teflon_ref_coeff;
             zero[teflon_entries] = 1e-6;
@@ -683,14 +833,14 @@ void PenMaterials::Construct()
     
     //Fiber WLS Absorption  ************************************
     
-    G4double coreIndex[500];
-    G4double cladIndex1[500];
+    G4double coreIndex[500] = { 0 };
+    G4double cladIndex1[500] = { 0 };
     // G4double cladIndex2[500];
     G4double coreIndexconst = 1.59;
     G4double cladIndexconst1 = 1.49;
     // G4double cladIndexconst2 = 1.42;
-    G4double wls_fiber_Energy[500];
-    G4double wls_fiber_Absorb[500];
+    G4double wls_fiber_Energy[500] = { 0 };
+    G4double wls_fiber_Absorb[500] = { 0 };
     G4int wls_fiber_Entries = 0;
     
     G4double wls_fiber_absorblength;
@@ -703,6 +853,9 @@ void PenMaterials::Construct()
         while(!ReadWLSfiberabsorb.eof()){
             G4String filler;
             ReadWLSfiberabsorb >> pWavelength >> filler >> wls_fiber_absorblength;
+			if (ReadWLSfiberabsorb.eof()) {
+				break;
+			}
             wls_fiber_Energy[wls_fiber_Entries] = (1240/pWavelength)*eV;
             wls_fiber_Absorb[wls_fiber_Entries] = 1.0*wls_fiber_absorblength*m;
             
@@ -719,8 +872,8 @@ void PenMaterials::Construct()
     ReadWLSfiberabsorb.close();
     
     //Fiber WLS Emission  ****************************************
-    G4double wls_fiber_emit_Energy[500];
-    G4double wls_fiber_Emit[500];
+    G4double wls_fiber_emit_Energy[500] = { 0 };
+    G4double wls_fiber_Emit[500] = { 0 };
     G4int wls_fiber_emit_Entries = 0;
     
     std::ifstream ReadWLSfibemit;
@@ -733,6 +886,9 @@ void PenMaterials::Construct()
             G4String filler;
             ;
             ReadWLSfibemit >> pWavelength >> filler >> wls_fiber_Emit[wls_fiber_emit_Entries];
+			if (ReadWLSfibemit.eof()) {
+				break;
+			}
             wls_fiber_emit_Energy[wls_fiber_emit_Entries] = (1240/pWavelength)*eV;
             wls_fiber_emit_Entries++;
         }
@@ -745,8 +901,8 @@ void PenMaterials::Construct()
     //Fiber Bulk Absorption ****************************************
     G4int bulk_fiber_Entries = 0;
     G4double bulk_fiber_absorblength;
-    G4double bulk_fiber_Absorb[500];
-    G4double bulk_fiber_Energy[500];
+    G4double bulk_fiber_Absorb[500] = { 0 };
+    G4double bulk_fiber_Energy[500] = { 0 };
     std::ifstream ReadFiberBulk;
     
     //  G4String FiberBulk = "../properties/fiberPSTabsorb.dat";
@@ -756,8 +912,10 @@ void PenMaterials::Construct()
     if(ReadFiberBulk.is_open()){
         while(!ReadFiberBulk.eof()){
             G4String filler;
-            ;
             ReadFiberBulk >> pWavelength >> filler >> bulk_fiber_absorblength;
+			if (ReadFiberBulk.eof()) {
+				break;
+			}
             bulk_fiber_Energy[bulk_fiber_Entries] = (1240/pWavelength)*eV;
             bulk_fiber_Absorb[bulk_fiber_Entries] = 1.0*bulk_fiber_absorblength*m;
             bulk_fiber_Entries++;
@@ -769,8 +927,8 @@ void PenMaterials::Construct()
     
     
     //PMMA Fiber Bulk Absorption  ******************************************
-    G4double pmma_fiber_bulkAbsorb[500];
-    G4double pmma_fiber_Energy[500];
+    G4double pmma_fiber_bulkAbsorb[500] = { 0 };
+    G4double pmma_fiber_Energy[500] = { 0 };
     G4double pmma_fiber_absorblength;
     G4int pmma_fiber_Entries = 0;
     
@@ -782,8 +940,10 @@ void PenMaterials::Construct()
     if(Read_pmma_fib_Bulk.is_open()){
         while(!Read_pmma_fib_Bulk.eof()){
             G4String filler;
-            ;
             Read_pmma_fib_Bulk >> pWavelength >> filler >> pmma_fiber_absorblength;
+			if (Read_pmma_fib_Bulk.eof()) {
+				break;
+			}
             pmma_fiber_Energy[pmma_fiber_Entries] = (1240/pWavelength)*eV;
             pmma_fiber_bulkAbsorb[pmma_fiber_Entries] = 1.0*pmma_fiber_absorblength*m;
             pmma_fiber_Entries++;
@@ -862,6 +1022,9 @@ void PenMaterials::Construct()
         while(!ReadGreaseBulk.eof()){
             G4String filler;
             ReadGreaseBulk>>pWavelength>>filler>>Greaseabsorblength;
+			if (ReadGreaseBulk.eof()) {
+				break;
+			}
             GreaseEnergy[GreaseEntries]=(1240/pWavelength)*eV;
             GreasebulkAbsorb[GreaseEntries]=Greaseabsorblength*m;
             GreaseIndex[GreaseEntries]=GreaseIndexconst;
@@ -994,9 +1157,9 @@ void PenMaterials::Construct()
     materialVikuiti->AddElement(C, number_of_atoms=10);
 
     G4int vikuiti_entries = 0;
-    G4double vikuiti_energy[202];
-    G4double vikuiti_reflect[202];
-    G4double zero_vikuiti[202];
+    G4double vikuiti_energy[202] = { 0 };
+    G4double vikuiti_reflect[202] = { 0 };
+    G4double zero_vikuiti[202] = { 0 };
 
     std::ifstream Read_vikuiti;
     G4String vikuiti_file = "../properties/vikuiti.dat";
@@ -1008,6 +1171,9 @@ void PenMaterials::Construct()
             G4double wavelength;
             G4double vikuiti_ref_coeff;
             Read_vikuiti >> wavelength >> filler >> vikuiti_ref_coeff;
+			if (Read_vikuiti.eof()) {
+				break;
+			}
             vikuiti_energy[vikuiti_entries] = (1240./wavelength)*eV;
             vikuiti_reflect[vikuiti_entries] = vikuiti_ref_coeff;
             zero_vikuiti[vikuiti_entries] = 1e-6;
@@ -1054,9 +1220,9 @@ void PenMaterials::Construct()
     //G4Material* matererialGlassPMT =  nistManager->FindOrBuildMaterial("G4_Pyrex_Glass");
     G4MaterialPropertiesTable *MPT_GlassPMT = new G4MaterialPropertiesTable();
     G4int glassPMTEntries = 400;
-    G4double glassPMTRindex[400];
-    G4double glassPMTEnergy[400];
-    G4double glassPMTAbs[400];
+    G4double glassPMTRindex[400] = { 0 };
+    G4double glassPMTEnergy[400] = { 0 };
+    G4double glassPMTAbs[400] = { 0 };
     std::ifstream Read_glassPMT;
     G4String glassPMT_file = "../properties/Rindex_real_glass_pmt.txt";
 
@@ -1066,6 +1232,9 @@ void PenMaterials::Construct()
         while(!Read_glassPMT.eof()){
                 G4double wavelength, glass_rindex;
                 Read_glassPMT >> wavelength >> glass_rindex;
+				if (Read_glassPMT.eof()) {
+					break;
+				}
                 glassPMTEnergy[counter_glass] = (1240./wavelength)*eV;
                 glassPMTRindex[counter_glass] = glass_rindex;
                 glassPMTAbs[counter_glass] = 1*m;
