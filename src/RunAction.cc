@@ -89,27 +89,51 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   stream_abs << std::fixed << std::setprecision(2) <<fDetector->GetABS();
   G4String abs_string = stream_abs.str();
   G4String s_LY = "_LY_"+std::to_string((int)fDetector->GetTargetMaterial()->GetMaterialPropertiesTable()->GetConstProperty("SCINTILLATIONYIELD"))+"ph_MeV_ABS_";
-  G4String s_detector_type = "_Det_"+std::to_string(fDetector->GetDetectorType())+"_";
-  std::stringstream stream_SigmaAlpha;
-  stream_SigmaAlpha << std::fixed << std::setprecision(2) <<fDetector->GetSigAlpha();
-  G4String s_SigAlpha ="_SigAlpha_"+ stream_SigmaAlpha.str();
-  std::stringstream stream_PMT_reflectivity;
-  stream_PMT_reflectivity << std::fixed << std::setprecision(2) <<fDetector->GetPMTReflectivity();
-  G4String s_PMT_reflectivity ="_PmtReflec_"+ stream_PMT_reflectivity.str();
-  G4String s_Target_Material = fDetector->GetTargetMaterialName();
+  G4String s_detector_type = "_Det_"+std::to_string(fDetector->GetDetectorType());
+  //SigmaAlpha sides
+  std::stringstream stream_SigmaAlphaSides;
+  stream_SigmaAlphaSides << std::fixed << std::setprecision(2) <<fDetector->GetSigAlphaSides();
+  G4String s_SigAlphaSides ="_SigAlphaSides_"+ stream_SigmaAlphaSides.str();
+  //SigmaAlpha top bottom
+  std::stringstream stream_SigmaAlphaBottom;
+  stream_SigmaAlphaBottom << std::fixed << std::setprecision(2) <<fDetector->GetSigAlphaBottom();
+  G4String s_SigAlphaBottom ="_SigAlphaBottom_"+ stream_SigmaAlphaBottom.str();
+  //transmittance side pmts
+  std::stringstream stream_PMT_reflectivitySides;
+  stream_PMT_reflectivitySides << std::fixed << std::setprecision(2) <<fDetector->GetPMTReflectivitySides();
+  G4String s_PMT_reflectivitySides ="_PmtReflecSide_"+ stream_PMT_reflectivitySides.str();
+  //transmittance bottom pmt
+  std::stringstream stream_PMT_reflectivityBottom;
+  stream_PMT_reflectivityBottom << std::fixed << std::setprecision(2) <<fDetector->GetPMTReflectivityBottom();
+  G4String s_PMT_reflectivityBottom ="_PmtReflecBottom_"+ stream_PMT_reflectivityBottom.str();
+  //Target material
+  G4String s_Target_Material ="_"+ fDetector->GetTargetMaterialName();
+  //n Samples
+  G4String s_n_targets = "_"+std::to_string(fDetector->GetNumberOfTargetSamples())+"_samples";
+  //Thickness
+  std::stringstream stream_thickness;
+  stream_thickness << std::fixed << std::setprecision(2) <<2*fDetector->GetTargetSampleThickness();
+  G4String s_target_thickness ="_"+ stream_thickness.str()+"mm";
+
 
   G4String directorName = "../output/"+sourceString+"_"
 	  +datetime()
 	  +positionX 
 	  +s_LY
 	  +abs_string
-	  +s_SigAlpha
-	  +s_PMT_reflectivity
-	  +s_detector_type+
+	  +s_detector_type
+          +s_n_targets
+          +s_target_thickness
 	  +s_Target_Material+"/";
 
   mkdir(directorName, 0777);
-  fFileName = directorName+fDetector->GetDetectorName()+".csv";
+  
+  fFileName = directorName+fDetector->GetDetectorName()
+	  +s_SigAlphaSides
+	  +s_SigAlphaBottom
+	  +s_PMT_reflectivitySides
+	  +s_PMT_reflectivityBottom
+          +".csv";
 
   fMan->SetVerboseLevel(0);
   fMan->OpenFile(fFileName);

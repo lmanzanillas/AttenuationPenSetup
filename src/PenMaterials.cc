@@ -19,7 +19,7 @@ using namespace std;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 PenMaterials::PenMaterials()
 {
-    lightYieldAntracene=20000/MeV; //Anthracene
+    lightYieldAntracene=15500/MeV; //Anthracene
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

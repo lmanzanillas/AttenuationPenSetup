@@ -27,7 +27,8 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
  commandSetAlphaSigma(0),
  commandSetAlphaSigmaSides(0),
  commandSetAlphaSigmaBottom(0),
- commandSetPMTReflectivity(0),
+ commandSetPMTReflectivitySides(0),
+ commandSetPMTReflectivityBottom(0),
  commandSetCollimatorPositionX(0),
  commandSetLY(0),
  commandSetResolutionLY(0),
@@ -124,10 +125,15 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   commandSetAlphaSigmaBottom->AvailableForStates(G4State_Init,G4State_Idle);
   commandSetAlphaSigmaBottom->SetToBeBroadcasted(false);
 
-  commandSetPMTReflectivity = new G4UIcmdWithADouble("/PEN/det/setPMTReflectivity",this);
-  commandSetPMTReflectivity->SetGuidance("Set PMT reflectivity");
-  commandSetPMTReflectivity->AvailableForStates(G4State_Init,G4State_Idle);
-  commandSetPMTReflectivity->SetToBeBroadcasted(false);
+  commandSetPMTReflectivitySides = new G4UIcmdWithADouble("/PEN/det/setPMTReflectivity",this);
+  commandSetPMTReflectivitySides->SetGuidance("Set PMT reflectivity sides");
+  commandSetPMTReflectivitySides->AvailableForStates(G4State_Init,G4State_Idle);
+  commandSetPMTReflectivitySides->SetToBeBroadcasted(false);
+
+  commandSetPMTReflectivityBottom = new G4UIcmdWithADouble("/PEN/det/setPMTReflectivityBottom",this);
+  commandSetPMTReflectivityBottom->SetGuidance("Set PMT reflectivity bottom");
+  commandSetPMTReflectivityBottom->AvailableForStates(G4State_Init,G4State_Idle);
+  commandSetPMTReflectivityBottom->SetToBeBroadcasted(false);
 
   commandSetDetectorName = new G4UIcmdWithAString("/PEN/det/setDetName",this);
   commandSetDetectorName->SetGuidance("Set detetector file name.");
@@ -165,7 +171,8 @@ DetectorMessenger::~DetectorMessenger()
   delete commandSetAlphaSigma;
   delete commandSetAlphaSigmaSides;
   delete commandSetAlphaSigmaBottom;
-  delete commandSetPMTReflectivity;
+  delete commandSetPMTReflectivitySides;
+  delete commandSetPMTReflectivityBottom;
   delete commandSetCollimatorPositionX;
   delete commandSetLY;
   delete commandSetResolutionLY;
@@ -239,8 +246,12 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	fDetector->SetSigAlphaBottom(commandSetAlphaSigmaBottom->GetNewDoubleValue(newValue));
    }
 
-   if(command == commandSetPMTReflectivity){
-	fDetector->SetPMTReflectivity(commandSetPMTReflectivity->GetNewDoubleValue(newValue));
+   if(command == commandSetPMTReflectivitySides){
+	fDetector->SetPMTReflectivitySides(commandSetPMTReflectivitySides->GetNewDoubleValue(newValue));
+   }
+
+   if(command == commandSetPMTReflectivityBottom){
+	fDetector->SetPMTReflectivityBottom(commandSetPMTReflectivityBottom->GetNewDoubleValue(newValue));
    }
 
    if(command == commandSetAbsorptionFile){
