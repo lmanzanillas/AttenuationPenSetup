@@ -247,8 +247,8 @@ void DetectorConstruction::SetABS(G4double value){
   G4double emission;
   G4double rindex;
 
-  G4double wlPhotonEnergy[102]  = {0};
-  G4double ABSORPTION_PEN[102] = {0};
+  G4double wlPhotonEnergy[191]  = {0};
+  G4double ABSORPTION_PEN[191] = {0};
 
   G4int absEntries = 0;
   ifstream ReadAbs;
@@ -277,6 +277,7 @@ void DetectorConstruction::SetABS(G4double value){
   assert(sizeof(ABSORPTION_PEN) == sizeof(wlPhotonEnergy));
   MPT_PEN->AddProperty("ABSLENGTH",    wlPhotonEnergy, ABSORPTION_PEN, nEntries1)->SetSpline(true); // *
   G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
 }
 
 void DetectorConstruction::SetSigAlpha(G4double value){
@@ -414,9 +415,9 @@ void DetectorConstruction::DefineMaterials(){
   G4double emission;
   G4double rindex;
 
-  G4double wlPhotonEnergy[102]  = {0};
-  G4double ABSORPTION_PEN[102] = {0};
-  G4double RINDEX_PEN[102] = {0};
+  G4double wlPhotonEnergy[191]  = {0};
+  G4double ABSORPTION_PEN[191] = {0};
+  G4double RINDEX_PEN[191] = {0};
 
   G4int absEntries = 0;
   ifstream ReadAbs;
@@ -434,6 +435,7 @@ void DetectorConstruction::DefineMaterials(){
       wlPhotonEnergy[absEntries] = (1240./wavelength)*eV;
       ABSORPTION_PEN[absEntries] = (varAbsorLength)*mm;
       RINDEX_PEN[absEntries] = rindex;
+      //cout<<" absEntries "<<absEntries<<" wlPhotonEnergy "<<wlPhotonEnergy[absEntries]<<" ABSORPTION_PEN "<<ABSORPTION_PEN[absEntries]<<" RINDEX_PEN "<<RINDEX_PEN[absEntries]<<endl;
       absEntries++;
     }
   }
@@ -445,8 +447,7 @@ void DetectorConstruction::DefineMaterials(){
   const G4int nEntries1 = sizeof(wlPhotonEnergy)/sizeof(G4double);
   assert(sizeof(RINDEX_PEN) == sizeof(wlPhotonEnergy));
   assert(sizeof(ABSORPTION_PEN) == sizeof(wlPhotonEnergy));
-  assert(sizeof(EMISSION_PEN) == sizeof(wlPhotonEnergy));
-  
+  cout<<" nEntries1 "<<nEntries1<<endl; 
   MPT_PEN = new G4MaterialPropertiesTable();
 
   MPT_PEN->AddProperty("RINDEX",       wlPhotonEnergy, RINDEX_PEN, nEntries1)->SetSpline(true);
@@ -878,13 +879,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //reflector foils
   G4VisAttributes* visulaAttributesReflectors = new G4VisAttributes(G4Colour::Red());
   visulaAttributesReflectors->SetVisibility(true);
-  visulaAttributesReflectors->SetForceSolid(true);
+  visulaAttributesReflectors->SetForceSolid(false);
   logicReflectorFoilAroundEJ212Foil->SetVisAttributes(visulaAttributesReflectors);
   logicReflectorFoilBox->SetVisAttributes(visulaAttributesReflectors);
 
   // Active Detectors
   G4VisAttributes* visulaAttributesDetectors = new G4VisAttributes(G4Colour::Yellow());
-  visulaAttributesDetectors->SetVisibility(false);
+  visulaAttributesDetectors->SetVisibility(true);
   visulaAttributesDetectors->SetForceSolid(true);
   logicBoxActivePhotoCathodePMT->SetVisAttributes(visulaAttributesDetectors);
   //Source container
@@ -903,7 +904,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //logicBoxEmptyInsidePMT->SetVisAttributes(visualAttributesInactiveMaterials);
   logicBoxPhotoCathodeSupport->SetVisAttributes(visualAttributesInactiveMaterials);
   G4VisAttributes* visualAttributesInactive = new G4VisAttributes(G4Colour::Black());
-  visualAttributesInactive->SetVisibility(false);
+  visualAttributesInactive->SetVisibility(true);
   visualAttributesInactive->SetForceSolid(true);
   visualAttributesInactive->SetForceAuxEdgeVisible(true);
   logicBoxPMTShell->SetVisAttributes(visualAttributesInactive);
@@ -1069,25 +1070,31 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   case 1:
      //Attenuation setup consisting on pen samples coupled to two PMTs and the trigger setup that can be moved
      for(int iSample = 0; iSample < nSamples; iSample++){
-  	//physicPenStackedSamples = new G4PVPlacement(0, 
   	                        new G4PVPlacement(0, 
-				G4ThreeVector(0,iSample*2*halfPenSampleThickness+iSample*SpaceBetweenSamples,0),
+				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
+				//G4ThreeVector(0,iSample*2*halfPenSampleThickness,0),
 				penLogicBox,
 				"target_"+std::to_string(iSample+1),
 				logicWorldBox,false,iSample,false);
-        //optical grease between PEN samples
-        if(iSample < nSamples){
-         	//physicPenGrease = new G4PVPlacement(0, 
-         	                new G4PVPlacement(0, 
-				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples - halfPenSampleThickness - SpaceBetweenSamples/2.,0),
-				//G4ThreeVector(0,iSample*2*halfPenSampleThickness,0),
-				logicGreasePEN,
-				"Grease_"+std::to_string(iSample+1),
-				logicWorldBox,false,iSample,false);
-        
-        }
- 
+
+                                //grease left PMT1
+				new G4PVPlacement(0, 
+                                G4ThreeVector(-(halfPenSampleLength + SpaceBetweenSamples/2.),iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
+                                logicGreasePENPMT,
+                                "Grease_PMT1_"+std::to_string(iSample+1),
+                                logicWorldBox,false,iSample,false);
+                                //grease right PMT2
+				new G4PVPlacement(0, 
+                                G4ThreeVector(+(halfPenSampleLength + SpaceBetweenSamples/2.),iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
+                                logicGreasePENPMT,
+                                "Grease_PMT2_"+std::to_string(iSample+1),
+                                logicWorldBox,false,iSample,false);
+
+        G4cout<<" name "<<"target_"+std::to_string(iSample+1)<<G4endl;
+        //no optical grease between PEN samples here
+        ////
      }
+     
      //Collimator, Trigger and light guide placement, with triggerFoilEJ212 PMT
      physicTriggerFoilEJ212 = new G4PVPlacement(0,
 			G4ThreeVector(0.*mm + fDetectorCollimatorX,positionYTriggerFoil,0), 
@@ -1102,15 +1109,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			logicWorldBox, false, 0, false);
      }
      physicCollimator = new G4PVPlacement(rotationMatrixCollimator, 
-			G4ThreeVector(0*mm + fDetectorCollimatorX,fDetectorCollimatorY,0), 
-			logicCollimator, 
-			"collimator", 
-			logicWorldBox, false, 0, false);
+     			G4ThreeVector(0*mm + fDetectorCollimatorX,fDetectorCollimatorY,0), 
+     			logicCollimator, 
+     			"collimator", 
+     			logicWorldBox, false, 0, false);
      physicSourceContainer = new G4PVPlacement(rotationMatrixCollimator,
                         G4ThreeVector(0*mm + fDetectorCollimatorX,fSourceContainerY,0),
                         logicSourceContainer,
                         "sourceContainer",
                         logicWorldBox, false, 0, false);
+
      physicLightGuide = new G4PVPlacement(rotationMatrix4, 
 			G4ThreeVector(xPositionLightGuide,yPositionLightGuide, 0),
 			logicLightGuidePMMA,
@@ -1121,14 +1129,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			logicTubeSiGrease, 
 			"grease", 
 			logicWorldBox, false, 0, false);
-     //PMT for trigger
+     //Trigger pmt
      physicBoxPhotoCathodeSupport = new G4PVPlacement(rotationMatrix,
                         G4ThreeVector(xPositionInactivePMTPhotoCathode,0,0),
                         logicBoxPhotoCathodeSupport,
                         "inactive_detector1",
                         logicLightGuidePMMA,false,0,false);
 
-      physicActivePhotoCathodeTriggerPMT = new G4PVPlacement(rotationMatrix,
+     physicActivePhotoCathodeTriggerPMT = new G4PVPlacement(rotationMatrix,
                         G4ThreeVector(xPositionPMTPhotoCathode,yPositionLightGuide,0),
                         logicBoxActivePhotoCathodePMT,
                         "trigger_pmt",
@@ -1144,32 +1152,29 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                         logicBoxEmptyInsidePMT,
                         "void1",
                         logicBoxPMTShell, false, 0, false);
-
-
      // Main PMT placements
      // PMT1
-     physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix,
-                        G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0),
-                        logicBoxActivePhotoCathodePMT,
-                        "main_pmt_1",
-                        logicWorldBox, false, 0, false);
+     physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix, 
+			G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0), 
+			logicBoxActivePhotoCathodePMT, 
+			"main_pmt_1", 
+			logicWorldBox, false, 0, false);
      physicPhotoCathodeSupportPMT1 = new G4PVPlacement(rotationMatrix,
-                        G4ThreeVector(-(halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0),
-                        logicBoxPhotoCathodeSupport,
-                        "support1",
-                        logicWorldBox, false, 0, false);
+			G4ThreeVector(-(halfPenSampleLength + inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support1", 
+			logicWorldBox, false, 0, false);
      //PMT2
-     physicActivePhotoCathodePMT2 = new G4PVPlacement(rotationMatrix1,
-                        G4ThreeVector((halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness), 0, 0),
-                        logicBoxActivePhotoCathodePMT,
-                        "main_pmt_2",
-                        logicWorldBox, false, 0, false);
+     physicActivePhotoCathodePMT2 = new G4PVPlacement(rotationMatrix1, 
+			G4ThreeVector((halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0), 
+			logicBoxActivePhotoCathodePMT, 
+			"main_pmt_2", 
+			logicWorldBox, false, 0, false);
      physicPhotoCathodeSupportPMT2 = new G4PVPlacement(rotationMatrix1,
-                        G4ThreeVector((halfPenSampleLength + inactivePhotoCathodePMTThickness), 0, 0),
-                        logicBoxPhotoCathodeSupport,
-                        "support2",
-                        logicWorldBox, false, 0, false);
-
+			G4ThreeVector((halfPenSampleLength + inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0), 
+			logicBoxPhotoCathodeSupport, 
+			"support2", 
+			logicWorldBox, false, 0, false);
      break;
 
      case 2:

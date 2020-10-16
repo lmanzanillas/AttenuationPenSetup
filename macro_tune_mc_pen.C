@@ -1,7 +1,7 @@
 //Macro to read geant4 simulated data
 //Author: Luis Manzanillas
 
-void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", int nCores = 1){
+void macro_tune_mc_pen(string stringDataName = "output/Bi207-17_04_2020-14-10-21", int nCores = 1){
        //declare trees to read data
        TTree *t_data_pmt1 = new TTree("t_data_pmt1","data txt pmt1");
        TTree *t_data_pmt2 = new TTree("t_data_pmt2","data txt pmt2");
@@ -12,7 +12,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
 
 
        //TString Base_name = "/remote/ceph/group/gedet/data/pen/2020/2020-01-28_8182cf65_lt_6pmt_first_data/data_luis_settings2/text_data_for_fit/Spectrum_hv_optimal_setup_2_PEN_S2_30_30_1mm3_settings2_5PMTs-center-collimator-without-reflector-tape-grease3-measurement-2_pmt_";
-       TString Base_name = "/remote/ceph/group/gedet/data/pen/2020/2020-01-28_8182cf65_lt_6pmt_first_data/data_luis_settings2/text_data_for_fit/Spectrum_hv_optimal_setup_2_EJ200_SoLid_30_30_1mm3_settings2_5PMTs-center-collimator-without-reflector-tape-grease1-measurement-2_pmt_";
+       TString Base_name = "/remote/ceph/group/gedet/data/pen/2020/2020-01-28_8182cf65_lt_6pmt_first_data/data_luis_settings2/text_data_for_fit/Spectrum_hv_optimal_setup_2_PEN_S2_30_30_1mm3_settings2_5PMTs-center-collimator-without-reflector-tape-grease3-measurement-2_pmt_";
        TString name_pmt1 = Base_name;
        name_pmt1 +="1.txt";
        t_data_pmt1->ReadFile(name_pmt1,"HV:amplitude:charge");         
@@ -40,11 +40,11 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        t_data_pmt5 -> SetBranchAddress("charge",&charge);
        t_data_pmt6 -> SetBranchAddress("charge",&charge);
 
-       double min_Charge_x = 5.;
+       double min_Charge_x = 1.;
        double max_Charge_x = 1105.;
        double bin_Charge_width = 3.;
        int n_Charge_bins = (int)((max_Charge_x-min_Charge_x)/bin_Charge_width);
-       double min_Charge_x_all = 50.;
+       double min_Charge_x_all = 5.;
        double max_Charge_x_all = 4000.;
        double bin_Charge_width_all = 5.;
        int n_Charge_bins_all = (int)((max_Charge_x_all-min_Charge_x_all)/bin_Charge_width_all);
@@ -227,7 +227,8 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        
        for(int i = 0; i < nEntries; ++i){
 	       t_geant4_data->GetEntry(i);
-	       if(EdepTrigger>15.){
+               double total_charge = NPMT1+NPMT2+NPMT4+NPMT5;
+	       if(EdepTrigger>15. && NPMT1 > 0 && NPMT2 > 0 && NPMT4 >0 && NPMT5 >0 && NPMT3 > 0){
                     h_total_charge_mc_bruto->Fill(NPMT1+NPMT2+NPMT3+NPMT4+NPMT5);
                     h_total_charge_mc_sidePMTs_bruto->Fill(NPMT1+NPMT2+NPMT4+NPMT5);
                }
@@ -237,7 +238,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        int bin_max_mc_total = h_total_charge_mc_bruto->GetMaximumBin();
        double x_bin_max_mc_total = h_total_charge_mc_bruto->GetXaxis()->GetBinCenter(bin_max_mc_total);
        TF1* f_gaus_total_mc = new TF1("f_gaus_total_mc","gaus",x_bin_max_mc_total-200.,x_bin_max_mc_total+200.);
-       h_total_charge_mc_bruto->Fit(f_gaus_total_mc,"R","",x_bin_max_mc_total-150.,x_bin_max_mc_total+150.);
+       h_total_charge_mc_bruto->Fit(f_gaus_total_mc,"R","",x_bin_max_mc_total-100.,x_bin_max_mc_total+100.);
        //h_total_charge_mc_bruto->Fit(f_gaus_total_mc,"R","",2500,3000.);
        double peak_1MeV_total_mc = f_gaus_total_mc->GetParameter(1);
 
@@ -246,7 +247,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        double x_bin_max_mc_lateral = h_total_charge_mc_sidePMTs_bruto->GetXaxis()->GetBinCenter(bin_max_mc_lateral);
        //TF1* f_gaus_lateral_mc = new TF1("f_gaus_lateral_mc","gaus",x_bin_max_mc_lateral-200.,x_bin_max_mc_lateral+200.);
        TF1* f_gaus_lateral_mc = new TF1("f_gaus_lateral_mc","gaus",1500.,2000.);
-       h_total_charge_mc_sidePMTs_bruto->Fit(f_gaus_lateral_mc,"R","",x_bin_max_mc_lateral-100.,x_bin_max_mc_lateral+100.);
+       h_total_charge_mc_sidePMTs_bruto->Fit(f_gaus_lateral_mc,"R","",x_bin_max_mc_lateral-70.,x_bin_max_mc_lateral+70.);
        //h_total_charge_mc_sidePMTs_bruto->Fit(f_gaus_lateral_mc,"R","",1500,2000.);
        double peak_1MeV_lateral_mc = f_gaus_lateral_mc->GetParameter(1);
 
@@ -254,10 +255,10 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        cout<<" mc peak lateral "<<peak_1MeV_lateral_mc<<" mc peak all "<<peak_1MeV_total_mc<<" mc all/lateral "<<peak_1MeV_total_mc/peak_1MeV_lateral_mc<<endl;       
 
        double scale_factor_lateral = peak_1MeV_lateral_mc/peak_1MeV_lateral_data;
-       if(scale_factor_lateral < 0.3){ scale_factor_lateral = 1.0;}
+       if(scale_factor_lateral < 0.2){ scale_factor_lateral = 1.0;}
        cout<<" scale_factor_lateral "<<scale_factor_lateral<<endl;
        double scale_factor_bottom = (peak_1MeV_total_mc - peak_1MeV_lateral_mc)/(peak_1MeV_all_data - peak_1MeV_lateral_data);
-       if(scale_factor_bottom < 0.3) {scale_factor_bottom = 1.0;}
+       if(scale_factor_bottom < 0.1) {scale_factor_bottom = 1.0;}
        cout<<" scale_factor_bottom "<<scale_factor_bottom<<endl;
       
 
@@ -265,7 +266,7 @@ void macro_tune_mc(string stringDataName = "output/Bi207-17_04_2020-14-10-21", i
        for(int i = 0; i < nEntries; ++i){
 	       t_geant4_data->GetEntry(i);
 	       //if(EdepTrigger>20. && EdepTrigger<100.){
-	       if(EdepTrigger>15.){
+	       if(EdepTrigger>15. && NPMT1 > 0 && NPMT2 > 0 && NPMT4 >0 && NPMT5 >0 && NPMT3 > 0){
 		       h_edep_PEN1->Fill(EdepPEN1);
 		       h_edep_PEN2->Fill(EdepPEN2);
 		       h_edep_PEN3->Fill(EdepPEN3);
