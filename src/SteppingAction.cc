@@ -148,7 +148,8 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
                      			fEventAction->AddWaveLength(photonWL);
                      			fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
                      			fEventAction->AddIsPhotonDetected(isOpticalPhotonDeathDetected);
-                                        //G4cout<<" lenght "<<theTrack->GetTrackLength ()<<" photonWL "<<photonWL<<G4endl; 
+                                        //G4cout<<" lenght "<<theTrack->GetTrackLength ()<<" photonWL "<<photonWL<<G4endl;
+                                        //G4cout<<" photon detected "<<G4endl; 
 					G4String pvName = thePostPV->GetName();
 					if(pvName == "trigger_pmt"){
  						fEventAction->AddDetectedPhoton();

@@ -1324,11 +1324,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     case 3:
     for(int iSample = 0; iSample < nSamples; iSample++){
   	//physicPenStackedSamples = new G4PVPlacement(0, 
-  	                        new G4PVPlacement(0, 
-				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*5.*um,0),
-				penLogicBox,
-				"target_"+std::to_string(iSample+1),
-				logicWorldBox,false,iSample,false);
+                                 new G4PVPlacement(0,
+                                G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
+                                //G4ThreeVector(0,iSample*2*halfPenSampleThickness,0),
+                                penLogicBox,
+                                "target_"+std::to_string(iSample+1),
+                                logicWorldBox,false,iSample,false); 
+
+                                new G4PVPlacement(0,
+                                G4ThreeVector(-(halfPenSampleLength + SpaceBetweenSamples/2.),iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
+                                logicGreasePENPMT,
+                                "Grease_PMT1_"+std::to_string(iSample+1),
+                                logicWorldBox,false,iSample,false);
 
      }
 
@@ -1351,11 +1358,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                         logicBoxPMTShell, false, 0, false);
 
      // Main PMT placements
-     physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix, 
-			G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness),0,0), 
-			logicBoxActivePhotoCathodePMT, 
-			"main_pmt_1", 
-			logicWorldBox, false, 0, false);
+     physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix,
+                        G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0),
+                        logicBoxActivePhotoCathodePMT,
+                        "main_pmt_1",
+                        logicWorldBox, false, 0, false);
+     physicPhotoCathodeSupportPMT1 = new G4PVPlacement(rotationMatrix,
+                        G4ThreeVector(-(halfPenSampleLength + inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0),
+                        logicBoxPhotoCathodeSupport,
+                        "support1",
+                        logicWorldBox, false, 0, false);
      break;
 
     case 4:
@@ -1974,6 +1986,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       ReadEff>>wavelength>>filler>>cathodeEfficiency;
       photocathEnergy[effCounter] = (1240./wavelength)*eV;
       photoCathodeQuantumEfficiency[effCounter] = cathodeEfficiency/100.;
+      if(fDetectorType == 3){photoCathodeQuantumEfficiency[effCounter] = 1.;}
       //perfectEfficiency[effCounter] = 1.0;
       effCounter++;
       if(effCounter > 36){break;}

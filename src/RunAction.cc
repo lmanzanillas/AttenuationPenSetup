@@ -137,22 +137,29 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 
   fMan->SetVerboseLevel(0);
   fMan->OpenFile(fFileName);
-
-  fMan->CreateNtuple("PEN","Detailed MC Info");
-  fMan->CreateNtupleDColumn("Event_Number");
-  fMan->CreateNtupleDColumn("EDep_Trigger_FoilEJ212");
-  fMan->CreateNtupleDColumn("EDep_PEN_Stacked1");
-  fMan->CreateNtupleDColumn("EDep_PEN_Stacked2");
-  fMan->CreateNtupleDColumn("EDep_PEN_Stacked3");
-  fMan->CreateNtupleDColumn("EDep_PEN_Stacked4");
-  fMan->CreateNtupleDColumn("EDep_InactiveMaterial");
-  fMan->CreateNtupleDColumn("N_Trigger");
-  fMan->CreateNtupleDColumn("N_Left");
-  fMan->CreateNtupleDColumn("N_Right");
-  fMan->CreateNtupleDColumn("N_Bottom");
-  fMan->CreateNtupleDColumn("N_Front");
-  fMan->CreateNtupleDColumn("N_Back");
-  fMan->FinishNtuple();
+  if(fDetector->GetDetectorType()==3){
+ 	 fMan->CreateNtuple("PEN","Detailed MC Info");
+	 fMan->CreateNtupleDColumn("PhotonWL");
+	 fMan->CreateNtupleDColumn("PhotonDistance");
+	 fMan->CreateNtupleDColumn("IsPhotonDetected");
+	fMan->FinishNtuple();
+  }else{
+  	fMan->CreateNtuple("PEN","Detailed MC Info");
+	  fMan->CreateNtupleDColumn("Event_Number");
+	  fMan->CreateNtupleDColumn("EDep_Trigger_FoilEJ212");
+	  fMan->CreateNtupleDColumn("EDep_PEN_Stacked1");
+	  fMan->CreateNtupleDColumn("EDep_PEN_Stacked2");
+	  fMan->CreateNtupleDColumn("EDep_PEN_Stacked3");
+	  fMan->CreateNtupleDColumn("EDep_PEN_Stacked4");
+	  fMan->CreateNtupleDColumn("EDep_InactiveMaterial");
+	  fMan->CreateNtupleDColumn("N_Trigger");
+	  fMan->CreateNtupleDColumn("N_Left");
+	  fMan->CreateNtupleDColumn("N_Right");
+	  fMan->CreateNtupleDColumn("N_Bottom");
+	  fMan->CreateNtupleDColumn("N_Front");
+	  fMan->CreateNtupleDColumn("N_Back");
+	  fMan->FinishNtuple();
+  }
 
 }
 
