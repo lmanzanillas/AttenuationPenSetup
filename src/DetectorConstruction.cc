@@ -475,7 +475,7 @@ void DetectorConstruction::DefineMaterials(){
         while(!ReadScintPEN.eof()){
                  ReadScintPEN>>pWavelength>>PEN_EMISSION[nEntriesPEN];
                  PEN_WL_ENERGY[nEntriesPEN] = (1240./pWavelength)*eV;//convert wavelength to eV
- 	         //G4cout<<nEntriesPEN<<" wl "<<PEN_WL_ENERGY[nEntriesPEN]<<" "<<PEN_EMISSION[nEntriesPEN]<<G4endl;
+ 	         G4cout<<nEntriesPEN<<" wl "<<pWavelength<<" Energy "<<PEN_WL_ENERGY[nEntriesPEN]<<" "<<PEN_EMISSION[nEntriesPEN]<<G4endl;
                  nEntriesPEN++;
 	         if(nEntriesPEN > (line_count-1)){ G4cout << " entries completed " << G4endl; break;}
         }
@@ -483,10 +483,10 @@ void DetectorConstruction::DefineMaterials(){
   else
        G4cout << "Error opening file: " << Scint_file << G4endl;
   ReadScintPEN.close();
-  G4cout<<" nEntriesPEN "<<nEntriesPEN<<G4endl;
+  G4cout<<" nEntriesPEN "<<nEntriesPEN<<" line_count "<<line_count<<G4endl;
 
-  MPT_PEN->AddProperty("FASTCOMPONENT",PEN_WL_ENERGY, PEN_EMISSION, line_count)->SetSpline(true);
-  MPT_PEN->AddProperty("SLOWCOMPONENT",PEN_WL_ENERGY, PEN_EMISSION, line_count)->SetSpline(true);
+  MPT_PEN->AddProperty("FASTCOMPONENT",PEN_WL_ENERGY, PEN_EMISSION, line_count);
+  MPT_PEN->AddProperty("SLOWCOMPONENT",PEN_WL_ENERGY, PEN_EMISSION, line_count);
 
   MPT_PEN->AddConstProperty("SCINTILLATIONYIELD",fLY/MeV); // * 2.5 * PEN = PS, 10*PEN=PS
   MPT_PEN->AddConstProperty("RESOLUTIONSCALE",fRES); // * 1, 4, 8
@@ -1240,11 +1240,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			"grease", 
 			logicWorldBox, false, 0, false);
      //trigger pmt
+     
      physicBoxPhotoCathodeSupport = new G4PVPlacement(rotationMatrix,
                         G4ThreeVector(xPositionInactivePMTPhotoCathode,0,0),
                         logicBoxPhotoCathodeSupport,
                         "inactive_detector1",
                         logicLightGuidePMMA,false,0,false);
+     
 
      physicActivePhotoCathodeTriggerPMT = new G4PVPlacement(rotationMatrix,
                         G4ThreeVector(xPositionPMTPhotoCathode,yPositionLightGuide,0),
@@ -1330,19 +1332,21 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                 penLogicBox,
                                 "target_"+std::to_string(iSample+1),
                                 logicWorldBox,false,iSample,false); 
-
+                                /*    
                                 new G4PVPlacement(0,
                                 G4ThreeVector(-(halfPenSampleLength + SpaceBetweenSamples/2.),iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
                                 logicGreasePENPMT,
                                 "Grease_PMT1_"+std::to_string(iSample+1),
                                 logicWorldBox,false,iSample,false);
+                                */
 
      }
 
      //Setup to reproduce the spectrometer measurements, it consit of only 1 PMT
-
+     /*
+     
      physicBoxPhotoCathodeSupport = new G4PVPlacement(0,
-                        G4ThreeVector(0,(activePhotoCathodePMTThickness + inactivePhotoCathodePMTThickness),0),
+                        G4ThreeVector(0,(activePhotoCathodePMTThickness - inactivePhotoCathodePMTThickness),0),
                         logicBoxPhotoCathodeSupport,
                         "inactive_detector1",
                         logicBoxActivePhotoCathodePMT,false,0,false);
@@ -1356,18 +1360,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                         logicBoxEmptyInsidePMT,
                         "void1",
                         logicBoxPMTShell, false, 0, false);
-
+     */
      // Main PMT placements
      physicActivePhotoCathodePMT1 = new G4PVPlacement(rotationMatrix,
-                        G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness + 2*inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0),
+                        G4ThreeVector(-(halfPenSampleLength + activePhotoCathodePMTThickness), 0, 0),
                         logicBoxActivePhotoCathodePMT,
                         "main_pmt_1",
                         logicWorldBox, false, 0, false);
+     /*
      physicPhotoCathodeSupportPMT1 = new G4PVPlacement(rotationMatrix,
                         G4ThreeVector(-(halfPenSampleLength + inactivePhotoCathodePMTThickness + SpaceBetweenSamples), 0, 0),
                         logicBoxPhotoCathodeSupport,
                         "support1",
                         logicWorldBox, false, 0, false);
+     */
      break;
 
     case 4:
@@ -1592,6 +1598,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   surfaceGreaseTargetSides = new G4OpticalSurface("surfaceGreaseTargetSides",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetSides -> SetSigmaAlpha(fSigAlphaSides);
+  if(fDetectorType == 3){pmtReflectivitySides = 0.95;}
   G4double reflectivityGreaseSide[NUM] = {pmtReflectivitySides, pmtReflectivitySides};
   MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
   MPT_SurfaceSides -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
