@@ -107,12 +107,13 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
                //Was the photon absorbed by the absorption process
                
 	  	boundaryStatus=boundary->GetStatus();
+	        /*
                 if(theTrack->GetCurrentStepNumber() == 1){
 			fEventAction->AddWaveLength(photonWL);
                         fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
                         fEventAction->AddIsPhotonDetected(isOpticalPhotonDeathDetected);
                 }
-               
+                */
                 if(thePostPoint->GetProcessDefinedStep()->GetProcessName() =="OpAbsorption"){
                         G4int absorp = 2;
                         fEventAction->AddWaveLength(photonWL);
