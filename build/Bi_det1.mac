@@ -1,0 +1,18 @@
+/PEN/det/setDetectorType 1
+/PEN/det/setNTargetSamples 2
+/PEN/det/setTargetThickness 1.75 mm
+/PEN/det/setTargetLength 74.0 mm
+/PEN/det/setTargetWidth 20.0 mm
+/PEN/det/setTargetMat PEN
+/PEN/det/setLY 8000.
+/PEN/det/setABS 2.0
+/PEN/det/setCollimatorPositionX 0. mm
+/PEN/det/setSigAlpha 0.01
+/PEN/det/setSigAlphaSides 0.01
+/PEN/det/setSigAlphaBottom 0.01
+/PEN/det/setPMTReflectivity 0.91
+/PEN/det/setPMTReflectivityBottom 0.06
+/PEN/gun/sourcePositionX 0. mm
+/PEN/gun/sourceType 1
+
+/run/beamOn 10000000

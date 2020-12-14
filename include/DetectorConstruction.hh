@@ -101,7 +101,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double GetLY(){return fLY;};
     G4double GetRes(){return fRES;};
     G4double GetABS(){return AbsorptionLength;};
-    G4double GetSigAlpha(){return fSigAlpha;};
+    G4double GetSigAlpha(){return fSigAlphaPENAirTopBottom;};
     G4double GetSigAlphaSides(){return fSigAlphaSides;};
     G4double GetSigAlphaBottom(){return fSigAlphaBottom;};
     G4double GetPMTReflectivitySides(){return pmtReflectivitySides;};
@@ -134,7 +134,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4double fLY;
     G4double fRES;
     G4double AbsorptionLength;
-    G4double fSigAlpha;
+    G4double fSigAlphaPENAirTopBottom;
     G4double fSigAlphaSides;
     G4double fSigAlphaBottom;
     G4double pmtReflectivitySides;
@@ -208,7 +208,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4bool reflectorOn;
 
 
-    G4OpticalSurface* AirTarget;
+    G4OpticalSurface* surfaceAirTargetTopBottom;
+    G4OpticalSurface* surfaceAirTargetLongSide;
+    G4OpticalSurface* surfaceAirTargetShortSide;
     G4OpticalSurface* surfaceCathodeSupport;
     G4OpticalSurface* surfaceCathodeSupportBottom;
     G4OpticalSurface* surfaceGreaseTargetSides;
@@ -218,7 +220,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4MaterialPropertiesTable* MPT_PEN;
     G4MaterialPropertiesTable* MPT_GlassPMT;
     G4MaterialPropertiesTable* MPT_Target;
-    G4MaterialPropertiesTable* SMPT_AirTarget;
+    G4MaterialPropertiesTable* SMPT_surfaceAirTargetTopBottom;
     G4MaterialPropertiesTable* MPT_World;
     G4MaterialPropertiesTable* MPT_SurfaceBottom;
     G4MaterialPropertiesTable* MPT_SurfaceSides;

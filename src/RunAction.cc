@@ -98,6 +98,10 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   std::stringstream stream_SigmaAlphaBottom;
   stream_SigmaAlphaBottom << std::fixed << std::setprecision(2) <<fDetector->GetSigAlphaBottom();
   G4String s_SigAlphaBottom ="_SigAlphaBottom_"+ stream_SigmaAlphaBottom.str();
+  //SigmaAlpha top - bottom air
+  std::stringstream stream_SigmaAlphaTopBottomAir;
+  stream_SigmaAlphaTopBottomAir << std::fixed << std::setprecision(2) <<fDetector->GetSigAlpha();
+  G4String s_SigAlphaTopBottomAir ="_SigAlphaTopBottomAir_"+ stream_SigmaAlphaTopBottomAir.str();
   //transmittance side pmts
   std::stringstream stream_PMT_reflectivitySides;
   stream_PMT_reflectivitySides << std::fixed << std::setprecision(2) <<fDetector->GetPMTReflectivitySides();
@@ -131,6 +135,7 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   fFileName = directorName+fDetector->GetDetectorName()
 	  +s_SigAlphaSides
 	  +s_SigAlphaBottom
+          +s_SigAlphaTopBottomAir
 	  +s_PMT_reflectivitySides
 	  +s_PMT_reflectivityBottom
           +".csv";

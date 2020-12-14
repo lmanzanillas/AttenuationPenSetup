@@ -1,0 +1,16 @@
+#Scan with Bi
+/PEN/det/setDetectorType 3
+/PEN/det/setNTargetSamples 1
+/PEN/det/setTargetWidth 20. mm
+/PEN/det/setTargetLength 74.0 mm
+/PEN/det/setTargetMat PEN
+#/PEN/det/setABS 3.3
+/PEN/det/setLY 10000.0
+##SigmaAlpha top-bottom air
+/PEN/det/setSigAlpha 0.5
+##SigmaAlpha sides air
+/PEN/det/setSigAlphaSides 0.5
+/PEN/gun/sourcePositionX -15. mm
+/PEN/gun/sourceType 3
+
+/run/beamOn 2000
