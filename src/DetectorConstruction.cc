@@ -285,7 +285,7 @@ void DetectorConstruction::SetABS(G4double value){
 void DetectorConstruction::SetSigAlpha(G4double value){
   fSigAlphaPENAirTopBottom = value;
   surfaceAirTargetTopBottom -> SetSigmaAlpha(fSigAlphaPENAirTopBottom);
-  surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
+  //surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
    
   G4RunManager::GetRunManager()->ReinitializeGeometry();
   //UpdateGeometry();
@@ -708,9 +708,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   double halfAirBoxWidth = 5.*mm;
   double halfAirBoxLength = 0.5*mm;
   G4Box* airBoxLongSide = new G4Box("airBoxLongSide", halfPenSampleLength, halfPenSampleThickness, halfAirBoxWidth);
+  G4Box* airBoxMouldedSide = new G4Box("airBoxMouldedSide", halfPenSampleLength, SpaceBetweenSamples/2., halfPenSampleWidth);
   G4Box* airBoxShortSide = new G4Box("airBoxShortSide", halfAirBoxLength, halfPenSampleThickness, halfPenSampleWidth);
   G4LogicalVolume* logicAirBoxLongSide = new G4LogicalVolume(airBoxLongSide,materialAir,"airlong",0,0,0);
-  G4LogicalVolume* logicAirBoxShortSide = new G4LogicalVolume(airBoxShortSide,materialAir,"airShort",0,0,0);
+  G4LogicalVolume* logicAirBoxMouldedSide = new G4LogicalVolume(airBoxMouldedSide,materialAir,"airmoulded",0,0,0);
+  G4LogicalVolume* logicAirBoxShortSide = new G4LogicalVolume(airBoxShortSide,materialAir,"airshort",0,0,0);
 
   //EJ212 foil scintillator used for trigger
   double halfThicknessTriggerFoilEJ212 = 60.*um;//100 um thickness EJ foil for trigger, increase to take into account tape under the trigger system
@@ -926,8 +928,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   visualAttributesLightGuide->SetVisibility(true);
   //visualAttributesLightGuide->SetForceSolid(true);
   logicLightGuidePMMA->SetVisAttributes(visualAttributesLightGuide);
-  logicAirBoxLongSide->SetVisAttributes(visualAttributesLightGuide);
-  logicAirBoxShortSide->SetVisAttributes(visualAttributesLightGuide);
+  
+  G4VisAttributes* visualAttributesAirBoxes = new G4VisAttributes(G4Colour::Blue());
+   visualAttributesAirBoxes->SetVisibility(true);
+  logicAirBoxLongSide->SetVisAttributes(visualAttributesAirBoxes);
+  logicAirBoxShortSide->SetVisAttributes(visualAttributesAirBoxes);
+  logicAirBoxMouldedSide->SetVisAttributes(visualAttributesAirBoxes);
 
   G4double greaseHoleDiameter = diameterGreaseHole*mm;
   G4double greaseHoleDepth = depthGreaseHole*mm;
@@ -1102,6 +1108,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                 G4ThreeVector(+(halfPenSampleLength + SpaceBetweenSamples/2.),iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
                                 logicGreasePENPMT,
                                 "Grease_PMT2_"+std::to_string(iSample+1),
+                                logicWorldBox,false,iSample,false);
+
+				//Add air boxes to change surface properties on the sides of the samples
+				//Long sides 
+				new G4PVPlacement(0,
+				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,-halfPenSampleWidth-halfAirBoxWidth),
+                                logicAirBoxLongSide,
+                                "airBoxLongSideZPlus_"+std::to_string(iSample+1),
+                                logicWorldBox,false,iSample,false);
+
+				new G4PVPlacement(0,
+				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,+halfPenSampleWidth+halfAirBoxWidth),
+                                logicAirBoxLongSide,
+                                "airBoxLongSideZMinus_"+std::to_string(iSample+1),
                                 logicWorldBox,false,iSample,false);
 
 
@@ -1382,6 +1402,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                 "airBoxShortSideXMinus_"+std::to_string(iSample+1),
                                 logicWorldBox,false,iSample,false);
 
+                                //Top and botom air boxes
+                                new G4PVPlacement(0, 
+				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples - halfPenSampleThickness - SpaceBetweenSamples/2.,0),
+				logicAirBoxMouldedSide,
+				"airBoxMoulded_B_"+std::to_string(iSample+1),
+				logicWorldBox,false,iSample,false);
+
+                                new G4PVPlacement(0, 
+				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples + halfPenSampleThickness + SpaceBetweenSamples/2.,0),
+				logicAirBoxMouldedSide,
+				"airBoxMoulded_T_"+std::to_string(iSample+1),
+				logicWorldBox,false,iSample,false);
+
 
      }
 
@@ -1578,21 +1611,29 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   const G4int NUM = 2;
   G4double pp[NUM] = {2.038*eV, 4.144*eV};
+  G4double specularlobe[NUM] = {0.5, 0.5};
+  G4double specularspike[NUM] = {0.5, 0.5};
   //G4double reflectivityPEN[NUM] = {pmtReflectivityBottom,pmtReflectivityBottom};
-  //G4double efficiencyPEN[NUM] = {0.0, 0.0};
+  G4double efficiencyPEN[NUM] = {0.0, 0.0};
 
   surfaceAirTargetTopBottom = new G4OpticalSurface("surfaceAirTargetTopBottom",unified, ground, dielectric_dielectric);
   surfaceAirTargetTopBottom -> SetSigmaAlpha(fSigAlphaPENAirTopBottom);
 
+  SMPT_surfaceAirTargetTopBottom = new G4MaterialPropertiesTable();
+  SMPT_surfaceAirTargetTopBottom->AddProperty("EFFICIENCY",pp,efficiencyPEN,NUM);
+  SMPT_surfaceAirTargetTopBottom->AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
+  SMPT_surfaceAirTargetTopBottom->AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
+  surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
+
   surfaceAirTargetLongSide = new G4OpticalSurface("surfaceAirTargetLongSide", unified, ground, dielectric_dielectric);
   surfaceAirTargetLongSide -> SetSigmaAlpha(fSigAlphaSides);
+  surfaceAirTargetLongSide -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
 
   surfaceAirTargetShortSide = new G4OpticalSurface("surfaceAirTargetShortSide", unified, ground, dielectric_dielectric);
   surfaceAirTargetShortSide -> SetSigmaAlpha(fSigAlphaSides);
+  surfaceAirTargetShortSide -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
 
-  SMPT_surfaceAirTargetTopBottom = new G4MaterialPropertiesTable();
-  //SMPT_surfaceAirTargetTopBottom->AddProperty("EFFICIENCY",pp,efficiencyPEN,NUM);
-  surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
+   
 
   new G4LogicalBorderSurface("surfaceAirTargetTopBottomOut1", GetPhysicalVolumeByName("target_1"), physicWorldBox, surfaceAirTargetTopBottom);
   new G4LogicalBorderSurface("surfaceAirTargetTopBottomOut2", GetPhysicalVolumeByName("target_2"), physicWorldBox, surfaceAirTargetTopBottom);
@@ -1605,6 +1646,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   new G4LogicalBorderSurface("surfaceAirTargetTopBottomIn4", physicWorldBox, GetPhysicalVolumeByName("target_4"), surfaceAirTargetTopBottom);
 
   //Sides for type 3detector, spectrometer
+  new G4LogicalBorderSurface("surfaceAirTargetBottomOut1", GetPhysicalVolumeByName("target_1"), GetPhysicalVolumeByName("airBoxMoulded_B_1"), surfaceAirTargetTopBottom);
+  new G4LogicalBorderSurface("surfaceAirTargetTopOut1", GetPhysicalVolumeByName("target_1"), GetPhysicalVolumeByName("airBoxMoulded_T_1"), surfaceAirTargetTopBottom);
+
+  new G4LogicalBorderSurface("surfaceAirTargetBottomIn1", GetPhysicalVolumeByName("airBoxMoulded_B_1"), GetPhysicalVolumeByName("target_1"),  surfaceAirTargetTopBottom);
+  new G4LogicalBorderSurface("surfaceAirTargetTopIn1", GetPhysicalVolumeByName("airBoxMoulded_T_1"), GetPhysicalVolumeByName("target_1"),  surfaceAirTargetTopBottom);
+
   new G4LogicalBorderSurface("surfaceAirTargetLongSidePlusOut1", GetPhysicalVolumeByName("target_1"), GetPhysicalVolumeByName("airBoxLongSideZPlus_1"), surfaceAirTargetLongSide);
   new G4LogicalBorderSurface("surfaceAirTargetLongSideMinusOut1", GetPhysicalVolumeByName("target_1"), GetPhysicalVolumeByName("airBoxLongSideZMinus_1"), surfaceAirTargetLongSide);
   
