@@ -4,14 +4,14 @@
 /PEN/det/setTargetWidth 20. mm
 /PEN/det/setTargetLength 74.0 mm
 /PEN/det/setTargetMat PEN
-/PEN/det/setABS 100.0
+/PEN/det/setABS 1.0
 /PEN/det/setLY 10000.0
 ##SigmaAlpha top-bottom air
-/PEN/det/setSigAlpha 0.90
+/PEN/det/setSigAlpha 0.00
 ##SigmaAlpha sides air
-/PEN/det/setSigAlphaSides 0.90
+/PEN/det/setSigAlphaSides 0.10
 ##Start at -37 and then steps of 5 mm
 /PEN/gun/sourcePositionX -12. mm
 /PEN/gun/sourceType 3
 
-/run/beamOn 30000
+/run/beamOn 20000

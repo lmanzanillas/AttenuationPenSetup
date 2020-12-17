@@ -929,7 +929,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //visualAttributesLightGuide->SetForceSolid(true);
   logicLightGuidePMMA->SetVisAttributes(visualAttributesLightGuide);
   
-  G4VisAttributes* visualAttributesAirBoxes = new G4VisAttributes(G4Colour::Blue());
+  G4VisAttributes* visualAttributesAirBoxes = new G4VisAttributes(G4Colour::Gray());
    visualAttributesAirBoxes->SetVisibility(true);
   logicAirBoxLongSide->SetVisAttributes(visualAttributesAirBoxes);
   logicAirBoxShortSide->SetVisAttributes(visualAttributesAirBoxes);
@@ -1123,6 +1123,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                 logicAirBoxLongSide,
                                 "airBoxLongSideZMinus_"+std::to_string(iSample+1),
                                 logicWorldBox,false,iSample,false);
+
+                                //Top and botom air boxes
+                                new G4PVPlacement(0, 
+				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples - halfPenSampleThickness - SpaceBetweenSamples/2.,0),
+				logicAirBoxMouldedSide,
+				"airBoxMoulded_B_"+std::to_string(iSample+1),
+				logicWorldBox,false,iSample,false);
+
+                                new G4PVPlacement(0, 
+				G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples + halfPenSampleThickness + SpaceBetweenSamples/2.,0),
+				logicAirBoxMouldedSide,
+				"airBoxMoulded_T_"+std::to_string(iSample+1),
+				logicWorldBox,false,iSample,false);
 
 
 
@@ -1672,6 +1685,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double efficiency[NUM] = {0.0, 0.0};
   MPT_SurfaceBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
   MPT_SurfaceBottom -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
+  MPT_SurfaceBottom -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
+  MPT_SurfaceBottom -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
   surfaceGreaseTargetBottom -> SetMaterialPropertiesTable(MPT_SurfaceBottom);
 
   surfaceGreaseTargetMiddle = new G4OpticalSurface("surfaceGreaseTargetMiddle",unified, ground, dielectric_dielectric);
@@ -1683,6 +1698,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double reflectivityGreaseSide[NUM] = {pmtReflectivitySides, pmtReflectivitySides};
   MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
   MPT_SurfaceSides -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
+  MPT_SurfaceSides -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
+  MPT_SurfaceSides -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
   surfaceGreaseTargetSides -> SetMaterialPropertiesTable(MPT_SurfaceSides);
 
   //G4MaterialPropertiesTable* SMPT_Grease = new G4MaterialPropertiesTable();

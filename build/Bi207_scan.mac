@@ -6,11 +6,11 @@
 #/PEN/det/setABS 3.3
 #/PEN/det/setLY 8500.0
 /PEN/det/setCollimatorPositionX 0. mm
-/PEN/det/setSigAlpha 0.09
-/PEN/det/setSigAlphaSides 0.09
-/PEN/det/setSigAlphaBottom 0.09
-/PEN/det/setPMTReflectivity 0.09
-/PEN/det/setPMTReflectivityBottom 0.05
+/PEN/det/setSigAlpha 0.5
+/PEN/det/setSigAlphaSides 0.5
+/PEN/det/setSigAlphaBottom 0.5
+/PEN/det/setPMTReflectivity 0.12
+/PEN/det/setPMTReflectivityBottom 0.06
 /PEN/gun/sourcePositionX 0. mm
 /PEN/gun/sourceType 1
 
