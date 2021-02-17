@@ -100,7 +100,7 @@ MPT_PEN(nullptr)
   userActivePhotoCathodeLength = 23.0/2.*mm;
   userActivePhotoCathodeWidth = 23.0/2.*mm;
   fDetectorName = "PenAttenuationSetup";
-  fABSFile = "PEN_ABS_it_1";
+  fABSFile = "PEN_ABS_it_3";
   fVolName = "World";
   fSigAlphaPENAirTopBottom = 0.01;
   fSigAlphaSides = 0.01;
