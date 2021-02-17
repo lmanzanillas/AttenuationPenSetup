@@ -283,7 +283,7 @@ void DetectorConstruction::SetABS(G4double value){
 }
 
 void DetectorConstruction::SetSigAlpha(G4double value){
-  fSigAlphaPENAirTopBottom = value;
+  fSigAlphaPENAirTopBottom = (value * pi) / 180.;
   surfaceAirTargetTopBottom -> SetSigmaAlpha(fSigAlphaPENAirTopBottom);
   //surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
    
@@ -293,7 +293,7 @@ void DetectorConstruction::SetSigAlpha(G4double value){
 }
 
 void DetectorConstruction::SetSigAlphaSides(G4double value){
-  fSigAlphaSides=value;
+  fSigAlphaSides= (value * pi) / 180.;
   surfaceGreaseTargetSides -> SetSigmaAlpha(fSigAlphaSides);
   surfaceAirTargetLongSide -> SetSigmaAlpha(fSigAlphaSides);
   surfaceAirTargetShortSide -> SetSigmaAlpha(fSigAlphaSides);
@@ -305,7 +305,7 @@ void DetectorConstruction::SetSigAlphaSides(G4double value){
 }
 
 void DetectorConstruction::SetSigAlphaBottom(G4double value){
-  fSigAlphaBottom=value;
+  fSigAlphaBottom= (value * pi) /180.;
   surfaceGreaseTargetBottom -> SetSigmaAlpha(fSigAlphaBottom);
   surfaceGreaseTargetMiddle -> SetSigmaAlpha(fSigAlphaBottom);
   surfaceGreaseTargetBottom -> SetMaterialPropertiesTable(MPT_SurfaceBottom);
