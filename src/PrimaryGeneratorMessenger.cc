@@ -69,7 +69,7 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
   }
 
   if(command == fSourceEnergy){
-  	fAction->SetSourceType(3);
+  	//fAction->SetSourceType(3);
   	fAction->SetSourceEnergy(fSourceEnergy->GetNewDoubleValue(newValue));
   }
   if(command == fSourcePositionX){

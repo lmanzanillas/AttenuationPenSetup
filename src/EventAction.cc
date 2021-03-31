@@ -52,26 +52,24 @@ void EventAction::BeginOfEventAction(const G4Event* myEvent)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void EventAction::AddWaveLength(G4double waveLength){
 	if (fDetector ->GetDetectorType() == 3){
-	auto analysisManager = G4AnalysisManager::Instance();
-	analysisManager->FillNtupleDColumn(0, waveLength);
+		auto analysisManager = G4AnalysisManager::Instance();
+		analysisManager->FillNtupleDColumn(0, waveLength);
         }
-	//analysisManager->AddNtupleRow(0);
-
 }
 
 void EventAction::AddPhotonTravelledDistance(G4double photonTravelledDistance){
 	if (fDetector ->GetDetectorType() == 3){
-     auto analysisManager = G4AnalysisManager::Instance();
-     analysisManager->FillNtupleDColumn(1, photonTravelledDistance);
-     }
+     		auto analysisManager = G4AnalysisManager::Instance();
+     		analysisManager->FillNtupleDColumn(1, photonTravelledDistance);
+     	}
 }
 
 void EventAction::AddIsPhotonDetected(G4int isPhotonDetected){
 	if (fDetector ->GetDetectorType() == 3){
-     auto analysisManager = G4AnalysisManager::Instance();
-     analysisManager->FillNtupleDColumn(2,isPhotonDetected);
-     analysisManager->AddNtupleRow(0);
-     }
+     		auto analysisManager = G4AnalysisManager::Instance();
+     		analysisManager->FillNtupleDColumn(2,isPhotonDetected);
+     		analysisManager->AddNtupleRow(0);
+     	}
 }
 
 
@@ -81,7 +79,8 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 
 	auto analysisManager = G4AnalysisManager::Instance();
 
-	if (fDetector ->GetDetectorType() != 3 && depositedEnergyTriggerFoilEJ212 > 0.){
+	//if (fDetector ->GetDetectorType() != 3 && depositedEnergyTriggerFoilEJ212 > 0.){
+	if (fDetector ->GetDetectorType() != 3){
 	//if (depositedEnergyTriggerFoilEJ212 > 0.){
 		//G4cout <<myEvent->GetEventID()<<": " << fDetectedPhotons << G4endl;
 		analysisManager->FillNtupleDColumn(0, myEvent->GetEventID());
@@ -98,6 +97,5 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 		analysisManager->FillNtupleDColumn(11, fFrontPhoton);
 		analysisManager->FillNtupleDColumn(12, fBackPhoton);
 		analysisManager->AddNtupleRow(0);
-
 	}
 }

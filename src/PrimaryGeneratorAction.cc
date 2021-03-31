@@ -84,7 +84,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         G4double r = sqrt(1.1*1.1 * G4UniformRand());
         G4double theta = 2. * M_PI * G4UniformRand();
         // pour une source dans le plan 1
-        fPositionY = fDetector -> GetSourceContainerY();
+        if(fSourceType != 4){
+              fPositionY = fDetector -> GetSourceContainerY();
+        }
         G4double x_sourceframe = r*cos(theta)*CLHEP::mm;
         G4double z_sourceframe = r*sin(theta)*CLHEP::mm;
         G4ThreeVector position = G4ThreeVector(fPositionX+x_sourceframe, fPositionY, fPositionZ+z_sourceframe);
@@ -93,6 +95,20 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	//G4ThreeVector position = G4ThreeVector(fPositionX, 30*mm, 0*mm);
         //G4cout<<" position x "<<GetSourcePositionX()<<G4endl;
 	//G4String name;
+	G4double a,b,c;
+  	G4double n;
+  	do{
+    		a = (G4UniformRand()-0.5)/0.5;
+    		b = (G4UniformRand()-0.5)/0.5;
+    		c = (G4UniformRand()-0.5)/0.5;
+    		n = a*a+b*b+c*c;
+  	}while(n > 1 || n == 0.0);
+  	n = std::sqrt(n);
+  	a /= n;
+ 	b /= n;
+  	c /= n;
+
+  	G4ThreeVector direction(a,b,c);
 
 	switch (fSourceType) {
 		case 0:
@@ -135,6 +151,12 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 			//fParticleGun->SetParticleMomentumDirection(G4ThreeVector(2*(rx-1),2*(ry-1),2*(rz-1)));
 			fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0,-1,0));
  			break;
+		case 4:
+			fParticleGun->SetParticleDefinition(particleTable->FindParticle("opticalphoton"));
+			fParticleGun->SetParticleEnergy(fSourceEnergy);
+			fParticleGun->SetParticlePosition(G4ThreeVector(fPositionX,fPositionY,fPositionZ));
+			fParticleGun->SetParticleMomentumDirection(direction);
+			break;
 
 	}
 	fParticleGun->GeneratePrimaryVertex(anEvent);

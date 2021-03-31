@@ -75,6 +75,9 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
     case 3:
       sourceString = "Mono-beta";
       break;
+    case 4:
+      sourceString = "Optical-Photon";
+      break;
   }
 
   G4cout << sourceString << G4endl;

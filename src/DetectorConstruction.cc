@@ -926,6 +926,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* logicLightGuidePMMA = new G4LogicalVolume(LightGuidePMMA, materialPMMA, "Ligh_guideLog");
   G4VisAttributes* visualAttributesLightGuide = new G4VisAttributes(G4Colour::Gray());
   visualAttributesLightGuide->SetVisibility(true);
+  visualAttributesLightGuide->SetForceWireframe(true);
+  visualAttributesLightGuide->SetLineWidth(3);
   //visualAttributesLightGuide->SetForceSolid(true);
   logicLightGuidePMMA->SetVisAttributes(visualAttributesLightGuide);
   
