@@ -105,14 +105,15 @@ MPT_PEN(nullptr)
   fSigAlphaPENAirTopBottom = 0.01;
   fSigAlphaSides = 0.01;
   fSigAlphaBottom = 0.01;
-  pmtReflectivitySides = 0.35;
-  pmtReflectivityBottom = 0.08;
+  pmtReflectivitySides = 0.95;
+  pmtReflectivityBottom = 0.95;
   materialConstruction = new PenMaterials;
   DefineMaterials();
   fTargetMaterial = G4Material::GetMaterial("PVT_structure");
   fGlassMaterialPMT = G4Material::GetMaterial("BorosilicateGlass");
   MPT_SurfaceSides = new G4MaterialPropertiesTable();
   MPT_SurfaceBottom = new G4MaterialPropertiesTable();
+  MPT_SurfaceBetween = new G4MaterialPropertiesTable();
   MPT_GlassPMT = new G4MaterialPropertiesTable();
   //SetABS(AbsorptionLength);
   SetWorldMaterial("Air");
@@ -309,6 +310,7 @@ void DetectorConstruction::SetSigAlphaBottom(G4double value){
   surfaceGreaseTargetBottom -> SetSigmaAlpha(fSigAlphaBottom);
   surfaceGreaseTargetMiddle -> SetSigmaAlpha(fSigAlphaBottom);
   surfaceGreaseTargetBottom -> SetMaterialPropertiesTable(MPT_SurfaceBottom);
+  surfaceGreaseTargetMiddle -> SetMaterialPropertiesTable(MPT_SurfaceBetween);
 
   G4RunManager::GetRunManager()->ReinitializeGeometry();
   //UpdateGeometry();
@@ -1442,6 +1444,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
      break;
 
     case 4:
+    //Setup with 5 PTMs plus trigger system with collimator
     for(int iSample = 0; iSample < nSamples; iSample++){
   	//physicPenStackedSamples = new G4PVPlacement(0, 
   	                        new G4PVPlacement(0, 
@@ -1693,6 +1696,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   surfaceGreaseTargetMiddle = new G4OpticalSurface("surfaceGreaseTargetMiddle",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetMiddle -> SetSigmaAlpha(fSigAlphaBottom);
+  MPT_SurfaceBetween -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  MPT_SurfaceBetween -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
+  MPT_SurfaceBetween -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
+  MPT_SurfaceBetween -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
+  surfaceGreaseTargetMiddle -> SetMaterialPropertiesTable(MPT_SurfaceBetween);
 
   surfaceGreaseTargetSides = new G4OpticalSurface("surfaceGreaseTargetSides",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetSides -> SetSigmaAlpha(fSigAlphaSides);

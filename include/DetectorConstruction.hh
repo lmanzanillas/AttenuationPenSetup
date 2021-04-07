@@ -223,6 +223,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4MaterialPropertiesTable* SMPT_surfaceAirTargetTopBottom;
     G4MaterialPropertiesTable* MPT_World;
     G4MaterialPropertiesTable* MPT_SurfaceBottom;
+    G4MaterialPropertiesTable* MPT_SurfaceBetween;
     G4MaterialPropertiesTable* MPT_SurfaceSides;
 
     G4LogicalBorderSurface* logicSurfaceAirTarget;
