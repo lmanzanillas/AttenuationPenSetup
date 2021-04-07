@@ -80,7 +80,7 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 	auto analysisManager = G4AnalysisManager::Instance();
 
 	//if (fDetector ->GetDetectorType() != 3 && depositedEnergyTriggerFoilEJ212 > 0.){
-	if (fDetector ->GetDetectorType() != 3){
+	if (fDetector ->GetDetectorType() != 3 && (depositedEnergyPENStackedSample1+depositedEnergyPENStackedSample2+depositedEnergyPENStackedSample3+depositedEnergyPENStackedSample4)>0.01 ){
 	//if (depositedEnergyTriggerFoilEJ212 > 0.){
 		//G4cout <<myEvent->GetEventID()<<": " << fDetectedPhotons << G4endl;
 		analysisManager->FillNtupleDColumn(0, myEvent->GetEventID());
