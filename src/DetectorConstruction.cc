@@ -1632,15 +1632,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4double specularlobe[NUM] = {0.5, 0.5};
   G4double specularspike[NUM] = {0.5, 0.5};
   //G4double reflectivityPEN[NUM] = {pmtReflectivityBottom,pmtReflectivityBottom};
+  G4double reflectivityGreaseBottom[NUM] = {pmtReflectivityBottom, pmtReflectivityBottom};
   G4double efficiencyPEN[NUM] = {0.0, 0.0};
 
   surfaceAirTargetTopBottom = new G4OpticalSurface("surfaceAirTargetTopBottom",unified, ground, dielectric_dielectric);
   surfaceAirTargetTopBottom -> SetSigmaAlpha(fSigAlphaPENAirTopBottom);
 
   SMPT_surfaceAirTargetTopBottom = new G4MaterialPropertiesTable();
-  SMPT_surfaceAirTargetTopBottom->AddProperty("EFFICIENCY",pp,efficiencyPEN,NUM);
-  SMPT_surfaceAirTargetTopBottom->AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
-  SMPT_surfaceAirTargetTopBottom->AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
+  SMPT_surfaceAirTargetTopBottom -> AddProperty("EFFICIENCY",pp,efficiencyPEN,NUM);
+  SMPT_surfaceAirTargetTopBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  SMPT_surfaceAirTargetTopBottom -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
+  SMPT_surfaceAirTargetTopBottom -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
   surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
 
   surfaceAirTargetLongSide = new G4OpticalSurface("surfaceAirTargetLongSide", unified, ground, dielectric_dielectric);
@@ -1686,9 +1688,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //Since the roughness of the surfaces is different, then we use one for the bottom (almost polished) and one for the sides (rough)
   surfaceGreaseTargetBottom = new G4OpticalSurface("surfaceGreaseTargetBottom",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetBottom -> SetSigmaAlpha(fSigAlphaBottom);
-  G4double reflectivityGreaseBottom[NUM] = {pmtReflectivityBottom, pmtReflectivityBottom};
   G4double efficiency[NUM] = {0.0, 0.0};
-  //MPT_SurfaceBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  MPT_SurfaceBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
   MPT_SurfaceBottom -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceBottom -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceBottom -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
@@ -1696,7 +1697,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   surfaceGreaseTargetMiddle = new G4OpticalSurface("surfaceGreaseTargetMiddle",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetMiddle -> SetSigmaAlpha(fSigAlphaBottom);
-  //MPT_SurfaceBetween -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  MPT_SurfaceBetween -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
   MPT_SurfaceBetween -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceBetween -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceBetween -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
@@ -1706,7 +1707,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   surfaceGreaseTargetSides -> SetSigmaAlpha(fSigAlphaSides);
   if(fDetectorType == 3){pmtReflectivitySides = 0.95;}
   G4double reflectivityGreaseSide[NUM] = {pmtReflectivitySides, pmtReflectivitySides};
-  //MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
+  MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
   MPT_SurfaceSides -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceSides -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceSides -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
