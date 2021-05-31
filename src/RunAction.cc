@@ -166,6 +166,9 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 	  fMan->CreateNtupleDColumn("N_Bottom");
 	  fMan->CreateNtupleDColumn("N_Front");
 	  fMan->CreateNtupleDColumn("N_Back");
+	  fMan->CreateNtupleDColumn("first_x_pen");
+	  fMan->CreateNtupleDColumn("first_y_pen");
+	  fMan->CreateNtupleDColumn("first_z_pen");
 	  fMan->FinishNtuple();
   }
 

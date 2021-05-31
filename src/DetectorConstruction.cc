@@ -76,10 +76,12 @@ surfaceCathodeSupportBottom(nullptr),
 surfaceGreaseTargetSides(nullptr),	
 surfaceGreaseTargetBottom(nullptr),	
 surfaceGreaseTargetMiddle(nullptr),	
-MPT_PEN(nullptr)
+MPT_PEN(nullptr),
+MPT_PVT(nullptr)
 {
   fDetectorMessenger = new DetectorMessenger(this);
   MPT_PEN = new G4MaterialPropertiesTable();
+  MPT_PVT = new G4MaterialPropertiesTable();
   halfSizeDarkBoxX = halfSizeDarkBoxY = halfSizeDarkBoxZ = 1.*m;
   fTargetName = "PEN";
   reflectorOn = false;
@@ -114,7 +116,7 @@ MPT_PEN(nullptr)
   MPT_SurfaceSides = new G4MaterialPropertiesTable();
   MPT_SurfaceBottom = new G4MaterialPropertiesTable();
   MPT_SurfaceBetween = new G4MaterialPropertiesTable();
-  MPT_GlassPMT = new G4MaterialPropertiesTable();
+  //MPT_GlassPMT = new G4MaterialPropertiesTable();
   //SetABS(AbsorptionLength);
   SetWorldMaterial("Air");
   //Construct();
@@ -351,7 +353,7 @@ void DetectorConstruction::SetTargetMaterial(G4String materialChoice)
     fTargetName = fTargetMaterial->GetName();
     if(penLogicBox)penLogicBox->SetMaterial(fTargetMaterial);
     G4cout<<" light yield: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("SCINTILLATIONYIELD")<<" photons/MeV"<<G4endl;  
-    //G4cout<<" abs: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("ABSLENGTH")<<" mm"<<G4endl;  
+    fTargetMaterial->GetMaterialPropertiesTable()->GetProperty("SLOWCOMPONENT")->DumpValues ();  
     //G4cout<<" surface: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("ABSLENGTH")<<" mm"<<G4endl;  
   } else {
     G4cout << "\n--> warning from DetectorConstruction::SetMaterial : "
@@ -359,7 +361,7 @@ void DetectorConstruction::SetTargetMaterial(G4String materialChoice)
   }
   //if(MPT_Target)MPT_Target->AddConstProperty("SCINTILLATIONYIELD",10000./MeV);
   G4RunManager::GetRunManager()->ReinitializeGeometry();
-  //G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
+  G4MTRunManager::GetRunManager()->PhysicsHasBeenModified();
 }
 
 void DetectorConstruction::SetRI(G4double value){
@@ -402,6 +404,7 @@ void DetectorConstruction::DefineMaterials(){
   fPOM = G4Material::GetMaterial("POM");
   fABS = G4Material::GetMaterial("ABS");
   PenMaterial = G4Material::GetMaterial("PEN");
+  PVTMaterial = G4Material::GetMaterial("PVT_structure");
   materialSi = G4Material::GetMaterial("G4_Si");
   materialTriggerFoilEJ212 = G4Material::GetMaterial("EJ212");
   Pstyrene = G4Material::GetMaterial("Polystyrene");
@@ -466,13 +469,13 @@ void DetectorConstruction::DefineMaterials(){
   std::ifstream ReadScint2(Scint_file),ReadScintPEN;
   //count number of entries
   ReadScint2.unsetf(std::ios_base::skipws);
-  //unsigned line_count = std::count(
   int line_count = std::count(
         std::istream_iterator<char>(ReadScint2),
         std::istream_iterator<char>(), 
         '\n');
-  std::cout << "Lines: " << line_count << "\n";
+  std::cout << " PEN Lines: " << line_count << "\n";
   ReadScint2.close();
+
   G4double PEN_EMISSION[500]; 
   G4double PEN_WL_ENERGY[500]; 
   G4int nEntriesPEN = 0;
@@ -480,14 +483,17 @@ void DetectorConstruction::DefineMaterials(){
   if(ReadScintPEN.is_open()){
         while(!ReadScintPEN.eof()){
                  ReadScintPEN>>pWavelength>>PEN_EMISSION[nEntriesPEN];
+	         if (ReadScintPEN.eof()) {
+	                        G4cout << " PEN entries completed " << G4endl; 
+				break;
+	         }
                  PEN_WL_ENERGY[nEntriesPEN] = (1240./pWavelength)*eV;//convert wavelength to eV
  	         G4cout<<nEntriesPEN<<" wl "<<pWavelength<<" Energy "<<PEN_WL_ENERGY[nEntriesPEN]<<" "<<PEN_EMISSION[nEntriesPEN]<<G4endl;
                  nEntriesPEN++;
-	         if(nEntriesPEN > (line_count-1)){ G4cout << " entries completed " << G4endl; break;}
         }
   }
   else
-       G4cout << "Error opening file: " << Scint_file << G4endl;
+       G4cout << "Error opening PEN file: " << Scint_file << G4endl;
   ReadScintPEN.close();
   G4cout<<" nEntriesPEN "<<nEntriesPEN<<" line_count "<<line_count<<G4endl;
 
@@ -503,7 +509,120 @@ void DetectorConstruction::DefineMaterials(){
   PenMaterial->SetMaterialPropertiesTable(MPT_PEN);
   //pvt_structure->SetMaterialPropertiesTable(MPT_PEN);
 
+  MPT_PVT = new G4MaterialPropertiesTable();
+  Scint_file ="../properties/PVTEmission.dat";
+
+    std::ifstream myfile(Scint_file);
+    myfile.unsetf(std::ios_base::skipws);
+    unsigned line_count_pvt = std::count(
+        std::istream_iterator<char>(myfile),
+        std::istream_iterator<char>(), 
+        '\n');
+
+    std::cout << "PVT Lines: " << line_count_pvt << "\n";
+
+
+    G4double PVT_WL_ENERGY[115];
+    G4double PVT_EMISSION[115];
+    // Read primary emission spectrum
+    std::ifstream ReadPVTScint;
+    ReadPVTScint.open(Scint_file);
+    G4int nEntriesPVT = 0;
+    if(ReadPVTScint.is_open()){
+        while(!ReadPVTScint.eof()){
+	 
+            ReadPVTScint>>pWavelength>>PVT_EMISSION[nEntriesPVT];
+	    if (ReadPVTScint.eof()) {
+				break;
+	                        G4cout << "PVT entries completed " << G4endl; 
+	    }
+            PVT_WL_ENERGY[nEntriesPVT] = (1240./pWavelength)*eV;         //convert wavelength to eV
+ 	    G4cout<<nEntriesPVT<<" wl "<<pWavelength<<" Energy "<<PVT_WL_ENERGY[nEntriesPVT]<<" "<<PVT_EMISSION[nEntriesPVT]<<G4endl;
+            nEntriesPVT++;
+        }
+    }
+    else
+        G4cout << "Error opening pvt file: " << Scint_file << G4endl;
+    ReadPVTScint.close();
+    G4cout<<" nEntriesPVT "<<nEntriesPVT<<" line_count_pvt "<<line_count_pvt<<G4endl;
+     
+    MPT_PVT->AddProperty("FASTCOMPONENT", PVT_WL_ENERGY, PVT_EMISSION, line_count_pvt);
+    MPT_PVT->AddProperty("SLOWCOMPONENT", PVT_WL_ENERGY, PVT_EMISSION, line_count_pvt);
+
+    // Read primary bulk absorption
+    G4int abs_entries_pvt = 311;
+    G4double absorbEnergy_pvt[311] = { 0 };
+    G4double Absorb_pvt[311] = { 0 };
+    G4double Rayleigh_pvt[311] = { 0 };
+    G4String Readabsorblength = "../properties/PVTAbsorption.dat";
+    
+    std::ifstream Readabsorb;
+    Readabsorb.open(Readabsorblength);
+    G4int absorbEntries = 0;
+    G4double varabsorblength;
+    if (Readabsorb.is_open()){
+        while(!Readabsorb.eof()){
+            //G4String filler;
+            Readabsorb >> pWavelength >> filler >> varabsorblength;
+			if (Readabsorb.eof()) {
+				break;
+			}
+            absorbEnergy_pvt[absorbEntries] = (1240./pWavelength)*eV;
+            Absorb_pvt[absorbEntries] = varabsorblength * m;
+            Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
+            absorbEntries++;
+        }
+    }
+    else
+        G4cout<<"Error opening abs pdf file: "<<Readabsorblength<<G4endl;
+    Readabsorb.close();
+
+    // Read scintillator refractive index
+    G4int entries_pvt_rindex = 11;
+    G4double ref_index_Energy_pvt[11] = { 0 };
+    G4double ref_index_value_pvt[11] = { 0 };
+
+    std::ifstream  Read_ref_index_pvt;
+    G4String ref_index_emit = "../properties/PVTRefIndex.dat";
+    Read_ref_index_pvt.open(ref_index_emit);
+    G4int ref_index_Entries = 0;
+    if(Read_ref_index_pvt.is_open()){
+        while(!Read_ref_index_pvt.eof()){
+            //G4String filler;
+            Read_ref_index_pvt >> pWavelength >> filler >> ref_index_value_pvt[ref_index_Entries];
+		if (Read_ref_index_pvt.eof()) {
+				break;
+		}
+            ref_index_Energy_pvt[ref_index_Entries] = (1240./pWavelength)*eV;
+	    //G4cout<<ref_index_Entries<<" rindex "<<ref_index_value_pvt[ref_index_Entries]<<" energy "<<ref_index_Energy_pvt[ref_index_Entries]<<G4endl;
+            ref_index_Entries++;
+        }
+    }
+    else
+        G4cout << "Error opening file: "<< ref_index_emit << G4endl;
+    Read_ref_index_pvt.close();
+    
+    // Now apply the properties table
+    MPT_PVT->AddProperty("RINDEX", ref_index_Energy_pvt, ref_index_value_pvt, entries_pvt_rindex);
+    MPT_PVT->AddProperty("ABSLENGTH", absorbEnergy_pvt, Absorb_pvt, abs_entries_pvt);
+    //MPT_PVT->AddConstProperty("EFFICIENCY",efficiency);
+    G4double LY_PVT = 10000;
+    MPT_PVT->AddConstProperty("SCINTILLATIONYIELD",LY_PVT);
+    G4double scintRes=1.0;
+    MPT_PVT->AddConstProperty("RESOLUTIONSCALE",scintRes);
+    G4double scintFastconst=2.0*ns;  //fluorescence
+    MPT_PVT->AddConstProperty("FASTTIMECONSTANT",scintFastconst);
+    G4double scintSlowconst=16.8*ns;  //phosphorescence
+    MPT_PVT->AddConstProperty("SLOWTIMECONSTANT",scintSlowconst);
+    MPT_PVT->AddConstProperty("YIELDRATIO",1.0); //was 1.0
+   
+    PVTMaterial->SetMaterialPropertiesTable(MPT_PVT);
+    G4cout<<" pvt table ok "<<G4endl; 
+ 
+
   
+
+  /*
   G4cout<<" pen ok "<<G4endl;
 
 
@@ -617,28 +736,28 @@ void DetectorConstruction::DefineMaterials(){
   ReadWLSAbsorb.close();
   wlsAbsorbEntries--;
 
-  G4MaterialPropertiesTable* MPT_FoilEJ212 = new G4MaterialPropertiesTable();
+  //G4MaterialPropertiesTable* MPT_FoilEJ212 = new G4MaterialPropertiesTable();
 
-  MPT_FoilEJ212->AddProperty("WLSABSLENGTH",wlsAbsorbEnergy,wlsAbsorb,wlsAbsorbEntries);
-  MPT_FoilEJ212->AddProperty("WLSCOMPONENT",wlsEnergy,wlsEmit,wlsScintEntries);
-  MPT_FoilEJ212->AddConstProperty("WLSTIMECONSTANT", 12*ns);
+ // MPT_FoilEJ212->AddProperty("WLSABSLENGTH",wlsAbsorbEnergy,wlsAbsorb,wlsAbsorbEntries);
+ // MPT_FoilEJ212->AddProperty("WLSCOMPONENT",wlsEnergy,wlsEmit,wlsScintEntries);
+ // MPT_FoilEJ212->AddConstProperty("WLSTIMECONSTANT", 12*ns);
 
-  MPT_FoilEJ212->AddProperty("RINDEX",        rindexEnergy,  scintIndex, rindexEntries);
-  MPT_FoilEJ212->AddProperty("ABSLENGTH",     absorbEnergy, Absorb,     absorbEntries);
-  MPT_FoilEJ212->AddProperty("FASTCOMPONENT", scintEnergy,  scintEmit,  scintEntries);
-  MPT_FoilEJ212->AddProperty("SLOWCOMPONENT",scintEnergy, scintEmitSlow,     scintEntries);
+  //MPT_FoilEJ212->AddProperty("RINDEX",        rindexEnergy,  scintIndex, rindexEntries);
+  //MPT_FoilEJ212->AddProperty("ABSLENGTH",     absorbEnergy, Absorb,     absorbEntries);
+  //MPT_FoilEJ212->AddProperty("FASTCOMPONENT", scintEnergy,  scintEmit,  scintEntries);
+  //MPT_FoilEJ212->AddProperty("SLOWCOMPONENT",scintEnergy, scintEmitSlow,     scintEntries);
 
   //MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",11520./MeV);
-  MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",10./MeV);//set low LY to make it faster, intead use Edep for coincidences
-  MPT_FoilEJ212->AddConstProperty("RESOLUTIONSCALE",4.0);
-  MPT_FoilEJ212->AddConstProperty("FASTTIMECONSTANT", 2.1*ns);
-  MPT_FoilEJ212->AddConstProperty("SLOWTIMECONSTANT",14.2*ns);
-  MPT_FoilEJ212->AddConstProperty("YIELDRATIO",1.0);
+  //MPT_FoilEJ212->AddConstProperty("SCINTILLATIONYIELD",10./MeV);//set low LY to make it faster, intead use Edep for coincidences
+  //MPT_FoilEJ212->AddConstProperty("RESOLUTIONSCALE",4.0);
+  //MPT_FoilEJ212->AddConstProperty("FASTTIMECONSTANT", 2.1*ns);
+  //MPT_FoilEJ212->AddConstProperty("SLOWTIMECONSTANT",14.2*ns);
+  //MPT_FoilEJ212->AddConstProperty("YIELDRATIO",1.0);
 
-  materialTriggerFoilEJ212->SetMaterialPropertiesTable(MPT_FoilEJ212);
+  //materialTriggerFoilEJ212->SetMaterialPropertiesTable(MPT_FoilEJ212);
 
   G4cout<<" EJ212 ok "<<G4endl;
-
+  */
   G4double refractive_index[] = {1.49, 1.49, 1.49, 1.49, 1.49, 1.49};
   G4double absPMMA[] = {5*m, 5*m, 5*m, 5*m, 5*m, 5*m};
   G4double reflPMMA[] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
@@ -706,6 +825,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   penSampleBox = new G4Box("target", halfPenSampleLength, halfPenSampleThickness, halfPenSampleWidth);
   penLogicBox = new G4LogicalVolume(penSampleBox,fTargetMaterial, "target",0,0,0);
 
+  fTargetMaterial->GetMaterialPropertiesTable()->GetProperty("SLOWCOMPONENT")->DumpValues ();  
   //Air box used to apply different surface properties on the sides
   double halfAirBoxWidth = 5.*mm;
   double halfAirBoxLength = 0.5*mm;
@@ -717,7 +837,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* logicAirBoxShortSide = new G4LogicalVolume(airBoxShortSide,materialAir,"airshort",0,0,0);
 
   //EJ212 foil scintillator used for trigger
-  double halfThicknessTriggerFoilEJ212 = 60.*um;//100 um thickness EJ foil for trigger, increase to take into account tape under the trigger system
+  double halfThicknessTriggerFoilEJ212 = 55.*um;//100 um thickness EJ foil for trigger, increase to take into account tape under the trigger system
   double halfWidthTriggerFoilEJ212 = 7.5*mm;
   double halfLengthTriggerFoilEJ212 = 15.*mm;
   G4Box* boxTriggerFoilEJ212 = new G4Box("triggerFoilEJ212", halfLengthTriggerFoilEJ212, halfThicknessTriggerFoilEJ212, halfWidthTriggerFoilEJ212);
@@ -743,7 +863,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //Passive collimator
   double innerRadiusCollimator = 1.*mm; 
   double externalRadiusCollimator = 12.*mm; 
-  halfCollimatorThickness= 5.*mm; 
+  halfCollimatorThickness= 10.*mm; 
   
   G4Tubs* collimatorTube = new G4Tubs("collimator",innerRadiusCollimator,externalRadiusCollimator,halfCollimatorThickness,0.,360.*deg);
   G4LogicalVolume* logicCollimator = new G4LogicalVolume(collimatorTube,materialPolyethylene,"collimator",0,0,0); 

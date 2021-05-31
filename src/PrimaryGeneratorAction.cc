@@ -80,8 +80,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	G4int Z=0, A=0;
 	G4ParticleDefinition* ion;
         //Define a more realistic source geometry
-        //Assume 1.1 mm radius disk
-        G4double r = sqrt(1.1*1.1 * G4UniformRand());
+        //Assume 1.01 mm radius disk to optimize 
+        G4double r = sqrt(1.01*1.01 * G4UniformRand());
         G4double theta = 2. * M_PI * G4UniformRand();
         // pour une source dans le plan 1
         if(fSourceType != 4){

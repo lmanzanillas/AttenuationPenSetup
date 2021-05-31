@@ -41,7 +41,10 @@ void EventAction::BeginOfEventAction(const G4Event* myEvent)
 	fBottomPhoton = 0.;
 	fLeftPhoton = 0.;
 	fRightPhoton = 0.;
-
+        
+        xFirstPen = 0.;
+        yFirstPen = 0.;
+        zFirstPen = 0.;
         //photonWL = 0.;
         //PhotonTravelledDistance = 0.;
         //isPhotonDetected = 0;
@@ -96,6 +99,9 @@ void EventAction::EndOfEventAction(const G4Event* myEvent)
 		analysisManager->FillNtupleDColumn(10, fBottomPhoton);
 		analysisManager->FillNtupleDColumn(11, fFrontPhoton);
 		analysisManager->FillNtupleDColumn(12, fBackPhoton);
+		analysisManager->FillNtupleDColumn(13, xFirstPen);
+		analysisManager->FillNtupleDColumn(14, yFirstPen);
+		analysisManager->FillNtupleDColumn(15, zFirstPen);
 		analysisManager->AddNtupleRow(0);
 	}
 }

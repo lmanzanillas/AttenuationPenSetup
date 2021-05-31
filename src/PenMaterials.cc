@@ -15,6 +15,10 @@
 #include "G4NistManager.hh"
 #include "G4MTRunManager.hh"
 
+#include <iterator>
+#include <iostream>
+#include <fstream>
+
 using namespace std;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 PenMaterials::PenMaterials()
@@ -601,24 +605,24 @@ void PenMaterials::Construct()
 
     
     /// Now apply the properties table
-    G4MaterialPropertiesTable* scintMPT2 = new G4MaterialPropertiesTable();
-    scintMPT2->AddProperty("RINDEX",ref_index_Energy,ref_index_value,ref_index_Entries);
-    scintMPT2->AddProperty("ABSLENGTH",absorbEnergy,Absorb,absorbEntries);
-    scintMPT2->AddProperty("FASTCOMPONENT",scintEnergyZnS,scintEmitZnS,scintEntries);
-    scintMPT2->AddProperty("SLOWCOMPONENT",scintEnergyZnS,scintEmitZnS,scintEntries);
+    G4MaterialPropertiesTable* MPT_PVT2 = new G4MaterialPropertiesTable();
+    MPT_PVT2->AddProperty("RINDEX",ref_index_Energy,ref_index_value,ref_index_Entries);
+    MPT_PVT2->AddProperty("ABSLENGTH",absorbEnergy,Absorb,absorbEntries);
+    MPT_PVT2->AddProperty("FASTCOMPONENT",scintEnergyZnS,scintEmitZnS,scintEntries);
+    MPT_PVT2->AddProperty("SLOWCOMPONENT",scintEnergyZnS,scintEmitZnS,scintEntries);
     //G4double efficiency = 1.0;
-    //scintMPT2->AddConstProperty("EFFICIENCY",efficiency);
-    scintMPT2->AddConstProperty("SCINTILLATIONYIELD",75000/MeV);
+    //MPT_PVT2->AddConstProperty("EFFICIENCY",efficiency);
+    MPT_PVT2->AddConstProperty("SCINTILLATIONYIELD",75000/MeV);
     G4double scintRes = 1;
-    scintMPT2->AddConstProperty("RESOLUTIONSCALE",scintRes);
+    MPT_PVT2->AddConstProperty("RESOLUTIONSCALE",scintRes);
     G4double scintSlowconst=1*ms;
-    scintMPT2->AddConstProperty("FASTTIMECONSTANT",scintSlowconst);
-    scintMPT2->AddConstProperty("SLOWTIMECONSTANT",scintSlowconst);
-    scintMPT2->AddConstProperty("YIELDRATIO",1.0);
-    scintMPT2->AddProperty("REFLECTIVITY",ref_index_Energy,scintReflect,ref_index_Entries);
+    MPT_PVT2->AddConstProperty("FASTTIMECONSTANT",scintSlowconst);
+    MPT_PVT2->AddConstProperty("SLOWTIMECONSTANT",scintSlowconst);
+    MPT_PVT2->AddConstProperty("YIELDRATIO",1.0);
+    MPT_PVT2->AddProperty("REFLECTIVITY",ref_index_Energy,scintReflect,ref_index_Entries);
 
     
-    Li6ZnS->SetMaterialPropertiesTable(scintMPT2);
+    Li6ZnS->SetMaterialPropertiesTable(MPT_PVT2);
     
     // Set the Birks Constant for the neutron scintillator
     //quenching effect for heavy particle
@@ -658,38 +662,49 @@ void PenMaterials::Construct()
     pvt_structure->AddElement(C,natoms=27);
     pvt_structure->AddElement(H_polyethylene,natoms=30);
     pvt_structure->GetIonisation()->SetMeanExcitationEnergy(64.7*eV); // NIST G4_PLASTIC_SC_VINYLTOLUENE
-
-
-    G4double scintEnergyPVT[115] = { 0 };
-    G4double scintEmitPVT[115] = { 0 };
-    G4int scintEntries_pvt = 115;
-    // Read primary emission spectrum
+     /*
     Scint_file ="../properties/PVTEmission.dat";
+
+    std::ifstream myfile(Scint_file);
+    myfile.unsetf(std::ios_base::skipws);
+    unsigned line_count = std::count(
+        std::istream_iterator<char>(myfile),
+        std::istream_iterator<char>(), 
+        '\n');
+
+    std::cout << "PVT Lines: " << line_count << "\n";
+
+
+    G4double PVT_WL_ENERGY[115];
+    G4double PVT_EMISSION[115];
+    // Read primary emission spectrum
     std::ifstream ReadPVTScint;
     ReadPVTScint.open(Scint_file);
-    scintEntries = 0;
+    G4int nEntriesPVT = 0;
     if(ReadPVTScint.is_open()){
         while(!ReadPVTScint.eof()){
 	 
-            G4String filler;
-            ReadPVTScint>>pWavelength>>filler>>scintEmitPVT[scintEntries];
-			if (ReadPVTScint.eof()) {
-				break;
-			}
-            scintEnergyPVT[scintEntries] = (1240./pWavelength)*eV;         //convert wavelength to eV
-            scintEntries++;
-	    if (scintEntries > (scintEntries_pvt-1)){ G4cout << " ERROR < scint entries  out of range > " << G4endl; break;}
+            ReadPVTScint>>pWavelength>>PVT_EMISSION[nEntriesPVT];
+            PVT_WL_ENERGY[nEntriesPVT] = (1240./pWavelength)*eV;         //convert wavelength to eV
+ 	    G4cout<<nEntriesPVT<<" wl "<<pWavelength<<" Energy "<<PVT_WL_ENERGY[nEntriesPVT]<<" "<<PVT_EMISSION[nEntriesPVT]<<G4endl;
+            nEntriesPVT++;
+	    if(nEntriesPVT > (line_count-1)){ G4cout << " entries completed " << G4endl; break;}
         }
     }
     else
-        G4cout << "Error opening file: " << Scint_file << G4endl;
+        G4cout << "Error opening pvt file: " << Scint_file << G4endl;
     ReadPVTScint.close();
+    G4cout<<" nEntriesPVT "<<nEntriesPVT<<" line_count "<<line_count<<G4endl;
      
+    G4MaterialPropertiesTable* MPT_PVT = new G4MaterialPropertiesTable();
+    MPT_PVT->AddProperty("FASTCOMPONENT", PVT_WL_ENERGY, PVT_EMISSION, line_count);
+    MPT_PVT->AddProperty("SLOWCOMPONENT", PVT_WL_ENERGY, PVT_EMISSION, line_count);
+
     // Read primary bulk absorption
-    G4int abs_entries_pvt = 500;
-    G4double absorbEnergy_pvt[500] = { 0 };
-    G4double Absorb_pvt[500] = { 0 };
-    G4double Rayleigh_pvt[500] = { 0 };
+    G4int abs_entries_pvt = 311;
+    G4double absorbEnergy_pvt[311] = { 0 };
+    G4double Absorb_pvt[311] = { 0 };
+    G4double Rayleigh_pvt[311] = { 0 };
     Readabsorblength = "../properties/PVTAbsorption.dat";
     
     Readabsorb.open(Readabsorblength);
@@ -705,11 +720,10 @@ void PenMaterials::Construct()
             Absorb_pvt[absorbEntries] = varabsorblength * m;
             Rayleigh_pvt[absorbEntries] = varabsorblength/5. * m;
             absorbEntries++;
-	    if(absorbEntries > (abs_entries_pvt-1)){G4cout << " ERROR < entries abs  out of range > " << G4endl; break;}
         }
     }
     else
-        G4cout<<"Error opening file: "<<Readabsorblength<<G4endl;
+        G4cout<<"Error opening abs pdf file: "<<Readabsorblength<<G4endl;
     Readabsorb.close();
 
     // Read scintillator refractive index
@@ -725,13 +739,12 @@ void PenMaterials::Construct()
         while(!Read_ref_index_pvt.eof()){
             G4String filler;
             Read_ref_index_pvt >> pWavelength >> filler >> ref_index_value_pvt[ref_index_Entries];
-			if (Read_ref_index_pvt.eof()) {
+		if (Read_ref_index_pvt.eof()) {
 				break;
-			}
+		}
             ref_index_Energy_pvt[ref_index_Entries] = (1240./pWavelength)*eV;
 	    //G4cout<<ref_index_Entries<<" rindex "<<ref_index_value_pvt[ref_index_Entries]<<" energy "<<ref_index_Energy_pvt[ref_index_Entries]<<G4endl;
             ref_index_Entries++;
-	    if(ref_index_Entries > (entries_pvt_rindex-1)){G4cout << " ERROR < entries ref abs  out of range > " << G4endl;break;}
         }
     }
     else
@@ -739,29 +752,24 @@ void PenMaterials::Construct()
     Read_ref_index_pvt.close();
     
     // Now apply the properties table
-    G4MaterialPropertiesTable* scintMPT = new G4MaterialPropertiesTable();
-    scintMPT->AddProperty("RINDEX", ref_index_Energy_pvt, ref_index_value_pvt, entries_pvt_rindex);
-    scintMPT->AddProperty("ABSLENGTH", absorbEnergy_pvt, Absorb_pvt, abs_entries_pvt);
-    //scintMPT->AddProperty("RAYLEIGH", absorbEnergy_pvt, Rayleigh_pvt, abs_entries_pvt);
-    scintMPT->AddProperty("FASTCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt);
-    scintMPT->AddProperty("SLOWCOMPONENT", scintEnergyPVT, scintEmitPVT, scintEntries_pvt);
-    //efficiency = 1.0;
-    //scintMPT->AddConstProperty("EFFICIENCY",efficiency);
+    MPT_PVT->AddProperty("RINDEX", ref_index_Energy_pvt, ref_index_value_pvt, entries_pvt_rindex);
+    MPT_PVT->AddProperty("ABSLENGTH", absorbEnergy_pvt, Absorb_pvt, abs_entries_pvt);
+    //MPT_PVT->AddConstProperty("EFFICIENCY",efficiency);
     G4double LY_PVT = lightYieldAntracene*0.64;
-    scintMPT->AddConstProperty("SCINTILLATIONYIELD",LY_PVT);
+    MPT_PVT->AddConstProperty("SCINTILLATIONYIELD",LY_PVT);
     scintRes=1.0;
-    scintMPT->AddConstProperty("RESOLUTIONSCALE",scintRes);
+    MPT_PVT->AddConstProperty("RESOLUTIONSCALE",scintRes);
     G4double scintFastconst=2.0*ns;  //fluorescence
-    scintMPT->AddConstProperty("FASTTIMECONSTANT",scintFastconst);
+    MPT_PVT->AddConstProperty("FASTTIMECONSTANT",scintFastconst);
     scintSlowconst=16.8*ns;  //phosphorescence
-    scintMPT->AddConstProperty("SLOWTIMECONSTANT",scintSlowconst);
-    scintMPT->AddConstProperty("YIELDRATIO",1.0); //was 1.0
+    MPT_PVT->AddConstProperty("SLOWTIMECONSTANT",scintSlowconst);
+    MPT_PVT->AddConstProperty("YIELDRATIO",1.0); //was 1.0
    
     G4cout<<" pvt table ok "<<G4endl; 
-    pvt_nist->SetMaterialPropertiesTable(scintMPT);
-    pvt_mixture->SetMaterialPropertiesTable(scintMPT);
-    pvt_structure->SetMaterialPropertiesTable(scintMPT);
-    
+    pvt_nist->SetMaterialPropertiesTable(MPT_PVT);
+    pvt_mixture->SetMaterialPropertiesTable(MPT_PVT);
+    pvt_structure->SetMaterialPropertiesTable(MPT_PVT);
+    */
     // Set the Birks Constant for the Polystyrene scintillator
     //quenching effect for heavy particle
     pvt_nist->GetIonisation()->SetBirksConstant(0.15*mm/MeV);

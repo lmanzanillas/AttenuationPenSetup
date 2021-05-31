@@ -42,15 +42,33 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
 	G4VPhysicalVolume* thePrePV = thePrePoint->GetPhysicalVolume();
 	//G4TouchableHistory* theTouchable = (G4TouchableHistory*)(thePrePoint->GetTouchable());
 	//G4int copyNo = theTouchable->GetVolume()->GetCopyNo();
+	// IsFirstStepInVolume ()
+	//
+	// Check boundary conditions to check first psiton of interaction in a new volume
+	G4StepStatus PreStepStatus = thePrePoint->GetStepStatus();
+        
 
        G4double edepStep = theStep->GetTotalEnergyDeposit()/keV; 
 
+       //double PosDirz = step->GetTrack()->GetPosition().x();
+       //step->GetPreStepPoint()->GetPosition()
        //if ( particleType != G4OpticalPhoton::OpticalPhotonDefinition()){
 	   if ( thePrePV->GetName()=="target_1"){
 		fEventAction->AddDepositedEnergyPENStackedSample1(edepStep);
   	   }
 	   else if ( thePrePV->GetName()=="target_2"){
 		fEventAction->AddDepositedEnergyPENStackedSample2(edepStep);
+ 		//Check if it's the first interaction in the sample
+                if(particleType != G4OpticalPhoton::OpticalPhotonDefinition() && (PreStepStatus == fGeomBoundary) ){ 
+			//G4cout<<" position "<<thePrePoint->GetPosition().x()<<G4endl;
+                        fEventAction->AddFirstPenX(thePrePoint->GetPosition().x());
+                        fEventAction->AddFirstPenY(thePrePoint->GetPosition().y());
+                        fEventAction->AddFirstPenZ(thePrePoint->GetPosition().z());
+                     	//fEventAction->AddWaveLength(photonWL);
+                        //fEventAction->AddFirstPenY(thePrePoint->GetPosition().y());
+                        //fEventAction->AddFirstPenZ(thePrePoint->GetPosition().z());
+		}
+		//G4cout<<" position "<<thePrePoint->GetPosition()<<G4endl;
            }
 	   else if ( thePrePV->GetName()=="target_3"){
 		fEventAction->AddDepositedEnergyPENStackedSample3(edepStep);
