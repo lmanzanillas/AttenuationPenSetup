@@ -131,13 +131,13 @@ void SteppingAction::UserSteppingAction(const G4Step * theStep)
                         fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
                         fEventAction->AddIsPhotonDetected(isOpticalPhotonDeathDetected);
                 }
-                */
                 if(thePostPoint->GetProcessDefinedStep()->GetProcessName() =="OpAbsorption"){
                         G4int absorp = 2;
                         fEventAction->AddWaveLength(photonWL);
                         fEventAction->AddPhotonTravelledDistance(photonTravelledDistance);
                         fEventAction->AddIsPhotonDetected(absorp);
                 }
+                */
 	    	//Check to see if the partcile was actually at a boundary
 	    	//Otherwise the boundary status may not be valid
 	    	//Prior to Geant4.6.0-p1 this would not have been enough to check

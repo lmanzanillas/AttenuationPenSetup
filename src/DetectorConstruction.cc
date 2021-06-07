@@ -247,9 +247,7 @@ void DetectorConstruction::SetABS(G4double value){
   AbsorptionLength=value;
   //read file and add the value given by the user
   G4double wavelength;
-  char filler;
   G4double varAbsorLength;
-  G4double emission;
   G4double rindex;
 
   G4double wlPhotonEnergy[191]  = {0};
@@ -264,7 +262,7 @@ void DetectorConstruction::SetABS(G4double value){
   {
     while(!ReadAbs.eof())
     {
-      ReadAbs>>wavelength>>filler>>varAbsorLength>>filler>>emission>>filler>>rindex;
+      ReadAbs>>wavelength>>varAbsorLength>>rindex;
       if(ReadAbs.eof()){
         break;
       }
@@ -421,7 +419,6 @@ void DetectorConstruction::DefineMaterials(){
   G4double wavelength;
   char filler;
   G4double varAbsorLength;
-  G4double emission;
   G4double rindex;
 
   G4double wlPhotonEnergy[191]  = {0};
@@ -437,7 +434,7 @@ void DetectorConstruction::DefineMaterials(){
   {
     while(!ReadAbs.eof())
     {
-      ReadAbs>>wavelength>>filler>>varAbsorLength>>filler>>emission>>filler>>rindex;
+      ReadAbs>>wavelength>>varAbsorLength>>rindex;
       if(ReadAbs.eof()){
         break;
       }

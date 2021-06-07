@@ -28,6 +28,10 @@ class EventAction : public G4UserEventAction
     void    AddDepositedEnergyEJ212TriggerFoil(G4double newEnergy){depositedEnergyTriggerFoilEJ212 += newEnergy;};
     void    AddDepositedEnergyInactiveMaterial(G4double newEnergy){depositedEnergyInactiveMaterial += newEnergy;};
 
+    void    AddFirstPenX(G4double new_x){xFirstPen = new_x;};
+    void    AddFirstPenY(G4double new_y){yFirstPen = new_y;};
+    void    AddFirstPenZ(G4double new_z){zFirstPen = new_z;};
+
     void    AddWaveLength(G4double PhotonWL);
     void    AddPhotonTravelledDistance(G4double PhotonTravelledDistance);
     void    AddIsPhotonDetected(G4int IsPhotonDetected);
@@ -56,7 +60,12 @@ class EventAction : public G4UserEventAction
     G4double fBottomPhoton;
     G4double fLeftPhoton;
     G4double fRightPhoton;
-   
+     
+    //position of first interaction
+    G4double xFirstPen;
+    G4double yFirstPen;
+    G4double zFirstPen;
+     
     //Spectrometer information
     G4double PhotonWL;
     G4double PhotonTravelledDistance;

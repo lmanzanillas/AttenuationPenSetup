@@ -218,6 +218,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4OpticalSurface* surfaceGreaseTargetMiddle;
 
     G4MaterialPropertiesTable* MPT_PEN;
+    G4MaterialPropertiesTable* MPT_PVT;
     G4MaterialPropertiesTable* MPT_GlassPMT;
     G4MaterialPropertiesTable* MPT_Target;
     G4MaterialPropertiesTable* SMPT_surfaceAirTargetTopBottom;
@@ -242,6 +243,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalBorderSurface* logicSurfaceReflectorEJ212;
     G4LogicalBorderSurface* logicSurfacePenReflectorFoilBoxOverPEN;
 
+    G4Material* PVTMaterial;
     G4Material* PenMaterial;
     G4Material* materialBialkali;
     G4Material* materialSi;
