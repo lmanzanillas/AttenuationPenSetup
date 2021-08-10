@@ -1767,8 +1767,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   const G4int NUM = 2;
   G4double pp[NUM] = {2.038*eV, 4.144*eV};
-  G4double specularlobe[NUM] = {0.3, 0.3};
-  G4double specularspike[NUM] = {0.7, 0.7};
+  G4double specularlobe[NUM] = {0.4, 0.4};
+  G4double specularspike[NUM] = {0.6, 0.6};
   //G4double reflectivityPEN[NUM] = {pmtReflectivityBottom,pmtReflectivityBottom};
   G4double reflectivityGreaseBottom[NUM] = {pmtReflectivityBottom, pmtReflectivityBottom};
   G4double efficiencyPEN[NUM] = {0.0, 0.0};
