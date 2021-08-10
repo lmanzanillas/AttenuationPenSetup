@@ -865,11 +865,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4Tubs* collimatorTube = new G4Tubs("collimator",innerRadiusCollimator,externalRadiusCollimator,halfCollimatorThickness,0.,360.*deg);
   G4LogicalVolume* logicCollimator = new G4LogicalVolume(collimatorTube,materialPolyethylene,"collimator",0,0,0); 
 
+  //gdml files pen holders
+  //fParser.Write("../input_files/PEN-018695-01Dec20_1644491893.ast.gdml",physicWorldBox);
 
   G4ThreeVector point = G4ThreeVector(0,0,5*cm);
   G4Navigator* pointNavigator = new G4Navigator();
   pointNavigator->SetWorldVolume(physicWorldBox);
   pointNavigator->LocateGlobalPointAndSetup(point);
+
+
 
   // ============================================================= Detectors =============================================================
 
@@ -997,6 +1001,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4VisAttributes* visualAttributesScintillators = new G4VisAttributes(G4Colour::Blue());
   visualAttributesScintillators->SetVisibility(true);
   penLogicBox->SetVisAttributes(visualAttributesScintillators);
+  //logicPENHolder->SetVisAttributes(visualAttributesScintillators);
   logicBoxTriggerFoilEJ212->SetVisAttributes(visualAttributesScintillators);
 
   //Collimator
@@ -1737,6 +1742,22 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 			"support5", 
 			logicWorldBox, false, 0, false);
      break;
+    /*
+    case 5:
+    //used for the spectrometer
+    for(int iSample = 0; iSample < nSamples; iSample++){
+                                new G4PVPlacement(0,
+                                G4ThreeVector(0,iSample*2*halfPenSampleThickness + iSample*SpaceBetweenSamples,0),
+                                logicPENHolder,
+                                "target_"+std::to_string(iSample+1),
+                                logicWorldBox,false,iSample,false); 
+                                
+			
+     }
+
+     break;
+     */
+
   }
 
   //============================================================= Surfaces =============================================================
@@ -1746,8 +1767,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   const G4int NUM = 2;
   G4double pp[NUM] = {2.038*eV, 4.144*eV};
-  G4double specularlobe[NUM] = {0.5, 0.5};
-  G4double specularspike[NUM] = {0.5, 0.5};
+  G4double specularlobe[NUM] = {0.3, 0.3};
+  G4double specularspike[NUM] = {0.7, 0.7};
   //G4double reflectivityPEN[NUM] = {pmtReflectivityBottom,pmtReflectivityBottom};
   G4double reflectivityGreaseBottom[NUM] = {pmtReflectivityBottom, pmtReflectivityBottom};
   G4double efficiencyPEN[NUM] = {0.0, 0.0};
@@ -1757,7 +1778,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   SMPT_surfaceAirTargetTopBottom = new G4MaterialPropertiesTable();
   SMPT_surfaceAirTargetTopBottom -> AddProperty("EFFICIENCY",pp,efficiencyPEN,NUM);
-  SMPT_surfaceAirTargetTopBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  //SMPT_surfaceAirTargetTopBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
   SMPT_surfaceAirTargetTopBottom -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   SMPT_surfaceAirTargetTopBottom -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
   surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
@@ -1806,7 +1827,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   surfaceGreaseTargetBottom = new G4OpticalSurface("surfaceGreaseTargetBottom",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetBottom -> SetSigmaAlpha(fSigAlphaBottom);
   G4double efficiency[NUM] = {0.0, 0.0};
-  MPT_SurfaceBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  //MPT_SurfaceBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
   MPT_SurfaceBottom -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceBottom -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceBottom -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
@@ -1814,7 +1835,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   surfaceGreaseTargetMiddle = new G4OpticalSurface("surfaceGreaseTargetMiddle",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetMiddle -> SetSigmaAlpha(fSigAlphaBottom);
-  MPT_SurfaceBetween -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  //MPT_SurfaceBetween -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
   MPT_SurfaceBetween -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceBetween -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceBetween -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
@@ -1824,7 +1845,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   surfaceGreaseTargetSides -> SetSigmaAlpha(fSigAlphaSides);
   if(fDetectorType == 3){pmtReflectivitySides = 0.95;}
   G4double reflectivityGreaseSide[NUM] = {pmtReflectivitySides, pmtReflectivitySides};
-  MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
+  //MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
   MPT_SurfaceSides -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceSides -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceSides -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
