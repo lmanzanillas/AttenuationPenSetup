@@ -462,7 +462,8 @@ void DetectorConstruction::DefineMaterials(){
   // Read primary emission spectrum from PEN
   // Measurements from MPP Munich
   G4double pWavelength;
-  G4String  Scint_file ="../properties/PEN_EM_SPECTRUM.dat";
+  //G4String  Scint_file ="../properties/PEN_EM_SPECTRUM.dat";
+  G4String  Scint_file ="../input_files/PEN_em_spectrum.csv";
   std::ifstream ReadScint2(Scint_file),ReadScintPEN;
   //count number of entries
   ReadScint2.unsetf(std::ios_base::skipws);
@@ -473,8 +474,8 @@ void DetectorConstruction::DefineMaterials(){
   std::cout << " PEN Lines: " << line_count << "\n";
   ReadScint2.close();
 
-  G4double PEN_EMISSION[500]; 
-  G4double PEN_WL_ENERGY[500]; 
+  G4double PEN_EMISSION[191]; 
+  G4double PEN_WL_ENERGY[191]; 
   G4int nEntriesPEN = 0;
   ReadScintPEN.open(Scint_file);
   if(ReadScintPEN.is_open()){
