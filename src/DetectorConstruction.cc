@@ -107,11 +107,11 @@ MPT_PVT(nullptr)
   fSigAlphaPENAirTopBottom = 0.01;
   fSigAlphaSides = 0.01;
   fSigAlphaBottom = 0.01;
-  pmtReflectivitySides = 0.95;
-  pmtReflectivityBottom = 0.95;
+  pmtReflectivitySides = 0.90;
+  pmtReflectivityBottom = 0.90;
   materialConstruction = new PenMaterials;
   DefineMaterials();
-  fTargetMaterial = G4Material::GetMaterial("PVT_structure");
+  fTargetMaterial = G4Material::GetMaterial("PEN");
   fGlassMaterialPMT = G4Material::GetMaterial("BorosilicateGlass");
   MPT_SurfaceSides = new G4MaterialPropertiesTable();
   MPT_SurfaceBottom = new G4MaterialPropertiesTable();
@@ -120,7 +120,7 @@ MPT_PVT(nullptr)
   //SetABS(AbsorptionLength);
   SetWorldMaterial("Air");
   //Construct();
-  SetTargetMaterial("PVT_structure");
+  SetTargetMaterial("PEN");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -350,7 +350,7 @@ void DetectorConstruction::SetTargetMaterial(G4String materialChoice)
     fTargetMaterial = pttoMaterial;
     fTargetName = fTargetMaterial->GetName();
     if(penLogicBox)penLogicBox->SetMaterial(fTargetMaterial);
-    G4cout<<" light yield: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("SCINTILLATIONYIELD")<<" photons/MeV"<<G4endl;  
+    G4cout<<" material "<<fTargetMaterial->GetName()<<" light yield: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("SCINTILLATIONYIELD")<<" photons/MeV"<<G4endl;  
     fTargetMaterial->GetMaterialPropertiesTable()->GetProperty("SLOWCOMPONENT")->DumpValues ();  
     //G4cout<<" surface: "<<fTargetMaterial->GetMaterialPropertiesTable()->GetConstProperty("ABSLENGTH")<<" mm"<<G4endl;  
   } else {
@@ -1779,7 +1779,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   SMPT_surfaceAirTargetTopBottom = new G4MaterialPropertiesTable();
   SMPT_surfaceAirTargetTopBottom -> AddProperty("EFFICIENCY",pp,efficiencyPEN,NUM);
-  //SMPT_surfaceAirTargetTopBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  if(fTargetMaterial->GetName() == "PEN"){
+  	SMPT_surfaceAirTargetTopBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  }
   SMPT_surfaceAirTargetTopBottom -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   SMPT_surfaceAirTargetTopBottom -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
   surfaceAirTargetTopBottom -> SetMaterialPropertiesTable(SMPT_surfaceAirTargetTopBottom);
@@ -1828,7 +1830,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   surfaceGreaseTargetBottom = new G4OpticalSurface("surfaceGreaseTargetBottom",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetBottom -> SetSigmaAlpha(fSigAlphaBottom);
   G4double efficiency[NUM] = {0.0, 0.0};
-  //MPT_SurfaceBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  if(fTargetMaterial->GetName() == "PEN"){
+  	MPT_SurfaceBottom -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  }
   MPT_SurfaceBottom -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceBottom -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceBottom -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
@@ -1836,7 +1840,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   surfaceGreaseTargetMiddle = new G4OpticalSurface("surfaceGreaseTargetMiddle",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetMiddle -> SetSigmaAlpha(fSigAlphaBottom);
-  //MPT_SurfaceBetween -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  if(fTargetMaterial->GetName() == "PEN"){
+  	MPT_SurfaceBetween -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseBottom,NUM);
+  }
   MPT_SurfaceBetween -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceBetween -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceBetween -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
@@ -1844,9 +1850,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   surfaceGreaseTargetSides = new G4OpticalSurface("surfaceGreaseTargetSides",unified, ground, dielectric_dielectric);
   surfaceGreaseTargetSides -> SetSigmaAlpha(fSigAlphaSides);
-  if(fDetectorType == 3){pmtReflectivitySides = 0.95;}
+  if(fDetectorType == 3){pmtReflectivitySides = 0.90;}
   G4double reflectivityGreaseSide[NUM] = {pmtReflectivitySides, pmtReflectivitySides};
-  //MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
+  if(fTargetMaterial->GetName() == "PEN"){
+        G4cout<<" T material: "<<fTargetMaterial->GetName()<<G4endl;
+  	MPT_SurfaceSides -> AddProperty("TRANSMITTANCE",pp,reflectivityGreaseSide,NUM);
+  }
   MPT_SurfaceSides -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   MPT_SurfaceSides -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
   MPT_SurfaceSides -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
